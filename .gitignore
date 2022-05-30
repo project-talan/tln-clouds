@@ -1,0 +1,24 @@
+#  Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# .tfvars files
+*.tfvars
+*out.terraform*
+
+# OSX
+**/.DS_Store
+
+# JetBrains
+.idea/*
+*.iws
+*.iml
+*.ipr
+
+# Dont remove it, cause .env file placed in root folder
+**/.env
+.kube.config*
+**/backend.tf
