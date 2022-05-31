@@ -13,10 +13,14 @@ resource "digitalocean_kubernetes_cluster" "k8s" {
   version   = var.do_k8s_version
 
   node_pool {
-    name       = module.shared.k8s_pool_name
-    auto_scale = true
-    min_nodes  = var.do_k8s_nodes_min
-    max_nodes  = var.do_k8s_nodes_max
-    size       = var.do_k8s_nodes_size
+    name        = module.shared.k8s_pool_name
+    auto_scale  = true
+    min_nodes   = var.do_k8s_nodes_min
+    max_nodes   = var.do_k8s_nodes_max
+    size        = var.do_k8s_nodes_size
+
+    tags          = data.digitalocean_tags.list.tags[*].name
   }
+
+  tags          = data.digitalocean_tags.list.tags[*].name
 }

@@ -18,6 +18,16 @@ locals {
 output "prefix" {
   value = local.prefix
 }
+
+output "tags" {
+  value = {
+    project                 = var.project_name
+    infrastructure_instance = var.ii_name
+    environment             = var.env_name
+    managed_by              = "terraform"
+  }
+}
+
 output "vpc_name" {
   value = "${local.prefix}-vpc"
 }
