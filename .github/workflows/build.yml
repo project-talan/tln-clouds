@@ -17,7 +17,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-
+      - name: Install tln cli
+        run: |
+          npm i -g tln-cli@1.61.0
+          tln --version
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
