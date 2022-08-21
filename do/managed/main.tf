@@ -1,9 +1,10 @@
 module "shared" {
-  source        = "../../shared"
-  project_name  = var.project_name
-  ii_name       = var.ii_name
-  env_name      = var.env_name
-  tenant_name   = var.tenant_name
+  source      = "../../shared"
+  org_id      = var.org_id
+  project_id  = var.project_id
+  ii_id       = var.ii_id
+  env_id      = var.env_id
+  tenant_id   = var.tenant_id
 }
 
 resource "digitalocean_kubernetes_cluster" "k8s" {
@@ -19,7 +20,7 @@ resource "digitalocean_kubernetes_cluster" "k8s" {
     max_nodes   = var.do_k8s_nodes_max
     size        = var.do_k8s_nodes_size
 
-    tags          = data.digitalocean_tags.list.tags[*].name
+    tags        = data.digitalocean_tags.list.tags[*].name
   }
 
   tags          = data.digitalocean_tags.list.tags[*].name

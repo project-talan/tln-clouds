@@ -1,13 +1,16 @@
-variable "project_name" {
+variable "org_id" {
   type = string
 }
-variable "ii_name" {
+variable "project_id" {
   type = string
 }
-variable "env_name" {
+variable "ii_id" {
   type = string
 }
-variable "tenant_name" {
+variable "env_id" {
+  type = string
+}
+variable "tenant_id" {
   type = string
 }
 
