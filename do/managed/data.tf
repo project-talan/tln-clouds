@@ -6,6 +6,13 @@ data "digitalocean_vpc" "vpc" {
 data "digitalocean_tags" "list" {
   filter {
     key       = "name"
-    values    = [module.shared.tags["project"], module.shared.tags["infrastructure_instance"], module.shared.tags["managed_by"]]
+    values    = [
+      module.shared.tags["org"],
+      module.shared.tags["proj"],
+      module.shared.tags["ii"],
+      module.shared.tags["env"],
+      module.shared.tags["proj"],
+      module.shared.tags["managed_by"]
+    ]
   }
 }

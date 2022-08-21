@@ -1,18 +1,21 @@
-variable "project_name" {
+variable "org_id" {
   type = string
 }
-variable "ii_name" {
+variable "project_id" {
   type = string
 }
-variable "env_name" {
+variable "ii_id" {
   type = string
 }
-variable "tenant_name" {
+variable "env_id" {
+  type = string
+}
+variable "tenant_id" {
   type = string
 }
 
 locals {
-  prefix = "${var.project_name}-${var.ii_name}"
+  prefix = "${var.project_id}-${var.ii_id}"
 }
 
 output "prefix" {
@@ -21,10 +24,11 @@ output "prefix" {
 
 output "tags" {
   value = {
-    project                 = var.project_name
-    infrastructure_instance = var.ii_name
-    environment             = var.env_name
-    managed_by              = "terraform"
+    org         = var.org_id
+    proj        = var.project_id
+    ii          = var.ii_id
+    env         = var.env_id
+    managed_by  = "terraform"
   }
 }
 
@@ -38,5 +42,5 @@ output "k8s_pool_name" {
   value = "${local.prefix}-k8s-pool"
 }
 output "k8s_config_name" {
-  value = ".kube.config.${var.ii_name}"
+  value = ".kube.config.${var.ii_id}"
 }
