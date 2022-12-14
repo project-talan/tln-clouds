@@ -7,12 +7,12 @@ data "digitalocean_tags" "list" {
   filter {
     key       = "name"
     values    = [
-      module.shared.tags["org"],
-      module.shared.tags["proj"],
-      module.shared.tags["ii"],
-      module.shared.tags["env"],
-      module.shared.tags["proj"],
-      module.shared.tags["managed_by"]
+      module.shared.tags["Org"],
+      module.shared.tags["Proj"],
+      module.shared.tags["II"],
+      module.shared.tags["Env"],
+      module.shared.tags["Proj"],
+      module.shared.tags["ManagedBy"]
     ]
   }
 }
