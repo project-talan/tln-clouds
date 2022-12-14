@@ -6,8 +6,3 @@ module "shared" {
   env_id      = var.env_id
   tenant_id   = var.tenant_id
 }
-
-
-data "aws_availability_zones" "available" {
-  state = "available"
-}

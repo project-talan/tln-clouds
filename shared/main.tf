@@ -24,17 +24,24 @@ output "prefix" {
 
 output "tags" {
   value = {
-    org         = var.org_id
-    proj        = var.project_id
-    ii          = var.ii_id
-    env         = var.env_id
-    managed_by  = "terraform"
+    Org         = var.org_id
+    Proj        = var.project_id
+    II          = var.ii_id
+    Env         = var.env_id
+    ManagedBy   = "terraform"
   }
 }
 
 output "vpc_name" {
   value = "${local.prefix}-vpc"
 }
+output "private_subnet_tags" {
+  value = { Type = "private" }
+}
+output "public_subnet_tags" {
+  value = { Type = "public" }
+}
+
 output "k8s_name" {
   value = "${local.prefix}-k8s"
 }
