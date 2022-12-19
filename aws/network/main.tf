@@ -23,13 +23,16 @@ module "vpc" {
   enable_dns_hostnames = true
 
   public_subnet_tags = merge(module.shared.public_subnet_tags, {
-    "kubernetes.io/cluster/${module.shared.vpc_name}" = "shared"
-    "kubernetes.io/role/elb"                      = 1
+    "kubernetes.io/cluster/${module.shared.k8s_name}" = "shared"
+    "kubernetes.io/role/elb"                          = "1"
   })
 
   private_subnet_tags = merge(module.shared.private_subnet_tags, {
-    "kubernetes.io/cluster/${module.shared.vpc_name}" = "shared"
-    "kubernetes.io/role/internal-elb"             = 1
+    "kubernetes.io/cluster/${module.shared.k8s_name}" = "shared"
+    "kubernetes.io/role/internal-elb"                 = "1"
   })
-}
 
+  tags = {
+    "kubernetes.io/cluster/${module.shared.k8s_name}" = "shared"
+  }
+}
