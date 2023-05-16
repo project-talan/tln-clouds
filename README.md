@@ -17,6 +17,11 @@ Framework:
   git clone git@github.com:project-talan/tln-clouds.git
   ```
 * Use **.env.template** files as an examples and fiil them with actial values
+
+* Install dependencies
+  ```
+  tln install do --depends
+  ```
 * Construct DO Infrastructure Instance (remove -u when you are ready to exually interact with cloud provider)
   ```
   tln construct do -u -- --backend cloud
