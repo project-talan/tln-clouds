@@ -25,6 +25,11 @@ module "eks" {
     create_security_group = false
   }
 
+  // https://stackoverflow.com/questions/74687452/eks-error-syncing-load-balancer-failed-to-ensure-load-balancer-multiple-tagge
+  node_security_group_tags = {
+    "kubernetes.io/cluster/${module.shared.k8s_name}" = null
+  }
+
   eks_managed_node_groups = {
     ng1 = {
       name = "ng1"
