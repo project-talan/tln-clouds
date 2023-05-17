@@ -22,11 +22,15 @@ Framework:
   ```
   tln install do --depends
   ```
-* Construct DO Infrastructure Instance (remove -u when you are ready to exually interact with cloud provider)
+* Construct DO Infrastructure Instance (remove -u when you are ready to interact with cloud provider)
   ```
   tln construct do -u -- --backend cloud
   ```
-* Verify access to the k8s cluster
+* Install Nginx ingress controller (remove -u when you are ready to interact with cloud provider)
+  ```
+  tln nginx-ingress-install@k8s do -u
+  ```
+* Verify access to the k8s cluster and ingress status (remove -u when you are ready to interact with cloud provider)
   ```
   tln shell do
   ```
@@ -34,9 +38,17 @@ Framework:
   kubectl get pods --all-namespaces
   ```
   ```
+  tln nginx-ingress-status@k8s
+  ```
+  ```
   ^d
   ```
-* Deconstruct DO Infrastructure Instance (remove -u when you are ready to exually interact with cloud provider)
+* Uninstall Nginx ingress controller (remove -u when you are ready to interact with cloud provider)
+  ```
+  tln nginx-ingress-uninstall@k8s do -u
+  ```
+
+* Deconstruct DO Infrastructure Instance (remove -u when you are ready to interact with cloud provider)
   ```
   tln deconstruct do -u -- --backend cloud
   ```
