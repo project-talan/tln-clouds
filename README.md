@@ -17,20 +17,21 @@ Framework:
   git clone git@github.com:project-talan/tln-clouds.git
   ```
 * Use **.env.template** files as an examples and fiil them with actial values
+* NOTE. Commands below assume that Terraform Cloud is used as a storage for states
 
 * Install dependencies
   ```
   tln install do --depends
   ```
-* Construct DO Infrastructure Instance (remove -u when you are ready to interact with cloud provider)
+* Construct DO Dev infrastructure i
   ```
-  tln construct do -u -- --backend cloud
+  tln construct do -- --backend cloud --init --plan --apply
   ```
-* Install Nginx ingress controller (remove -u when you are ready to interact with cloud provider)
+* Install Nginx ingress controller
   ```
-  tln nginx-ingress-install@k8s do -u
+  tln nginx-ingress-install@k8s do
   ```
-* Verify access to the k8s cluster and ingress status (remove -u when you are ready to interact with cloud provider)
+* Verify access to the k8s cluster and ingress status
   ```
   tln shell do
   ```
@@ -43,12 +44,12 @@ Framework:
   ```
   ^d
   ```
-* Uninstall Nginx ingress controller (remove -u when you are ready to interact with cloud provider)
+* Uninstall Nginx ingress controller
   ```
-  tln nginx-ingress-uninstall@k8s do -u
+  tln nginx-ingress-uninstall@k8s do
   ```
 
-* Deconstruct DO Infrastructure Instance (remove -u when you are ready to interact with cloud provider)
+* Deconstruct DO Dev infrastructure instance
   ```
-  tln deconstruct do -u -- --backend cloud
+  tln deconstruct do -- --backend cloud --init --plan --apply
   ```
