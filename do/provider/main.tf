@@ -8,6 +8,7 @@ module "shared" {
 */
 }
 
+/*
 resource "digitalocean_certificate" "certificate" {
   name              = "${module.shared.prefix_env}-${var.domain_tag}-cert"
   type              = "custom"
@@ -15,3 +16,4 @@ resource "digitalocean_certificate" "certificate" {
   certificate_chain = file(var.certificate_chain)
   leaf_certificate = file(var.leaf_certificate)
 }
+*/
