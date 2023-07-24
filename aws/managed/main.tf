@@ -2,19 +2,20 @@ module "shared" {
   source        = "../../shared"
   org_id      = var.org_id
   project_id  = var.project_id
-  ii_id       = var.ii_id
   env_id      = var.env_id
+/*
   tenant_id   = var.tenant_id
+*/
 }
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "18.31.2"
+  version = "19.15.3"
 
   cluster_name      = module.shared.k8s_name
   cluster_version   = var.aws_k8s_version
   vpc_id            = data.aws_vpc.main.id
-  subnet_ids        = data.aws_subnets.private.ids
+  subnet_ids        = data.aws_subnets.public.ids
 
   eks_managed_node_group_defaults = {
     ami_type = "AL2_x86_64"
@@ -54,7 +55,7 @@ locals {
     endpoint                          = module.eks.cluster_endpoint
     cluster_auth_base64               = module.eks.cluster_certificate_authority_data
     aws_authenticator_command         = "aws"
-    aws_authenticator_command_args    = ["--region", "us-west-1", "eks", "get-token", "--cluster-name", module.shared.k8s_name]
+    aws_authenticator_command_args    = ["--region", "eu-central-1", "eks", "get-token", "--cluster-name", module.shared.k8s_name]
     aws_authenticator_additional_args = []
     aws_authenticator_env_variables   = {}
   })
