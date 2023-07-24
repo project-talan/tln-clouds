@@ -15,7 +15,7 @@ module "eks" {
   cluster_name      = module.shared.k8s_name
   cluster_version   = var.aws_k8s_version
   vpc_id            = data.aws_vpc.main.id
-  subnet_ids        = data.aws_subnets.public.ids
+  subnet_ids        = data.aws_subnets.private.ids
 
   eks_managed_node_group_defaults = {
     ami_type = "AL2_x86_64"
