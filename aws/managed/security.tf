@@ -14,7 +14,7 @@ resource "aws_security_group" "ng1" {
 }
 
 resource "local_sensitive_file" "kubeconfig" {
-  filename          = module.shared.k8s_config_name
-  file_permission   = "400"
-  content           = local.kubeconfig
+  filename        = module.shared.k8s_config_name
+  file_permission = "400"
+  content         = local.kubeconfig
 }
