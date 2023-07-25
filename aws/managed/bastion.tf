@@ -25,7 +25,7 @@ resource "aws_instance" "bastion" {
   subnet_id                   = data.aws_subnets.public.ids[0]
   associate_public_ip_address = true
 
-  security_groups = [module.bastion_sg.security_group_id]
+  vpc_security_group_ids = [module.bastion_sg.security_group_id]
   key_name        = aws_key_pair.ssh.key_name
 
   user_data                   = base64encode(file("${path.module}/templates/template.sh"))
@@ -62,12 +62,12 @@ resource "tls_private_key" "ssh" {
 }
 
 resource "aws_key_pair" "ssh" {
-  key_name   = "ssh-key"
+  key_name = "${module.shared.prefix_env}-bastion-ssh-key"
   public_key = tls_private_key.ssh.public_key_openssh
 }
 
 resource "local_sensitive_file" "ssh_private_key_pem" {
-  filename        = "ssh-key.pem"
+  filename        = "${module.shared.prefix_env}-bastion-ssh-key.pem"
   file_permission = "400"
   content         = tls_private_key.ssh.private_key_pem
 }
