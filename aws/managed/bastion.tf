@@ -26,7 +26,7 @@ resource "aws_instance" "bastion" {
   associate_public_ip_address = true
 
   vpc_security_group_ids = [module.bastion_sg.security_group_id]
-  key_name        = aws_key_pair.ssh.key_name
+  key_name               = aws_key_pair.ssh.key_name
 
   user_data                   = base64encode(file("${path.module}/templates/template.sh"))
   user_data_replace_on_change = true
@@ -62,7 +62,7 @@ resource "tls_private_key" "ssh" {
 }
 
 resource "aws_key_pair" "ssh" {
-  key_name = "${module.shared.prefix_env}-bastion-ssh-key"
+  key_name   = "${module.shared.prefix_env}-bastion-ssh-key"
   public_key = tls_private_key.ssh.public_key_openssh
 }
 
