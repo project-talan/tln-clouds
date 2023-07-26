@@ -6,4 +6,3 @@ variable "tenant_id"  { type = string }
 */
 
 variable "do_region"  { type = string }
-
