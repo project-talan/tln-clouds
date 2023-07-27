@@ -62,12 +62,12 @@ resource "tls_private_key" "ssh" {
 }
 
 resource "aws_key_pair" "ssh" {
-  key_name   = "${module.shared.prefix_env}-bastion-ssh-key"
+  key_name   = "${var.env_id}-bastion-ssh-key"
   public_key = tls_private_key.ssh.public_key_openssh
 }
 
 resource "local_sensitive_file" "ssh_private_key_pem" {
-  filename        = "${module.shared.prefix_env}-bastion-ssh-key.pem"
+  filename        = "${var.env_id}-bastion-ssh-key.pem"
   file_permission = "400"
   content         = tls_private_key.ssh.private_key_pem
 }
