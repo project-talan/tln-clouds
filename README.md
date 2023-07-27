@@ -16,8 +16,9 @@ Framework:
   ```
   git clone git@github.com:project-talan/tln-clouds.git
   ```
-* Use **.env.template** files as an examples and fiil them with actial values
+* Use **.env.template** files as an examples and fill it with actual values (create .env file at repository root level and inside every provider: do, aws, azure, gcp folders)
 * NOTE. Commands below assume that Terraform Cloud is used as a storage for states
+* Commands below will guide you to configure k8s infrastructure usign DO. By replacing <do> with <aws> you can have AWS based infrastructure
 
 * Install dependencies
   ```
@@ -27,13 +28,12 @@ Framework:
   ```
   tln construct do -- --backend cloud --init --plan --apply
   ```
-* Install Nginx ingress controller
-  ```
-  tln nginx-ingress-install@k8s do
-  ```
-* Verify access to the k8s cluster and ingress status
+* Verify access to the k8s cluster and install/uninstall ingress
   ```
   tln shell do
+  ```
+  ```
+  tln nginx-ingress-install@k8s
   ```
   ```
   kubectl get pods --all-namespaces
@@ -42,13 +42,11 @@ Framework:
   tln nginx-ingress-status@k8s
   ```
   ```
+  tln nginx-ingress-uninstall@k8s
+  ```
+  ```
   ^d
   ```
-* Uninstall Nginx ingress controller
-  ```
-  tln nginx-ingress-uninstall@k8s do
-  ```
-
 * Deconstruct DO Dev infrastructure instance
   ```
   tln deconstruct do -- --backend cloud --init --plan --apply
