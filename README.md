@@ -1,22 +1,23 @@
 # Description
-Cloud agnostic, enterprise grade, bulletproof, battle tested IaC skeleton for SaaS solutions.
+Cloud agnostic IaC based SaaS skeleton.
 ![Infrastructure Instance](ii.png)
 
 ## Features
 Framework:
-* supports AWS, Azure, GCP, Digitalocean provider
-* provides Multi-tenancy feature via layers architecture
-* implements nested configurations for Infrastructure Instance and Environments
+* supports AWS, DO (Azure, GCP - in progress)
+* provides Multi-tenancy feature via layers architecture (provider, network, managed, appl, tenant)
+* implements easy-to-construct multiple environment approach (single env var)
 * is based on IaC (Terraform)
-* includes support of multiple backend providers - Local, Cloud, Remote, PG, S3
+* supports of multiple backend providers - Local, Cloud (PG, S3 - in progress)
 
 ## Quick start
 * Install [tln](https://www.npmjs.com/package/tln-cli)
-* Goto **projects** and clone repository
+* Goto **projects** folder from tln-cli installation above and clone repository
   ```
-  git clone git@github.com:project-talan/tln-clouds.git
+  git clone --depth 1 --branch v23.7.0 git@github.com:project-talan/tln-clouds.git
   ```
-* Use **.env.template** files as an examples and fill it with actual values (create .env file at repository root level and inside every provider: do, aws, azure, gcp folders)
+* Use **.env.template** file as an examples and fill it with actual values
+  * dfdfdf
 * NOTE. Commands below assume that Terraform Cloud is used as a storage for states
 * Commands below will guide you to configure k8s infrastructure usign DO. By replacing <do> with <aws> you can have AWS based infrastructure
 
