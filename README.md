@@ -52,7 +52,7 @@
   tln shell do
   ```
   ```
-  tln nginx-ingress-install@k8s
+  tln nginx-ingress-install@k8s -- --ver 4.7.2
   ```
   ```
   kubectl get pods --all-namespaces
