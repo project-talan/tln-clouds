@@ -24,7 +24,7 @@
     TF_VAR_org_id=<your_terraform_cloud_org>
     TF_VAR_project_id=tln-clouds
     TF_VAR_env_id=dev
-    #TF_VAR_tenant_id=
+    TF_VAR_tenant_id=
 
     TF_TOKEN_app_terraform_io=<your_terraform_cloud_token>
     ```
