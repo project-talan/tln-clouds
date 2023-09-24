@@ -9,6 +9,15 @@
 * IaC - Terraform, Helm
 * supports of multiple backend providers - Local, Cloud, PG (S3 - in progress)
 
+## Infrastructure Instance layers
+| Layer  | Description |
+| ------------- | ------------- |
+| Tenant | Is constructed during new tenant (customer) onboarding: DNS record creation (customerN.project.io), tenant DB creation etc. |
+| Appl | Holds Application resources: DB server, Message broker cluster, DNS records (api.project.io) etc. |
+| Managed | Constructs K8s cluster, runs security checks etc. |
+| Network | VPC, pruvate & public networks, Bastion |
+| Provider | Provider level configrations: SSL certificates, Docker registry etc. |
+
 ## Quick start
 * Install [tln](https://www.npmjs.com/package/tln-cli)
 * Goto **projects** folder from tln-cli installation above and clone repository
