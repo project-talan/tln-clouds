@@ -1,16 +1,11 @@
 variable "org_id"     { type = string }
 variable "project_id" { type = string }
 variable "env_id"     { type = string }
-/*
 variable "tenant_id"  { type = string }
-*/
 
 locals {
   prefix_project  = "${var.project_id}"
   prefix_env      = "${var.project_id}-${var.env_id}"
-/*
-  prefix_tenant   = "${var.project_id}-${var.env_id}-${var.tenant_id}"
-*/
 }
 
 output "prefix_project" { value = local.prefix_project }
@@ -25,9 +20,6 @@ output "tags" {
     Org         = var.org_id
     Proj        = var.project_id
     Env         = var.env_id
-/*
-    Tenant      = var.tenant_id
-*/
   }
 }
 

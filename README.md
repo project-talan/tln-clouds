@@ -1,34 +1,46 @@
 # Description
-Cloud agnostic IaC based SaaS skeleton.
+## Cloud agnostic IaC based SaaS skeleton.
 ![Infrastructure Instance](ii.png)
 
 ## Features
-Framework
 * supports AWS, DO (Azure, GCP - in progress)
-* provides Multi-tenancy feature via layers architecture (provider, network, managed, appl, tenant)
-* implements easy-to-construct multiple environment approach (single env var)
-* is based on IaC (Terraform)
-* supports of multiple backend providers - Local, Cloud (PG, S3 - in progress)
+* provides Multi-tenancy feature via layers architecture (Provider, Network, Managed, Appl, Tenant)
+* implements easy-to-construct multiple environment approach, controls by one environment variable - **TF_VAR_env_id**
+* IaC - Terraform, Helm
+* supports of multiple backend providers - Local, Cloud, PG (S3 - in progress)
+
+## Infrastructure Instance layers
+| Layer  | Description |
+| ------------- | ------------- |
+| Tenant | Is constructed during new tenant (customer) onboarding: DNS record creation (customerN.project.io), tenant DB creation etc. |
+| Appl | Holds Application resources: DB server, Message broker cluster, DNS records (api.project.io) etc. |
+| Managed | Constructs K8s cluster, runs security checks etc. |
+| Network | VPC, pruvate & public networks, Bastion |
+| Provider | Provider level configrations: SSL certificates, Docker registry etc. |
 
 ## Quick start
 * Install [tln](https://www.npmjs.com/package/tln-cli)
 * Goto **projects** folder from tln-cli installation above and clone repository
   ```
-  git clone --depth 1 --branch v23.7.0 git@github.com:project-talan/tln-clouds.git
+  git clone --depth 1 --branch v23.9.0 git@github.com:project-talan/tln-clouds.git && cd tln-clouds
   ```
+> Important<br>
+> Commands below assume that Terraform Cloud is used as a storage for states<br/>
+> By skipping **--backend cloud** local backend will be used
 * Use **.env.template** file as an examples and fill it with actual values
   * root .env
     ```
-    TF_VAR_org_id=project-talan
+    TF_VAR_org_id=<your_terraform_cloud_org>
     TF_VAR_project_id=tln-clouds
     TF_VAR_env_id=dev
-    #TF_VAR_tenant_id=
+    TF_VAR_tenant_id=
 
-    TF_TOKEN_app_terraform_io=<your_token>
+    TF_TOKEN_app_terraform_io=<your_terraform_cloud_token>
     ```
-  * do/.env
+### Digital Ocean
+  * Create **do/.env** file using **do/.env.template** as an example
     ```
-    DIGITALOCEAN_TOKEN=<your_token>
+    DIGITALOCEAN_TOKEN=<your_do_token>
 
     TF_VAR_do_region=nyc3
     TF_VAR_do_k8s_version=1.27.4-do.0
@@ -36,10 +48,46 @@ Framework
     TF_VAR_do_k8s_nodes_max=2
     TF_VAR_do_k8s_nodes_size=s-2vcpu-2gb
     ```
-  * aws/.env
+* Install dependencies
+  ```
+  tln install do --depends
+  ```
+* Construct DO Dev infrastructure instance
+  ```
+  tln construct do -- --backend cloud --init --plan --apply
+  ```
+* Verify access to the k8s cluster and install/uninstall ingress
+  * Create ssh session
     ```
-    AWS_ACCESS_KEY_ID=<your_token>
-    AWS_SECRET_ACCESS_KEY=<your_token>
+    tln shell do
+    ```
+    ```
+    tln nginx-ingress-install@k8s -- --ver 4.7.2
+    ```
+    ```
+    kubectl get pods --all-namespaces
+    ```
+    ```
+    tln nginx-ingress-status@k8s
+    ```
+  * Use IP address from command outpu below to check access to the cluster using browser/curl
+  * Uninstall Ingress
+    ```
+    tln nginx-ingress-uninstall@k8s
+    ```
+  * Close ssh session
+    ```
+    ^d
+    ```
+* Deconstruct DO Dev infrastructure instance
+  ```
+  tln deconstruct do -- --backend cloud --plan --apply
+  ```
+### AWS
+  * Create **aws/.env** file using **aws/.env.template** as an example
+    ```
+    AWS_ACCESS_KEY_ID=<your_aws_id>
+    AWS_SECRET_ACCESS_KEY=<your_aws_key>
     AWS_SESSION_TOKEN=
 
     AWS_DEFAULT_REGION=eu-central-1
@@ -51,36 +99,59 @@ Framework
     TF_VAR_aws_k8s_nodes_size=t3a.medium
     TF_VAR_aws_k8s_nodes_disk=50
     ```
-* NOTE. Commands below assume that Terraform Cloud is used as a storage for states
-* Next commands will guide you to configure k8s infrastructure usign DO. By replacing **do** with **aws** you can have AWS based infrastructure
 * Install dependencies
   ```
-  tln install do --depends
+  tln install aws --depends
   ```
-* Construct DO Dev infrastructure instance
+* Construct AWS Dev infrastructure instance
   ```
-  tln construct do -- --backend cloud --init --plan --apply
+  tln construct aws -- --backend cloud --init --plan --apply
   ```
 * Verify access to the k8s cluster and install/uninstall ingress
+  * Open separate terminal and establish connection with bastion, use user@ip from previous command output (bastion_remote_address)
+    ```
+    tln bridge aws -- --bastion user@ip
+    ```
+  * Switch back to the original terminal and initiate session for kubectl
+    ```
+    tln connect aws
+    ```
+    ```
+    tln nginx-ingress-install@k8s -- --ver 4.7.2
+    ```
+    ```
+    kubectl get pods --all-namespaces
+    ```
+    ```
+    tln nginx-ingress-status@k8s
+    ```
+    * Use DNS address name from command output below to check access to the cluster using browser/curl
+    * Uninstall Ingress
+    ```
+    tln nginx-ingress-uninstall@k8s
+    ```
+    * Close both terminals
+    ```
+    ^d
+    ```
+* Deconstruct AWS Dev infrastructure instance
   ```
-  tln shell do
+  tln deconstruct aws -- --backend cloud --plan --apply
   ```
-  ```
-  tln nginx-ingress-install@k8s
-  ```
-  ```
-  kubectl get pods --all-namespaces
-  ```
-  ```
-  tln nginx-ingress-status@k8s
-  ```
-  ```
-  tln nginx-ingress-uninstall@k8s
-  ```
-  ```
-  ^d
-  ```
-* Deconstruct DO Dev infrastructure instance
-  ```
-  tln deconstruct do -- --backend cloud --plan --apply
-  ```
+## Command line options
+General format
+```
+tln [construct | deconstruct] [do | aws] [-u] -- [option, [option], ...]
+```
+| Option  | Description | Example |
+| ------------- | ------------- | ------------- |
+| backend | Defines which backend provider should bu used (cloud, pg) | $ tln construct do -- --backend cloud <br /> $ tln construct aws -- --backend pg |
+| state | Defines how store name will be built: project, provider, env, layer, tenant, <custom_string> | $ tln construct do -- --backend cloud -- state project,provider,env,layer <br /> will use tln-clouds-do-dev-managed Terraform Cloud workspace  |
+| init | Run Terraform init | $ tln construct aws -- --backend cloud --init |
+| upgrade | Run Terraform upgrade mode for init | $ tln construct aws -- --backend cloud --init --upgrade |
+| plan | Run Terraform plan | $ tln construct aws -- --backend cloud --plan |
+| apply | Run Terraform apply | $ tln construct aws -- --backend cloud --apply |
+| auto-approve | Tun on auto approve for apply & destroy | $ tln construct aws -- --backend cloud --apply --auto-approve |
+| layers | Select which layers will be included | $ tln construct aws -- --backend cloud --apply --layers tenant <br /> will construct infrastructure for tenant layer only |
+| bastion | Bastion address in form user@ip | $ tln bridge aws -- --bastion devops@192.168.10.1 <br /> will establish ssh connection with local box and bastion |
+| bridge-port | Local port for bridge to bastion | $ tln connect aws -- --bridge-port 8888 <br /> will run shell with ssh connection into k8s cluster |
