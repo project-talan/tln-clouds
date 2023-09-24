@@ -13,7 +13,7 @@
 * Install [tln](https://www.npmjs.com/package/tln-cli)
 * Goto **projects** folder from tln-cli installation above and clone repository
   ```
-  git clone --depth 1 --branch v23.9.0 git@github.com:project-talan/tln-clouds.git
+  git clone --depth 1 --branch v23.9.0 git@github.com:project-talan/tln-clouds.git && cd tln-clouds
   ```
 > Important<br>
 > Commands below assume that Terraform Cloud is used as a storage for states<br/>
@@ -48,26 +48,28 @@
   tln construct do -- --backend cloud --init --plan --apply
   ```
 * Verify access to the k8s cluster and install/uninstall ingress
-  ```
-  tln shell do
-  ```
-  ```
-  tln nginx-ingress-install@k8s -- --ver 4.7.2
-  ```
-  ```
-  kubectl get pods --all-namespaces
-  ```
-  ```
-  tln nginx-ingress-status@k8s
-  ```
-  Use IP address name from command outpu below to check access to the cluster using browser/curl
-  Uninstall Ingress
-  ```
-  tln nginx-ingress-uninstall@k8s
-  ```
-  ```
-  ^d
-  ```
+  * Create ssh session
+    ```
+    tln shell do
+    ```
+    ```
+    tln nginx-ingress-install@k8s -- --ver 4.7.2
+    ```
+    ```
+    kubectl get pods --all-namespaces
+    ```
+    ```
+    tln nginx-ingress-status@k8s
+    ```
+  * Use IP address from command outpu below to check access to the cluster using browser/curl
+  * Uninstall Ingress
+    ```
+    tln nginx-ingress-uninstall@k8s
+    ```
+  * Close ssh session
+    ```
+    ^d
+    ```
 * Deconstruct DO Dev infrastructure instance
   ```
   tln deconstruct do -- --backend cloud --plan --apply
@@ -97,32 +99,32 @@
   tln construct aws -- --backend cloud --init --plan --apply
   ```
 * Verify access to the k8s cluster and install/uninstall ingress
-  Open separate terminal and establish connection with bastion, use user@ip from previous command output (bastion_remote_address)
-  ```
-  tln bridge aws -- --bastion user@ip
-  ```
-  Switch back to the original terminal and initiate session for kubectl
-  ```
-  tln connect aws
-  ```
-  ```
-  tln nginx-ingress-install@k8s -- --ver 4.7.2
-  ```
-  ```
-  kubectl get pods --all-namespaces
-  ```
-  ```
-  tln nginx-ingress-status@k8s
-  ```
-  Use DNS address name from command outpu below to check access to the cluster using browser/curl
-  Uninstall Ingress
-  ```
-  tln nginx-ingress-uninstall@k8s
-  ```
-  Close both terminals
-  ```
-  ^d
-  ```
+  * Open separate terminal and establish connection with bastion, use user@ip from previous command output (bastion_remote_address)
+    ```
+    tln bridge aws -- --bastion user@ip
+    ```
+  * Switch back to the original terminal and initiate session for kubectl
+    ```
+    tln connect aws
+    ```
+    ```
+    tln nginx-ingress-install@k8s -- --ver 4.7.2
+    ```
+    ```
+    kubectl get pods --all-namespaces
+    ```
+    ```
+    tln nginx-ingress-status@k8s
+    ```
+    * Use DNS address name from command output below to check access to the cluster using browser/curl
+    * Uninstall Ingress
+    ```
+    tln nginx-ingress-uninstall@k8s
+    ```
+    * Close both terminals
+    ```
+    ^d
+    ```
 * Deconstruct AWS Dev infrastructure instance
   ```
   tln deconstruct aws -- --backend cloud --plan --apply
