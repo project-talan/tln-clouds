@@ -37,7 +37,7 @@ module "eks" {
       to_port                    = 443
       type                       = "ingress"
       source_node_security_group = false
-      source_security_group_id   = module.bastion_sg.security_group_id
+      source_security_group_id   = data.aws_security_group.bastion.id
     }
   }
 
