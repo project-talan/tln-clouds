@@ -4,19 +4,20 @@
 
 ## Features
 * supports AWS, DO (Azure, GCP - in progress)
-* provides Multi-tenancy feature via layers architecture (Provider, Network, Managed, Appl, Tenant)
-* implements easy-to-construct multiple environment approach, controls by one environment variable - **TF_VAR_env_id**
-* IaC - Terraform, Helm
-* supports of multiple backend providers - Local, Cloud, PG (S3 - in progress)
+* provides Multi-tenancy feature via layers architecture (provider, group, network, managed, app, tenant)
+* implements easy-to-construct multiple environment approach, controls by single environment variable - **TF_VAR_env_id**
+* IaC via Terraform
+* supports multiple backend providers - Local, Cloud, PG (S3 - in progress)
 
 ## Infrastructure Instance layers
 | Layer  | Description |
 | ------------- | ------------- |
-| Tenant | Is constructed during new tenant (customer) onboarding: DNS record creation (customerN.project.io), tenant DB creation etc. |
-| Appl | Holds Application resources: DB server, Message broker cluster, DNS records (api.project.io) etc. |
-| Managed | Constructs K8s cluster, runs security checks etc. |
-| Network | VPC, pruvate & public networks, Bastion |
-| Provider | Provider level configrations: SSL certificates, Docker registry etc. |
+| provider | Provider level configrations (Docker registry etc.) |
+| group | Logical group of environments dev: ci, dev01, qa01, prod: blue, green |
+| network | VPC, private & public networks, Bastion |
+| managed | K8s cluster, monitoring etc. |
+| app | Holds Application level resources: DBs, Message brokers, DNS records (api.project.io) etc. |
+| tenant | Is constructed during new tenant (customer) onboarding: DNS record creation (customerN.project.io), tenant DB creation etc. |
 
 ## Quick start
 * Install [tln](https://www.npmjs.com/package/tln-cli)
@@ -32,11 +33,69 @@
     ```
     TF_VAR_org_id=<your_terraform_cloud_org>
     TF_VAR_project_id=tln-clouds
-    TF_VAR_env_id=dev
+    TF_VAR_group_id=dev
+    TF_VAR_env_id=dev01
     TF_VAR_tenant_id=
 
     TF_TOKEN_app_terraform_io=<your_terraform_cloud_token>
     ```
+
+### AWS
+  * Create **aws/.env** file using **aws/.env.template** as an example
+    ```
+    AWS_ACCESS_KEY_ID=<your_aws_id>
+    AWS_SECRET_ACCESS_KEY=<your_aws_key>
+    AWS_SESSION_TOKEN=
+
+    AWS_DEFAULT_REGION=eu-central-1
+
+    TF_VAR_aws_k8s_version=1.27
+    TF_VAR_aws_k8s_nodes_min=1
+    TF_VAR_aws_k8s_nodes_desired=2
+    TF_VAR_aws_k8s_nodes_max=3
+    TF_VAR_aws_k8s_nodes_size=t3a.medium
+    TF_VAR_aws_k8s_nodes_disk=50
+    ```
+* Install dependencies
+  ```
+  tln install aws --depends
+  ```
+* Construct AWS Dev infrastructure instance
+  ```
+  tln construct aws -- --backend cloud --init --plan --apply
+  ```
+* Verify access to the k8s cluster and install/uninstall ingress
+  * Open separate terminal and establish connection with bastion, use **user@ip** from previous command output (bastion_remote_address)
+    ```
+    tln bridge aws -- --bastion user@ip
+    ```
+  * Switch back to the original terminal and initiate session for kubectl
+    ```
+    tln connect aws
+    ```
+    ```
+    tln nginx-ingress-install@k8s -- --ver 4.7.2
+    ```
+    ```
+    kubectl get pods --all-namespaces
+    ```
+    ```
+    tln nginx-ingress-status@k8s
+    ```
+    * Use DNS address name from command output below to check access to the cluster using browser/curl
+    * Uninstall Ingress
+    ```
+    tln nginx-ingress-uninstall@k8s
+    ```
+    * Close both terminals
+    ```
+    ^d
+    ```
+* Deconstruct AWS Dev infrastructure instance
+  ```
+  tln deconstruct aws -- --backend cloud --plan --apply
+  ```
+
 ### Digital Ocean
   * Create **do/.env** file using **do/.env.template** as an example
     ```
@@ -82,61 +141,6 @@
 * Deconstruct DO Dev infrastructure instance
   ```
   tln deconstruct do -- --backend cloud --plan --apply
-  ```
-### AWS
-  * Create **aws/.env** file using **aws/.env.template** as an example
-    ```
-    AWS_ACCESS_KEY_ID=<your_aws_id>
-    AWS_SECRET_ACCESS_KEY=<your_aws_key>
-    AWS_SESSION_TOKEN=
-
-    AWS_DEFAULT_REGION=eu-central-1
-
-    TF_VAR_aws_k8s_version=1.27
-    TF_VAR_aws_k8s_nodes_min=1
-    TF_VAR_aws_k8s_nodes_desired=2
-    TF_VAR_aws_k8s_nodes_max=3
-    TF_VAR_aws_k8s_nodes_size=t3a.medium
-    TF_VAR_aws_k8s_nodes_disk=50
-    ```
-* Install dependencies
-  ```
-  tln install aws --depends
-  ```
-* Construct AWS Dev infrastructure instance
-  ```
-  tln construct aws -- --backend cloud --init --plan --apply
-  ```
-* Verify access to the k8s cluster and install/uninstall ingress
-  * Open separate terminal and establish connection with bastion, use user@ip from previous command output (bastion_remote_address)
-    ```
-    tln bridge aws -- --bastion user@ip
-    ```
-  * Switch back to the original terminal and initiate session for kubectl
-    ```
-    tln connect aws
-    ```
-    ```
-    tln nginx-ingress-install@k8s -- --ver 4.7.2
-    ```
-    ```
-    kubectl get pods --all-namespaces
-    ```
-    ```
-    tln nginx-ingress-status@k8s
-    ```
-    * Use DNS address name from command output below to check access to the cluster using browser/curl
-    * Uninstall Ingress
-    ```
-    tln nginx-ingress-uninstall@k8s
-    ```
-    * Close both terminals
-    ```
-    ^d
-    ```
-* Deconstruct AWS Dev infrastructure instance
-  ```
-  tln deconstruct aws -- --backend cloud --plan --apply
   ```
 ## Command line options
 General format
