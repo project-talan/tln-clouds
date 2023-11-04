@@ -31,3 +31,17 @@ data "aws_security_group" "bastion" {
 
   vpc_id = data.aws_vpc.main.id
 }
+
+data "aws_security_group" "bastion" {
+  filter {
+    name   = "tag:Name"
+    values = ["${var.env_id}-bastion-sg"]
+  }
+
+  filter {
+    name   = "tag:Env"
+    values = [var.env_id]
+  }
+
+  vpc_id = data.aws_vpc.main.id
+}
