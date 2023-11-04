@@ -2,6 +2,7 @@ module "shared" {
   source      = "../../shared"
   org_id      = var.org_id
   project_id  = var.project_id
+  group_id    = var.group_id
   env_id      = var.env_id
   tenant_id   = var.tenant_id
 }
@@ -23,4 +24,11 @@ resource "digitalocean_kubernetes_cluster" "k8s" {
   }
 
   tags          = data.digitalocean_tags.list.tags[*].name
+}
+
+resource "digitalocean_project_resources" "project_resources" {
+  project = data.digitalocean_project.project.id
+  resources = [
+    digitalocean_kubernetes_cluster.k8s.urn
+  ]
 }

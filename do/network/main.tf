@@ -12,7 +12,6 @@ resource "digitalocean_vpc" "vpc" {
   region  = var.do_region
 }
 
-resource "digitalocean_tag" "tags" {
-  for_each = module.shared.tags
-  name = each.value
+resource "digitalocean_tag" "env" {
+  name = var.env_id
 }

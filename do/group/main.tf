@@ -6,3 +6,7 @@ module "shared" {
   env_id      = var.env_id
   tenant_id   = var.tenant_id
 }
+
+resource "digitalocean_tag" "group" {
+  name = var.group_id
+}

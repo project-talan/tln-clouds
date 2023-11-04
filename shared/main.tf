@@ -19,11 +19,9 @@ output "prefix_tenant"  { value = local.prefix_tenant }
 
 output "tags" {
   value = {
-    ManagedBy   = "terraform"
-    Org         = var.org_id
-    Proj        = var.project_id
-    Group       = var.group_id
-    Env         = var.env_id
+    managed_by  = "terraform"
+    org         = var.org_id
+    project     = var.project_id
   }
 }
 
