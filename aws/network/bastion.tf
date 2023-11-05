@@ -20,8 +20,11 @@ resource "aws_instance" "bastion" {
   subnet_id                   = module.vpc.public_subnets[0]
   associate_public_ip_address = true
 
-  vpc_security_group_ids = [module.bastion_sg.security_group_id]
-  key_name               = aws_key_pair.ssh.key_name
+  vpc_security_group_ids      = [module.bastion_sg.security_group_id]
+  key_name                    = aws_key_pair.ssh.key_name
+
+  user_data                   = base64encode(file("${path.module}/templates/template.sh"))
+  user_data_replace_on_change = true
 
   tags = {
     Name = "${var.env_id}-bastion"

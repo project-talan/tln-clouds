@@ -1,17 +1,21 @@
+locals {
+  tags = { group = var.group_id, env = var.env_id }
+}
+
 data "aws_availability_zones" "available" {
   state = "available"
 }
 
 data "aws_vpc" "main" {
-  tags = module.shared.tags
+  tags = merge(module.shared.tags, local.tags)
 }
 
 data "aws_subnets" "private" {
-  tags = merge(module.shared.tags, module.shared.private_subnet_tags)
+  tags = merge(module.shared.tags, local.tags, module.shared.private_subnet_tags)
 }
 
 data "aws_subnets" "public" {
-  tags = merge(module.shared.tags, module.shared.public_subnet_tags)
+  tags = merge(module.shared.tags, local.tags, module.shared.public_subnet_tags)
 }
 
 data "aws_security_group" "bastion" {
@@ -21,7 +25,7 @@ data "aws_security_group" "bastion" {
   }
 
   filter {
-    name   = "tag:Env"
+    name   = "tag:env"
     values = [var.env_id]
   }
 

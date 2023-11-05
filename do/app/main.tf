@@ -6,12 +6,3 @@ module "shared" {
   env_id      = var.env_id
   tenant_id   = var.tenant_id
 }
-
-resource "digitalocean_project" "project" {
-  name        = var.project_id
-}
-
-resource "digitalocean_tag" "tags" {
-  for_each = module.shared.tags
-  name = each.value
-}
