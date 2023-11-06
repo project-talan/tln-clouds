@@ -67,7 +67,7 @@
     tln connect aws
     ```
     ```
-    tln nginx-ingress-install@k8s -- --ver 4.7.2
+    tln nginx-ingress-install@k8s -- --ver 4.8.3
     ```
     ```
     kubectl get pods --all-namespaces
@@ -75,7 +75,7 @@
     ```
     tln nginx-ingress-status@k8s
     ```
-    * Use DNS address name from command output below to check access to the cluster using browser/curl
+    * Use DNS address name from command output above to check access to the cluster using browser/curl
     * Uninstall Ingress
     ```
     tln nginx-ingress-uninstall@k8s
@@ -114,7 +114,7 @@
     tln shell do
     ```
     ```
-    tln nginx-ingress-install@k8s -- --ver 4.7.2
+    tln nginx-ingress-install@k8s -- --ver 4.8.3
     ```
     ```
     kubectl get pods --all-namespaces
@@ -122,7 +122,7 @@
     ```
     tln nginx-ingress-status@k8s
     ```
-  * Use IP address from command outpu below to check access to the cluster using browser/curl
+  * Use IP address from command output above to check access to the cluster using browser/curl
   * Uninstall Ingress
     ```
     tln nginx-ingress-uninstall@k8s
