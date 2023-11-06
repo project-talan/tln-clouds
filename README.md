@@ -42,7 +42,7 @@
 
     AWS_DEFAULT_REGION=eu-central-1
 
-    TF_VAR_aws_k8s_version=1.27
+    TF_VAR_aws_k8s_version=1.28
     TF_VAR_aws_k8s_nodes_min=1
     TF_VAR_aws_k8s_nodes_desired=2
     TF_VAR_aws_k8s_nodes_max=3
@@ -95,7 +95,7 @@
     DIGITALOCEAN_TOKEN=<your_do_token>
 
     TF_VAR_do_region=nyc3
-    TF_VAR_do_k8s_version=1.27.4-do.0
+    TF_VAR_do_k8s_version=1.28.2-do.0
     TF_VAR_do_k8s_nodes_min=1
     TF_VAR_do_k8s_nodes_max=2
     TF_VAR_do_k8s_nodes_size=s-2vcpu-2gb
