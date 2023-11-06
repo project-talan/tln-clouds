@@ -10,14 +10,7 @@
 * supports multiple backend providers - Local, Cloud, PG (S3 - in progress)
 
 ## Infrastructure Instance layers
-| Layer  | Description |
-| ------------- | ------------- |
-| provider | Provider level configrations (Docker registry etc.) |
-| group | Logical group of environments dev: ci, dev01, qa01, prod: blue, green |
-| network | VPC, private & public networks, Bastion |
-| managed | K8s cluster, monitoring etc. |
-| app | Holds Application level resources: DBs, Message brokers, DNS records (api.project.io) etc. |
-| tenant | Is constructed during new tenant (customer) onboarding: DNS record creation (customerN.project.io), tenant DB creation etc. |
+![Infrastructure Instance Layers](layers.drawio.png)
 
 ## Quick start
 * Install [tln](https://www.npmjs.com/package/tln-cli)
