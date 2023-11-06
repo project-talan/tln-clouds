@@ -10,7 +10,7 @@
 * supports multiple backend providers - Local, Cloud, PG (S3 - in progress)
 
 ## Infrastructure Instance layers
-![Infrastructure Instance Layers](layers.drawio.png)
+![Infrastructure Instance Layers](layers.png)
 
 ## Quick start
 * Install [tln](https://www.npmjs.com/package/tln-cli)
