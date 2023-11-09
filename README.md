@@ -16,7 +16,7 @@
 * Install [tln](https://www.npmjs.com/package/tln-cli)
 * Goto **projects** folder from tln-cli installation above and clone repository
   ```
-  git clone --depth 1 --branch v23.9.0 git@github.com:project-talan/tln-clouds.git && cd tln-clouds
+  git clone --depth 1 --branch v23.11.1 git@github.com:project-talan/tln-clouds.git && cd tln-clouds
   ```
 > Important<br>
 > Commands below assume that Terraform Cloud is used as a storage for states<br/>

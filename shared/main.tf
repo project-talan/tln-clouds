@@ -1,21 +1,41 @@
-variable "org_id"     { type = string }
-variable "project_id" { type = string }
-variable "group_id"   { type = string }
-variable "env_id"     { type = string }
-variable "tenant_id"  { type = string }
-
-locals {
-  prefix_project  = "${var.project_id}"
-  prefix_group    = "${var.project_id}-${var.group_id}"
-  prefix_env      = "${var.project_id}-${var.group_id}-${var.env_id}"
-  prefix_tenant   = "${var.project_id}-${var.group_id}-${var.env_id}-${var.tenant_id}"
+variable "org_id" {
+  type = string
+}
+variable "project_id" {
+  type = string
+}
+variable "group_id" {
+  type = string
+  default = ""
+}
+variable "env_id" {
+  type = string
+  default = ""
+}
+variable "tenant_id" {
+  type = string
+  default = ""
 }
 
-output "prefix_project" { value = local.prefix_project }
-output "prefix_group"   { value = local.prefix_group }
-output "prefix_env"     { value = local.prefix_env }
-output "prefix_tenant"  { value = local.prefix_tenant }
+locals {
+  prefix_project = "${var.project_id}"
+  prefix_group = "${var.project_id}-${var.group_id}"
+  prefix_env = "${var.project_id}-${var.group_id}-${var.env_id}"
+  prefix_tenant = "${var.project_id}-${var.group_id}-${var.env_id}-${var.tenant_id}"
+}
 
+output "prefix_project" {
+  value = local.prefix_project
+}
+output "prefix_group" {
+  value = local.prefix_group
+}
+output "prefix_env" {
+  value = local.prefix_env
+}
+output "prefix_tenant" {
+  value = local.prefix_tenant
+}
 
 output "tags" {
   value = {
