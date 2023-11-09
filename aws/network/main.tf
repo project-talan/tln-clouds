@@ -1,15 +1,14 @@
 module "shared" {
-  source        = "../../shared"
-  org_id      = var.org_id
-  project_id  = var.project_id
-  group_id    = var.group_id
-  env_id      = var.env_id
-  tenant_id   = var.tenant_id
+  source = "../../shared"
+  org_id = var.org_id
+  project_id = var.project_id
+  group_id = var.group_id
+  env_id = var.env_id
 }
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "5.1.0"
+  version = "5.1.2"
 
   name = module.shared.vpc_name
   cidr = "10.0.0.0/16"

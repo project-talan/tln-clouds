@@ -1,15 +1,14 @@
 module "shared" {
-  source      = "../../shared"
-  org_id      = var.org_id
-  project_id  = var.project_id
-  group_id    = var.group_id
-  env_id      = var.env_id
-  tenant_id   = var.tenant_id
+  source = "../../shared"
+  org_id = var.org_id
+  project_id = var.project_id
+  group_id = var.group_id
+  env_id = var.env_id
 }
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "19.15.3"
+  version = "19.19.0"
 
   cluster_name    = module.shared.k8s_name
   cluster_version = var.aws_k8s_version
