@@ -22,7 +22,6 @@
 **/.env
 .kube.config*
 **/backend.tf
-secrets
 
 # ignore .pem
 *.pem
