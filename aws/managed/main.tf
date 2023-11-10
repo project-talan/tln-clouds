@@ -15,6 +15,8 @@ module "eks" {
   vpc_id          = data.aws_vpc.main.id
   subnet_ids      = data.aws_subnets.private.ids
 
+  //kms_key_administrators = []
+
   eks_managed_node_group_defaults = {
     ami_type = "AL2_x86_64"
 
