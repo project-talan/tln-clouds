@@ -8,7 +8,7 @@ module "shared" {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "19.19.0"
+  version = "19.21.0"
 
   cluster_name    = module.shared.k8s_name
   cluster_version = var.aws_k8s_version
