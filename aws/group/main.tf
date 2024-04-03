@@ -15,7 +15,7 @@ resource "aws_route53_zone" "primary" {
 module "root_certificate" {
   for_each = var.domains != "" ? toset(split(",", var.domains)) : []
   source  = "terraform-aws-modules/acm/aws"
-  version = "~> 4.0"
+  version = "4.5.0"
 
   domain_name               = each.key
   subject_alternative_names = ["*.${each.key}"]
