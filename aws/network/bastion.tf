@@ -33,7 +33,7 @@ resource "aws_instance" "bastion" {
 
 module "bastion_sg" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
+  version = "5.1.2"
 
   name        = "${var.env_id}-bastion-sg"
   description = "Security group for web-server to allow SSH access"
@@ -65,4 +65,10 @@ resource "local_sensitive_file" "ssh_private_key_pem" {
   filename        = "${var.env_id}-bastion-ssh-key.pem"
   file_permission = "400"
   content         = tls_private_key.ssh.private_key_pem
+}
+
+resource "local_sensitive_file" "bastion_address" {
+  filename        = "${var.env_id}-bastion.addr"
+  file_permission = "400"
+  content         = "ubuntu@${aws_instance.bastion.public_ip}"
 }
