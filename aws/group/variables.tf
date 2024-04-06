@@ -8,7 +8,7 @@ variable "group_id" {
   type = string 
 }
 
-variable "domains" {
+variable "domain_name" {
   type = string
   default = ""
 }
