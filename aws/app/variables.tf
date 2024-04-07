@@ -14,6 +14,9 @@ variable "env_id" {
 variable "domain_name" {
   type = string
 }
+variable "dns_records" {
+  type = string
+}
 
 variable "rds_pg_db_size" {
   type = string

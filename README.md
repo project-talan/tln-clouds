@@ -16,7 +16,7 @@
 * Install [tln](https://www.npmjs.com/package/tln-cli)
 * Goto **projects** folder from tln-cli installation above and clone repository
   ```
-  git clone --depth 1 --branch v23.11.1 git@github.com:project-talan/tln-clouds.git && cd tln-clouds
+  git clone --depth 1 --branch v24.4.0 git@github.com:project-talan/tln-clouds.git && cd tln-clouds
   ```
 > Important<br>
 > Commands below assume that Terraform Cloud is used as a storage for states<br/>
@@ -38,11 +38,9 @@
     ```
     AWS_ACCESS_KEY_ID=<your_aws_id>
     AWS_SECRET_ACCESS_KEY=<your_aws_key>
-    AWS_SESSION_TOKEN=
-
     AWS_DEFAULT_REGION=eu-central-1
 
-    TF_VAR_aws_k8s_version=1.28
+    TF_VAR_aws_k8s_version=1.29
     TF_VAR_aws_k8s_nodes_min=1
     TF_VAR_aws_k8s_nodes_desired=2
     TF_VAR_aws_k8s_nodes_max=3
