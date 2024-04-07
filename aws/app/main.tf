@@ -6,7 +6,6 @@ module "shared" {
   env_id = var.env_id
 }
 
-
 resource "aws_route53_record" "record" {
   for_each = toset(split(",", var.dns_records))
   zone_id  = data.aws_route53_zone.primary.zone_id
@@ -18,4 +17,7 @@ resource "aws_route53_record" "record" {
     zone_id                = data.aws_lb.primary.zone_id
     evaluate_target_health = false
   }
+  depends_on = [
+    helm_release.nginx
+  ]  
 }
