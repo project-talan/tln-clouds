@@ -96,21 +96,21 @@
   ```
   ^C
   ```
-* You can go extra mile and deploy your SaaS-specific resource
+* You can go extra mile and deploy your SaaS-specific resources
 
   (1) Start secure sshuttle connection (first terminal)
   ```
   tln connect aws
   ```
-  (2) Deploy App layer - Nginx ingress, Postgres DBs, DNS records
+  (2) Deploy App layer - Nginx ingress, Postgres DBs, DNS records (second terminal)
   ```
   tln construct aws -- --backend cloud --init --apply --layers app --state project,provider,group,env,layer
   ```
-  (3) You can check available endpoints in browser https://myprojecy.io & https://api.myproject.io
+  (3) You can check endpoints availability in browser https://myprojecy.io & https://api.myproject.io
 
 * Now you can deconstruct all layers and free all Cloud resources
 
-  (1) Undeploy App layer
+  (1) Undeploy App layer (second terminal)
   ```
   tln deconstruct aws -- --backend cloud --init --apply --layers app --state project,provider,group,env,layer
   ```
