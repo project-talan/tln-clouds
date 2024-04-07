@@ -13,3 +13,7 @@ variable "env_id" {
 variable "tenant_id" {
   type = string 
 }
+
+variable "domain_name" {
+  type = string
+}

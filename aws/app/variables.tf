@@ -10,3 +10,21 @@ variable "group_id" {
 variable "env_id" {
   type = string 
 }
+
+variable "domain_name" {
+  type = string
+}
+variable "dns_records" {
+  type = string
+}
+
+variable "rds_pg_db_size" {
+  type = string
+}
+variable "databases" {
+  description = "A map of databases, their owners and passwords"
+  type = map(object({
+    owner = string,
+    password = string
+  }))
+}
