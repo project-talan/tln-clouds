@@ -9,3 +9,7 @@ variable "repositories" {
   type = string
   default = ""
 }
+variable "image_tag_mutability" {
+  type = string
+  default = ""
+}

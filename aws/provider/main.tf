@@ -8,7 +8,7 @@ resource "aws_ecr_repository" "primary" {
   for_each = var.repositories != "" ? toset(split(",", var.repositories)) : []
 
   name                 = each.key
-  image_tag_mutability = "MUTABLE"
+  image_tag_mutability = var.image_tag_mutability
 
   encryption_configuration {
     encryption_type = "KMS"
