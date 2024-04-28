@@ -18,6 +18,7 @@ resource "aws_route53_record" "record" {
     evaluate_target_health = false
   }
   depends_on = [
-    helm_release.nginx
+    helm_release.nginx,
+    data.aws_lb.primary
   ]  
 }

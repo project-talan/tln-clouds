@@ -46,6 +46,10 @@ data "aws_lb" "primary" {
     "kubernetes.io/cluster/${module.shared.k8s_name}" = "owned",
     "kubernetes.io/service-name" = "nginx-ingress/nginx-ingress-nginx-controller"
   }
+
+  depends_on = [
+    helm_release.nginx
+  ]  
 }
 
 data "aws_secretsmanager_secret" "rds_pg" {
