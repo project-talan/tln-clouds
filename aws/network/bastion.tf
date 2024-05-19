@@ -57,18 +57,18 @@ resource "tls_private_key" "ssh" {
 }
 
 resource "aws_key_pair" "ssh" {
-  key_name   = "${var.env_id}-bastion-ssh-key"
+  key_name   = "${var.group_id}-${var.env_id}-bastion-ssh-key"
   public_key = tls_private_key.ssh.public_key_openssh
 }
 
 resource "local_sensitive_file" "ssh_private_key_pem" {
-  filename        = "${var.env_id}-bastion-ssh-key.pem"
+  filename        = "${var.group_id}-${var.env_id}-bastion-ssh-key.pem"
   file_permission = "400"
   content         = tls_private_key.ssh.private_key_pem
 }
 
 resource "local_sensitive_file" "bastion_address" {
-  filename        = "${var.env_id}-bastion.addr"
+  filename        = "${var.group_id}-${var.env_id}-bastion.addr"
   file_permission = "400"
   content         = "ubuntu@${aws_instance.bastion.public_ip}"
 }
