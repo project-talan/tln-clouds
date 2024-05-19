@@ -7,7 +7,10 @@ data "aws_availability_zones" "available" {
 }
 
 data "aws_vpc" "main" {
-  tags = merge(module.shared.tags, local.tags)
+  filter {
+    name   = "tag:Name"
+    values = [module.shared.vpc_name]
+  }
 }
 
 data "aws_subnets" "private" {
