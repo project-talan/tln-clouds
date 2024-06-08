@@ -7,5 +7,6 @@ controller:
     targetPorts:
       https: http
   config:
-    use-proxy-protocol: false
-    ssl-redirect: true
+    use-proxy-protocol: "false"
+    use-forwarded-headers: "true"
+    ssl-redirect: "true"

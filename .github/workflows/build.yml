@@ -5,31 +5,25 @@ on:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
-  workflow_dispatch:    
+  workflow_dispatch:
 jobs:
   buildandtest:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
+          node-version: "20.9.0"
+
       - name: Install tln cli
-        run: |
-          npm i -g tln-cli@1.61.0
-          tln --version
-  sonarcloud:
-    name: SonarCloud
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+        run: npm i -g tln-cli@1.102.0 && tln --version
+
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
