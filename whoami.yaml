@@ -45,7 +45,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: "/$2"
 spec:
   rules:
-    - host: "api.umlhub.io"
+    - host: "<host>"
       http:
         paths:
           - path: "/whoami(/|$)(.*)"
