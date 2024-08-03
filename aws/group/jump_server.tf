@@ -1,4 +1,3 @@
-/*
 data "aws_ami" "ubuntu" {
   most_recent = false
 
@@ -15,19 +14,11 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-locals {
-  vpc_cidr = "10.0.0.0/16"
-  azs      = slice(data.aws_availability_zones.available.names, 0, 2)
-
-  instance_type = "t3.micro"
-}
-
 module "jump-server-sg-rules" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.2"
 
-  name   = "${module.shared.prefix_group}-jump-server-sg"
-  vpc_id = module.vpc.vpc_id
+  name = "${module.shared.prefix_group}-jump-server-sg"
   ingress_with_cidr_blocks = [
     {
       from_port   = 22
@@ -42,19 +33,9 @@ module "jump-server-sg-rules" {
   tags = module.shared.tags
 }
 
-module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "5.6.0"
-
-  name              = "${module.shared.prefix_group}-vpc"
-  cidr              = local.vpc_cidr
-  azs               = local.azs
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets    = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
-
-  enable_nat_gateway = true
-  single_nat_gateway = true
-  tags               = module.shared.tags
+resource "aws_eip" "eip" {
+  instance = module.jump_server.id
+  domain   = "vpc"
 }
 
 resource "tls_private_key" "ssh" {
@@ -73,14 +54,11 @@ module "jump_server" {
 
   name                        = "${module.shared.prefix_group}-jump-server"
   ami                         = data.aws_ami.ubuntu.id
-  instance_type               = local.instance_type
+  instance_type               = "t3.nano"
   key_name                    = aws_key_pair.ssh.key_name
   vpc_security_group_ids      = [module.jump-server-sg-rules.security_group_id]
-  subnet_id                   = element(module.vpc.public_subnets, 0)
   associate_public_ip_address = true
-  user_data                   = <<EOT
-apt install openvpn easy-rsa
-  EOT
+  user_data                   = file("userdata.sh")
 
   root_block_device = [
     {
@@ -104,4 +82,3 @@ resource "local_sensitive_file" "bastion_address" {
   file_permission = "400"
   content         = "ubuntu@${module.jump_server.public_ip}"
 }
-*/
