@@ -1,3 +1,4 @@
+/*
 data "aws_ami" "ubuntu" {
   most_recent = false
 
@@ -82,3 +83,4 @@ resource "local_sensitive_file" "bastion_address" {
   file_permission = "400"
   content         = "ubuntu@${module.jump_server.public_ip}"
 }
+*/
