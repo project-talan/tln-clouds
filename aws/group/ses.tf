@@ -1,4 +1,4 @@
-//*
+/*
 module "ses" {
   source  = "cloudposse/ses/aws"
   version = "0.25.0"
@@ -354,4 +354,4 @@ output "access_key_id" {
   value       = module.ses.access_key_id
   description = "The SMTP user which is access key ID."
 }
-//*/
+*/

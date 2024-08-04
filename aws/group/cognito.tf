@@ -1,6 +1,8 @@
+/*
 locals {
   api_base_url = "http://localhost"
 }
+
 module "cognito_user_pool" {
   source  = "lgallard/cognito-user-pool/aws"
   version = "0.30.0"
@@ -12,12 +14,10 @@ module "cognito_user_pool" {
   admin_create_user_config_allow_admin_create_user_only = false
   domain                                                = module.shared.prefix_group
 
-/*
-  mfa_configuration           = "ON"
-  software_token_mfa_configuration = {
-    enabled = true
-  }
-*/
+//  mfa_configuration           = "ON"
+//  software_token_mfa_configuration = {
+//    enabled = true
+//  }
 
   email_configuration = {
     email_sending_account  = "DEVELOPER"
@@ -39,11 +39,9 @@ module "cognito_user_pool" {
     },
   ]
 
-  /*
-  lambda_config = {
-    pre_authentication = module.cognito_pre_auth_function.lambda_function_arn
-  }
-  */
+//  lambda_config = {
+//    pre_authentication = module.cognito_pre_auth_function.lambda_function_arn
+//  }
 
   clients = [
     {
@@ -73,11 +71,11 @@ module "cognito_user_pool" {
     }
   ]
 
-  /*
-  depends_on = [ module.cognito_pre_auth_function ]
-  */
+//  depends_on = [ module.cognito_pre_auth_function ]
+
   tags = module.shared.tags
 }
+*/
 
 /*
 module "cognito_pre_auth_function" {
