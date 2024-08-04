@@ -28,3 +28,15 @@ variable "databases" {
     password = string
   }))
 }
+variable "backup_schedule" {
+  type = string
+  default = "cron(0 */2 * * ? *)"
+}
+variable "backup_lifecycle" {
+  type = string
+  default = "1"
+}
+variable "snapshot_identifier" {
+  type    = string
+  default = null
+}
