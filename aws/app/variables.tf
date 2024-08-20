@@ -21,6 +21,12 @@ variable "dns_records" {
 variable "rds_pg_db_size" {
   type = string
 }
+variable "rds_pg_db_allocated_storage" {
+  type = string
+}
+variable "rds_pg_max_allocated_storage" {
+  type = string
+}
 variable "databases" {
   description = "A map of databases, their owners and passwords"
   type = map(object({

@@ -1,3 +1,5 @@
+// Uncomment the following code if you want to enable Cognito User Pool
+
 /*
 locals {
   api_base_url = "http://localhost"
@@ -21,8 +23,9 @@ module "cognito_user_pool" {
 
   email_configuration = {
     email_sending_account  = "DEVELOPER"
-    reply_to_email_address = "no-reply@${var.domain_name}"
+    reply_to_email_address = "no-reply@no-reply.${var.domain_name}"
     source_arn             = module.ses.ses_domain_identity_arn
+    from_email_address     = "no-reply@no-reply.${var.domain_name}"
   }
 
   string_schemas = [

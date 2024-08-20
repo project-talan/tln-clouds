@@ -1,3 +1,5 @@
+// Uncomment the following code if you want to enable SES (Simple Email Service)
+
 /*
 module "ses" {
   source  = "cloudposse/ses/aws"
