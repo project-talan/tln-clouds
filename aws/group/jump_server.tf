@@ -1,3 +1,5 @@
+// Uncomment the following code if you want to enable Jump Server
+
 /*
 data "aws_ami" "ubuntu" {
   most_recent = false

@@ -29,8 +29,8 @@ module "rds_pg" {
   major_engine_version = "15"
   instance_class       = var.rds_pg_db_size
 
-  allocated_storage     = 20
-  max_allocated_storage = 30
+  allocated_storage     = var.rds_pg_db_allocated_storage
+  max_allocated_storage = var.rds_pg_max_allocated_storage
 
   db_name  = "postgres"
   username = "root"
