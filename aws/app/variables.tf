@@ -17,6 +17,9 @@ variable "domain_name" {
 variable "dns_records" {
   type = string
 }
+variable "use_primary_domain" {
+  type = bool
+}
 
 variable "rds_pg_db_size" {
   type = string

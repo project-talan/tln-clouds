@@ -29,7 +29,7 @@ resource "helm_release" "nginx" {
   }
   set {
     name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-ssl-cert"
-    value = data.aws_acm_certificate.primary.arn
+    value = var.use_primary_domain ? data.aws_acm_certificate.primary.arn : module.secondary_certificate.acm_certificate_arn
     type  = "string"
   }
 
