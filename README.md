@@ -33,7 +33,7 @@
     TF_VAR_env_id=dev01
     TF_VAR_tenant_id=balenciaga
     
-    TF_VAR_repositories=io.myproject.services.api,io.myproject.web.landing
+    TF_VAR_repositories=io.myproject.backend.services.api,io.myproject.web.landing
 
     TF_VAR_domain_name=myproject.io
     TF_VAR_dns_records=dev01.myproject.io,api
