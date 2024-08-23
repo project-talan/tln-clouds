@@ -33,7 +33,7 @@
     TF_VAR_env_id=dev01
     TF_VAR_tenant_id=balenciaga
     
-    TF_VAR_repositories=io.myproject.services.api,io.myproject.web.landing
+    TF_VAR_repositories=io.myproject.backend.services.api,io.myproject.web.landing
 
     TF_VAR_domain_name=myproject.io
     TF_VAR_dns_records=dev01.myproject.io,api
@@ -42,7 +42,7 @@
     TF_VAR_rds_pg_db_size=db.t3.micro
     TF_VAR_rds_pg_db_allocated_storage=20
     TF_VAR_rds_pg_max_allocated_storage=30
-    TF_VAR_databases={ "user" = { owner = "admin", password = "admin" }, "auth" = { owner = "admin", password = "admin" } }
+    TF_VAR_databases={ "iam" = { owner = "admin", password = "admin" }, "billing" = { owner = "admin", password = "admin" } }
     ```
 
 ### AWS
@@ -109,7 +109,7 @@
     ```
     tln construct aws -- --backend cloud --init --apply --layers app --state project,provider,group,env,layer
     ```
-  3. **You can check endpoints availability in browser https://myprojecy.io & https://api.myproject.io**
+  3. **You can check endpoints availability in browser https://dev01.myprojecy.io & https://api.dev01.myproject.io**
 
 * Now you can deconstruct all layers and free all Cloud resources
 
