@@ -1,4 +1,5 @@
 // Uncomment the following code if you want to enable Cognito User Pool
+// NOTE: user_pool_name & domain should carefully reviewed and updated
 
 /*
 locals {
