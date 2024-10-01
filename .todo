@@ -1,0 +1,24 @@
+/* TPM
+
+team:
+  alice.d:
+    email: alice.d@gmail.com
+timeline:
+  v24.9.0:
+    date: 2024-09-30
+tasks: |-
+  [-:002] Add CI/CD skeleton (srs/cicd)
+  [-:001:v24.9.0] Intergare auth library
+    [-] Add /auth endpoint @alice.d
+    [-] Configure auth callbacks @alice.d
+srs:
+  cicd: >-
+    Skeleton should implement four main scenarios: pr build, push build, nightly
+    build, dispamch run.
+
+    All steps should be implemented in a single yaml file (base.yml).
+
+    Every scenario should be implemented as a separate yaml file and should use
+    parameters to define which step needs to be run.
+
+*/
