@@ -9,7 +9,7 @@ timeline:
     date: 2024-10-xx
 
 tasks: |
-  [-:014] Add subdomain_name at App layer #aws @vlad.k
+  [-:015:v24.10.0] Bump versions #aws @vlad.k
   [-:014] Add "coming-soon" AWS Amplify at group layer #aws @vlad.k
   [-:013] Add template for db-per-tenant #aws @vlad.k
   [-:012] Add node autoscaler #aws @vlad.k
