@@ -1,23 +1,30 @@
-/* TPM
+project:
+  id: tln-clouds
+  name: Talan Clouds
+  description: Cloud Agnostic IaC based SaaS skeleton
 
 team:
   vlad.k:
     email: vladislav.kurmaz@gmail.com
+    fte: 1
 
 timeline:
-  v24.10.0:
-    date: 2024-10-xx
+  - name: v24.11.0
+    date: 2024-11-07 17:30:00 GMT+0200
 
 tasks: |
-  [-:016:v24.10.0] Add construct/deconstruct into CI/CD @vlad.k
-  [>:015:v24.10.0] Bump versions #aws @vlad.k
+  [-:019:v24.11.0] move Cognito user pool, app, idp to shared area #aws @vlad.k
+  [-:018:v24.11.0] Add DB instance creation template at Tenant layer #aws @vlad.k
+  [-:017:v24.11.0] Pin version for cognito_pre_auth_function -> 7.13.0 #aws @vlad.k
+  [-:016:v24.11.0] Add construct/deconstruct into CI/CD @vlad.k
+  [>:015:v24.11.0] Bump versions #aws @vlad.k
   [-:014] Add "coming-soon" AWS Amplify at group layer #aws @vlad.k
   [-:013] Add template for db-per-tenant #aws @vlad.k
   [-:012] Add node autoscaler #aws @vlad.k
   [-:011] Add pod autoscaler #aws @vlad.k
   [-:010] Add terraform refresh command @vlad.k
   [-:009] Use provided region to access k8s cluster #aws #bug @vlad.k
-  [-:008] Troubleshoot Nginx X-Forwarded-* headers #aws #bug @vlad.k
+  [-:008] Troubleshoot Nginx X-Forwarded-* headers #aws [](srs/nlb) #bug @vlad.k
   [-:007] Add parameters for maintenance window for RDS #aws @vlad.k
   [-:006] Multiple domains at group layer #aws @vlad.k
   [-:005] .gitsibtrees is not modified if git subtree pull is failed #bug @vlad.k
@@ -31,5 +38,11 @@ tasks: |
   [-:001] Bastion enhancement #do @vlad.k
 
 srs:
-
-*/
+  nlb: |
+    https://github.com/kubernetes/ingress-nginx/issues/5051
+    https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/service/annotations/#proxy-protocol-v2
+    https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/#use-proxy-protocol
+    https://www.scaleway.com/en/docs/tutorials/proxy-protocol-v2-load-balancer/?ref=martysweet.co.uk#configuring-proxy-protocol-for-ingress-nginx
+    https://www.martysweet.co.uk/aws-nlb-and-ip-preservation/
+    https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/x-forwarded-headers.html
+    https://repost.aws/questions/QUuOlh5w61Tuij63OiAuMpOw/could-not-see-aws-lb-classic-x-forwarded-for-header
