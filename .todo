@@ -15,7 +15,7 @@ timeline:
 tasks: |
   [-:019:v24.11.0] move Cognito user pool, app, idp to shared area #aws @vlad.k
   [-:018:v24.11.0] Add DB instance creation template at Tenant layer #aws @vlad.k
-  [-:017:v24.11.0] Pin version for cognito_pre_auth_function -> 7.13.0 #aws @vlad.k
+  [+:017:v24.11.0] Pin version for cognito_pre_auth_function -> 7.13.0 #aws @vlad.k
   [-:016:v24.11.0] Add construct/deconstruct into CI/CD @vlad.k
   [>:015:v24.11.0] Bump versions #aws @vlad.k
   [-:014] Add "coming-soon" AWS Amplify at group layer #aws @vlad.k

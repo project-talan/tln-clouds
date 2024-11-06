@@ -84,6 +84,7 @@ module "cognito_user_pool" {
 /*
 module "cognito_pre_auth_function" {
   source = "terraform-aws-modules/lambda/aws"
+  version = "7.13.0"
 
   function_name = "${module.shared.prefix_group}-cognito-pre-auth"
   description   = "Cognito Pre-auth function"
