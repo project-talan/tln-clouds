@@ -1,5 +1,5 @@
 # Description
-## Cloud agnostic IaC based SaaS skeleton.
+## Cloud Agnostic IaC based SaaS Skeleton.
 ![Infrastructure Instance](ii.png)
 
 ## Features
