@@ -33,7 +33,7 @@ resource "aws_instance" "bastion" {
 
 module "bastion_sg" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.2"
+  version = "5.2.0"
 
   name        = "${var.env_id}-bastion-sg"
   description = "Security group for web-server to allow SSH access"

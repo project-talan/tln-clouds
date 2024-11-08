@@ -1,6 +1,6 @@
 module "rds_pg_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.2"
+  version = "5.2.0"
 
   name   = "${module.shared.prefix_env}-pg-database-sg"
   vpc_id = data.aws_vpc.primary.id

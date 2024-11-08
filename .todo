@@ -10,15 +10,18 @@ team:
     fte: 1
 
 timeline:
+  - name: v24.11.1
+    date: 2024-11-15 12:00:00 GMT+0200
   - name: v24.11.0
-    date: 2024-11-07 17:30:00 GMT+0200
+    date: 2024-11-08 12:00:00 GMT+0200
 
 tasks: |
-  [-:019:v24.11.0] move Cognito user pool, app, idp to shared area #aws @vlad.k
-  [-:018:v24.11.0] Add DB instance creation template at Tenant layer #aws @vlad.k
+  [-:020:v24.11.1] Ad shared component with bastion, cognito, dbs #aws @vlad.k
+  [-:019:v24.11.1] Move Cognito user pool, app, idp to shared area #aws @vlad.k
+  [-:018:v24.11.1] Add DB instance creation template at Tenant layer #aws @vlad.k
   [+:017:v24.11.0] Pin version for cognito_pre_auth_function -> 7.13.0 #aws @vlad.k
-  [-:016:v24.11.0] Add construct/deconstruct into CI/CD @vlad.k
-  [>:015:v24.11.0] Bump versions #aws @vlad.k
+  [-:016:v24.11.1] Add construct/deconstruct into CI/CD @vlad.k
+  [+:015:v24.11.0] Bump versions #aws @vlad.k
   [-:014] Add "coming-soon" AWS Amplify at group layer #aws @vlad.k
   [-:013] Add template for db-per-tenant #aws @vlad.k
   [-:012] Add node autoscaler #aws @vlad.k
