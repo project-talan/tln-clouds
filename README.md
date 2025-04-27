@@ -3,7 +3,7 @@
 ![Infrastructure Instance](ii.png)
 
 ## Features
-* Supports AWS (Azure, GCP - in progress)
+* Supports AWS (Azure, GCP are in progress)
 * Provides Multi-tenancy feature via layers architecture (provider, group, network, managed, app, tenant)
 * Implements easy-to-construct multiple environment approach, controls by single environment variable - **TF_VAR_env_id**
 * IaC via Terraform and Helm
