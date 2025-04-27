@@ -13,10 +13,14 @@
 ![Infrastructure Instance Layers](layers.png)
 
 ## Quick start
-* Install [tln](https://www.npmjs.com/package/tln-cli)
-* Goto **projects** folder from tln-cli installation above and clone repository
+* Install [Nodejs 20.x or higher](https://nodejs.org)
+* Install helpers [tln](https://www.npmjs.com/package/tln-cli) & [tpm](https://github.com/project-talan/tln-pm)
+    ```
+    npm i -g tln-cli@1.110.0 tln-pm@0.19.0 && brew install wget
+    ```
+* Goto **projects** folder from **tln** installation above and clone repository
   ```
-  git clone --depth 1 --branch v24.8.1 git@github.com:project-talan/tln-clouds.git && cd tln-clouds
+  git clone --depth 1 --branch v25.5.0 git@github.com:project-talan/tln-clouds.git && cd tln-clouds
   ```
 > Important<br>
 > * Commands below assume that Terraform Cloud is used as a storage for states<br/>
