@@ -20,14 +20,14 @@ locals {
   ami_id = var.ami_id != null ? var.ami_id : data.aws_ami.ubuntu[0].id
   tags = merge(
     {
-      "Name" = "${var.name_prefix}-jumpserver"
+      "Name" = "${var.resources_prefix}"
     },
     var.tags
   )
 }
 
 resource "aws_security_group" "jumpserver_sg" {
-  name        = "${var.name_prefix}-jumpserver-sg"
+  name        = "${var.resources_prefix}-sg"
   description = "Allow SSH access to the jump server"
   vpc_id      = var.vpc_id
 
@@ -64,7 +64,7 @@ resource "tls_private_key" "ssh" {
 }
 
 resource "aws_key_pair" "ssh" {
-  key_name   = "${var.name_prefix}-jumpserver-ssh-key"
+  key_name   = "${var.resources_prefix}-ssh-key"
   public_key = tls_private_key.ssh.public_key_openssh
 
   tags = local.tags
@@ -87,13 +87,13 @@ resource "aws_instance" "jumpserver" {
 
 # Add local file resources to save key and address
 resource "local_sensitive_file" "ssh_private_key_pem" {
-  filename        = "${var.name_prefix}-bastion-ssh-key.pem"
+  filename        = "${var.files_prefix}-ssh-key.pem"
   file_permission = "400"
   content         = tls_private_key.ssh.private_key_pem
 }
 
 resource "local_sensitive_file" "bastion_address" {
-  filename        = "${var.name_prefix}-bastion.addr"
+  filename        = "${var.files_prefix}.addr"
   file_permission = "400"
   content         = "ubuntu@${aws_instance.jumpserver.public_ip}"
 }

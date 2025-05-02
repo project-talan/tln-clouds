@@ -1,5 +1,10 @@
-variable "name_prefix" {
+variable "resources_prefix" {
   description = "Prefix for resource names to ensure uniqueness."
+  type        = string
+}
+
+variable "files_prefix" {
+  description = "Prefix for local file names to ensure uniqueness."
   type        = string
 }
 

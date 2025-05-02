@@ -1,7 +1,9 @@
 module "shared" {
-  source     = "../../shared"
-  org_id     = var.org_id
+  source = "../../shared"
+  org_id = var.org_id
   project_id = var.project_id
+  group_id = var.group_id
+  env_id = var.env_id
 }
 
 module "vpc" {
@@ -39,12 +41,13 @@ module "vpc" {
 module "bastion" {
   source = "../shared/jumpserver"
 
-  name_prefix   = "${var.group_id}-${var.env_id}"
-  vpc_id        = module.vpc.vpc_id 
-  subnet_id     = module.vpc.public_subnets[0] # Replace with your actual public subnet ID source
-  instance_type = var.bastion_instance_type
-  user_data     = var.bastion_user_data
-  tags          = module.shared.tags
+  resources_prefix  = "${module.shared.prefix_env}-bastion"
+  files_prefix      =  "${var.group_id}-${var.env_id}-bastion"
+  vpc_id            = module.vpc.vpc_id 
+  subnet_id         = module.vpc.public_subnets[0] # Replace with your actual public subnet ID source
+  instance_type     = var.bastion_instance_type
+  user_data         = var.bastion_user_data
+  tags              = module.shared.tags
   # allowed_ssh_cidr_blocks = ["YOUR_IP/32"] # Optionally restrict access
 }
 
