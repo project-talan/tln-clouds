@@ -1,9 +1,9 @@
 module "shared" {
-  source = "../../shared"
-  org_id = var.org_id
+  source     = "../../shared"
+  org_id     = var.org_id
   project_id = var.project_id
-  group_id = var.group_id
-  env_id = var.env_id
+  group_id   = var.group_id
+  env_id     = var.env_id
 }
 
 module "vpc" {
@@ -14,8 +14,8 @@ module "vpc" {
   cidr = "10.0.0.0/16"
   azs  = data.aws_availability_zones.available.names
 
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  private_subnets  = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets   = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
   database_subnets = ["10.0.7.0/24", "10.0.8.0/24", "10.0.9.0/24"]
 
   enable_nat_gateway   = true
@@ -41,15 +41,15 @@ module "vpc" {
 module "bastion" {
   source = "../shared/jumpserver"
 
-  resources_prefix  = "${module.shared.prefix_env}-bastion"
-  files_prefix      =  "${var.group_id}-${var.env_id}-bastion"
-  vpc_id            = module.vpc.vpc_id 
-  subnet_id         = module.vpc.public_subnets[0] # Replace with your actual public subnet ID source
-  instance_type     = var.bastion_instance_type
-  user_data         = var.bastion_user_data
-  tags              = module.shared.tags
-  # allowed_ssh_cidr_blocks = ["YOUR_IP/32"] # Optionally restrict access
+  resources_prefix = "${module.shared.prefix_env}-bastion"
+  files_prefix     = "${var.group_id}-${var.env_id}-bastion"
+  vpc_id           = module.vpc.vpc_id
+  subnet_id        = module.vpc.public_subnets[0] # Replace with your actual public subnet ID source
+  instance_type    = var.bastion_instance_type
+  user_data        = var.bastion_user_data
+  tags             = module.shared.tags
+
 }
 
-# ... other resources ...
+
 
