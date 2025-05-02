@@ -22,6 +22,10 @@
   ```
   git clone --depth 1 --branch v25.5.0 git@github.com:project-talan/tln-clouds.git && cd tln-clouds
   ```
+* For local development just clone repository as usual
+  ```
+  git clone git@github.com:project-talan/tln-clouds.git && cd tln-clouds
+  ```
 > Important<br>
 > * Commands below assume that Terraform Cloud is used as a storage for states<br/>
 > * By skipping **--backend cloud** local backend will be used<br/>
@@ -35,7 +39,7 @@
     TF_VAR_project_id=myproject
     TF_VAR_group_id=dev
     TF_VAR_env_id=dev01
-    TF_VAR_tenant_id=balenciaga
+    TF_VAR_tenant_id=demo
     
     TF_VAR_repositories=io.myproject.backend.services.api,io.myproject.web.landing
 
@@ -56,7 +60,7 @@
     AWS_SECRET_ACCESS_KEY=<your_aws_key>
     AWS_DEFAULT_REGION=eu-central-1
 
-    TF_VAR_aws_k8s_version=1.30
+    TF_VAR_aws_k8s_version=1.32
     TF_VAR_aws_k8s_nodes_min=1
     TF_VAR_aws_k8s_nodes_desired=2
     TF_VAR_aws_k8s_nodes_max=3
@@ -71,21 +75,22 @@
 
   1. **Provider layer - configure ERC**
     ```
-    tln construct aws -- --backend cloud --init --apply --layers provider --state project,provider
+    tln construct aws -- --backend cloud --init --apply --layer provider --state project,provider
     ```
   2. **Groupr layer - configure Route53, certificate & validation. You will need to modify DNS nameservers at your registrar side**
     ```
-    tln construct aws -- --backend cloud --init --apply --layers group --state project,provider,group
+    tln construct aws -- --backend cloud --init --apply --layer group --state project,provider,group
     ```
   3. **Network and Managed layers - configure VPC, Bastion, K8s**
     ```
-    tln construct aws -- --backend cloud --init --apply --layers network,managed --state project,provider,group,env,layer
+    tln construct aws -- --backend cloud --init --apply --layer network --state project,provider,group,env,layer
+    tln construct aws -- --backend cloud --init --apply --layer managed --state project,provider,group,env,layer
     ```
 * At this point you have ready to use cloud infrastructure with K8s and secure access via bastion
   
   1. **Initiate sshuttle connection to the cluster via bastion (first terminal)**
     ```
-    tln connect aws
+    tln connect aws -- --layer network --prefix bastion
     ```
   2. **Open shell with necessary environment variables (second terminal)**
     ```
@@ -107,11 +112,11 @@
 
   1. **Start secure sshuttle connection (first terminal)**
     ```
-    tln connect aws
+    tln connect aws -- --layer network --prefix bastion
     ```
   2. **Deploy App layer - configure Nginx ingress, Postgres DBs, DNS records (second terminal)**
     ```
-    tln construct aws -- --backend cloud --init --apply --layers app --state project,provider,group,env,layer
+    tln construct aws -- --backend cloud --init --apply --layer app --state project,provider,group,env,layer
     ```
   3. **You can check endpoints availability in browser https://dev01.myprojecy.io & https://api.dev01.myproject.io**
 
@@ -119,7 +124,7 @@
 
   1. **Undeploy App layer (second terminal)**
     ```
-    tln deconstruct aws -- --backend cloud --init --apply --layers app --state project,provider,group,env,layer
+    tln deconstruct aws -- --backend cloud --init --apply --layer app --state project,provider,group,env,layer
     ```
   2. **Close sshuttle connection (first terminal)**
     ```
@@ -127,15 +132,16 @@
     ```
   3. **Delete Network and Managed layers**
     ```
-    tln deconstruct aws -- --backend cloud --init --apply --layers network,managed --state project,provider,group,env,layer
+    tln deconstruct aws -- --backend cloud --init --apply --layer managed --state project,provider,group,env,layer
+    tln deconstruct aws -- --backend cloud --init --apply --layer network --state project,provider,group,env,layer
     ```
   4. **Delete Groupr layer**
     ```
-    tln deconstruct aws -- --backend cloud --init --apply --layers group --state project,provider,group
+    tln deconstruct aws -- --backend cloud --init --apply --layer group --state project,provider,group
     ```
   5. **Delete Provider layer**
     ```
-    tln deconstruct aws -- --backend cloud --init --apply --layers provider --state project,provider
+    tln deconstruct aws -- --backend cloud --init --apply --layer provider --state project,provider
     ```
 
 ### Azure
