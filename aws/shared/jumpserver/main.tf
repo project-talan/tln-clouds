@@ -1,11 +1,8 @@
 data "aws_ami" "ubuntu" {
-  count = var.ami_id == null ? 1 : 0 # Only lookup if ami_id is not provided
-
   most_recent = true
-
   filter {
     name   = "name"
-    values = ["ubuntu-minimal/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-minimal-*"] # This system has been minimized by removing packages and content that are not required on a system that users do not log into. 
+    values = ["ubuntu-minimal/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-minimal-*"]
   }
 
   filter {
@@ -16,8 +13,15 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
+
 locals {
-  ami_id = var.ami_id != null ? var.ami_id : data.aws_ami.ubuntu[0].id
+  ami_id = data.aws_ami.ubuntu.id
+
+  flattened_custom_packages_map = flatten([
+    for key, value in var.custom_packages:
+    [key, value]
+  ])
+
   tags = merge(
     {
       "Name" = "${var.resources_prefix}"
@@ -76,11 +80,26 @@ resource "aws_instance" "jumpserver" {
   subnet_id                   = var.subnet_id
   associate_public_ip_address = true # Jump server needs public IP
 
-  vpc_security_group_ids      = [aws_security_group.jumpserver_sg.id]
-  key_name                    = aws_key_pair.ssh.key_name
+  vpc_security_group_ids = [aws_security_group.jumpserver_sg.id]
+  key_name               = aws_key_pair.ssh.key_name
+  user_data = base64encode(templatefile("${path.module}/templates/template.sh.tftpl", {
+    custom_packages = join(",", local.flattened_custom_packages_map)
+  }))
 
-  user_data                   = base64encode(file("${path.module}/templates/template.sh"))
-  user_data_replace_on_change = true 
+
+  user_data_replace_on_change = true
+
+  metadata_options {
+    http_tokens                 = "required"
+    http_endpoint               = "enabled"
+    http_put_response_hop_limit = 1
+    instance_metadata_tags      = "disabled"
+  }
+  root_block_device {
+    encrypted   = true
+    volume_type = "gp3"
+    volume_size = var.jumpserver_volume_size
+  }
 
   tags = local.tags
 }

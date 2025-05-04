@@ -23,19 +23,19 @@ variable "instance_type" {
   type        = string
   default     = "t3.micro"
 }
-
-variable "ami_id" {
-  description = "Optional specific AMI ID to use for the jump server. If null, the latest Ubuntu 22.04 LTS AMI will be used."
-  type        = string
-  default     = null
+variable "jumpserver_volume_size" {
+  description = "The size of the EBS volume for the jump server instance."
+  type        = number
+  default     = 30
 }
-
-variable "user_data" {
-  description = "User data script to run on the instance at launch."
+variable "ami_name" {
+  description = "AMI Name to use for the EC2 instance of the jump server"
   type        = string
-  default     = null
+  default     = "ubuntu-minimal/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-minimal-*"
 }
-
+variable "custom_packages" {
+  type = map(string)
+}
 variable "allowed_ssh_cidr_blocks" {
   description = "List of CIDR blocks allowed to SSH into the jump server."
   type        = list(string)

@@ -1,0 +1,68 @@
+#!/bin/bash
+#Install prerequisites
+sudo apt-get update
+sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
+
+add_helm_repositorie() {
+  curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+}
+add_kubernetes_repositorie() {
+#Add Ubuntu repository for kubectl
+  echo "adding kubernetes repository for version $${1}"
+  sudo mkdir -p -m 755 /etc/apt/keyrings 
+  (curl -fsSL "https://pkgs.k8s.io/core:/stable:/v$${1}/deb/Release.key" | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg)
+  echo  "https://pkgs.k8s.io/core:/stable:/v$${1}/deb/Release.key"
+  sudo chmod 644 /etc/apt/keyrings/kubernetes-apt-keyring.gpg 
+  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v$${1}/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+  sudo chmod 644 /etc/apt/sources.list.d/kubernetes.list   
+}
+
+echo "Geting package names and versions from terraform.."
+custom_packages="${custom_packages}"
+IFS=',' read -r -a custom_packages <<< "${custom_packages}"
+for item in "$${custom_packages[@]}" ; do
+  echo "received strings from terraform: $item"
+done
+declare -A package_versions
+number_of_elements="$${#custom_packages[@]}"
+echo "number of elements: $number_of_elements"
+for ((i=0; i < number_of_elements; i+=2)); do
+  echo "String at index $i" is "$${custom_packages[$i]}"
+  package="$${custom_packages[$i]}"
+  i=$((i+1))
+  package_version="$${custom_packages[$i]}"
+  echo "Package is: $package"
+  echo "Package version is: $package_version accessed with index $i"
+  echo "Filling package_versions array..."
+  package_versions[$package]=$package_version
+  i=$((i-1))
+  if [[ -v package_versions[$package] ]]; then
+     echo "package_versions[$package] is set"
+  else
+      echo "package_versions[$package] is not set"
+  fi
+done
+#print all keys and values from package_versions array
+for key in "$${!package_versions[@]}"; do
+  echo "key: $key"
+  echo "value: $${package_versions[$key]}"
+  if [[ $key == "kubectl" ]]; then
+    kubectl_version="$${package_versions[$key]}"
+    kubectl_short_version="$${kubectl_version:0:4}"
+    echo "kubectl_short_version: $kubectl_short_version"
+    add_kubernetes_repositorie "$${kubectl_short_version}"
+  elif [[ $key == "helm" ]]; then
+    add_helm_repositorie
+  else
+    echo "Installing package: $key"
+  fi  
+  sudo apt-get update
+  full_package_version=$(apt-cache madison "$key" | grep "$${package_versions[$key]}" | awk '{print $3}')
+  sudo apt-get -y install "$key"="$full_package_version" 
+done
+
+
+
+
+
