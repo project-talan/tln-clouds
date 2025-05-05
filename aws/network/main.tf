@@ -37,7 +37,6 @@ module "vpc" {
   }
 }
 
-
 module "bastion" {
   source = "../shared/jumpserver"
 
@@ -46,7 +45,7 @@ module "bastion" {
   vpc_id           = module.vpc.vpc_id
   subnet_id        = module.vpc.public_subnets[0]
   instance_type    = var.bastion_instance_type
-  custom_packages  = var.aws_bastion_custom_packages
+  custom_packages  = var.bastion_custom_packages
   tags             = module.shared.tags
 }
 
