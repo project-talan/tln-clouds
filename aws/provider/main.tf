@@ -5,9 +5,9 @@ module "shared" {
 }
 
 resource "aws_ecr_repository" "primary" {
-  for_each = var.repositories != "" ? toset(split(",", var.repositories)) : []
+  for_each = toset(var.repositories)
 
-  name                 = each.key
+  name                 = each.value
   image_tag_mutability = var.image_tag_mutability
 
   encryption_configuration {

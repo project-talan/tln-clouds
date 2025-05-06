@@ -6,8 +6,8 @@ variable "project_id" {
 }
 
 variable "repositories" {
-  type = string
-  default = ""
+  type = list(string)
+  default = []
 }
 variable "image_tag_mutability" {
   type = string
