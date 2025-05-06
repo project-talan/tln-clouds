@@ -11,7 +11,7 @@ locals {
     endpoint                          = module.eks.cluster_endpoint
     cluster_auth_base64               = module.eks.cluster_certificate_authority_data
     aws_authenticator_command         = "aws"
-    aws_authenticator_command_args    = ["--region", "eu-central-1", "eks", "get-token", "--cluster-name", module.shared.k8s_name]
+    aws_authenticator_command_args    = ["eks", "get-token", "--cluster-name", module.shared.k8s_name]
     aws_authenticator_additional_args = []
     aws_authenticator_env_variables   = {}
   })
