@@ -23,12 +23,35 @@ variable "use_primary_domain" {
 
 variable "rds_pg_db_size" {
   type = string
+  default = "db.t4g.micro"
 }
 variable "rds_pg_db_allocated_storage" {
   type = string
+  default = "20"
 }
 variable "rds_pg_max_allocated_storage" {
   type = string
+  default = "30"
+}
+variable rds_manage_master_user_password {
+  type    = bool
+  default = true
+}
+variable "rds_engine_version" {
+  type    = string
+  default = "17.4"
+}
+variable "rds_family" {
+  type    = string
+  default = "postgres17"
+}
+variable "rds_major_engine_version" {
+  type    = string
+  default = "17"
+}
+variable "rds_multi_az" {
+  type    = bool
+  default = false
 }
 variable "databases" {
   description = "A map of databases, their owners and passwords"
@@ -49,3 +72,4 @@ variable "snapshot_identifier" {
   type    = string
   default = null
 }
+

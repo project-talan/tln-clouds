@@ -37,8 +37,4 @@ variable "database_subnets" {
 }
 variable "bastion_custom_packages" {
   type        = map(string)
-  default     = {
-    kubectl: "1.3x.x"
-    helm: "3.xx.x"
-  }
 }
