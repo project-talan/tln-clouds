@@ -41,7 +41,9 @@
     TF_VAR_env_id=dev01
     TF_VAR_tenant_id=demo
     
-    TF_VAR_repositories=io.myproject.backend.services.api,io.myproject.web.landing
+    TF_VAR_registry=
+    TF_VAR_repositories=["dev.myproject.services.iam","dev.myproject.web.landing"]
+    TF_VAR_image_tag_mutability=
 
     TF_VAR_domain_name=myproject.io
     TF_VAR_dns_records=dev01.myproject.io,api
@@ -58,6 +60,7 @@
     ```
     AWS_ACCESS_KEY_ID=<your_aws_id>
     AWS_SECRET_ACCESS_KEY=<your_aws_key>
+    AWS_REGION=eu-central-1
     AWS_DEFAULT_REGION=eu-central-1
 
     TF_VAR_aws_k8s_version=1.32
