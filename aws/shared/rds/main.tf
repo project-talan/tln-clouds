@@ -1,21 +1,52 @@
-module "rds_pg_security_group" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "5.2.0"
-
-  name   = "${var.prefix_env}-pg-database-sg"
-  vpc_id = var.vpc_id
-
-  ingress_with_source_security_group_id = [
-    {
-      rule                     = "postgresql-tcp"
-      source_security_group_id = var.node_security_group_id
-    },
-    {
-      rule                     = "postgresql-tcp"
-      source_security_group_id = var.bastion_security_group_id
-    },
-  ]
+resource "aws_security_group" "postgres_sg" {
+  name        = "${var.prefix_env}-sg"
+  description = "Allow connection to Postgres server"
+  vpc_id      = var.vpc_id
+  lifecycle {
+    create_before_destroy = true
+  }
+  timeouts {
+    create = "10m"
+    delete = "2m"
+  }
   tags = var.tags
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_bastion" {
+  security_group_id            = aws_security_group.postgres_sg.id
+  referenced_security_group_id = var.bastion_security_group_id
+  from_port                    = 5432
+  ip_protocol                  = "tcp"
+  to_port                      = 5432
+  description                  = "Allow Postgresql traffic from bastion"
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = var.tags
+}
+resource "aws_vpc_security_group_ingress_rule" "allow_k8s_nodes" {
+  security_group_id            = aws_security_group.postgres_sg.id
+  referenced_security_group_id = var.node_security_group_id
+  from_port                    = 5432
+  ip_protocol                  = "tcp"
+  to_port                      = 5432
+  description                  = "Allow Postgresql traffic from kubernetes nodes"
+    lifecycle {
+    create_before_destroy = true
+  }
+  tags                         = var.tags
+}
+
+resource "aws_vpc_security_group_egress_rule" "allow_all_outbound" {
+  security_group_id = aws_security_group.postgres_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1" # All protocols
+  description       = "Allow all outbound traffic"
+  tags              = var.tags
+    lifecycle {
+    create_before_destroy = true
+  }
 }
 
 module "rds_pg" {
@@ -40,7 +71,9 @@ module "rds_pg" {
   multi_az = var.rds_multi_az
 
   db_subnet_group_name   = var.db_subnet_group_name
-  vpc_security_group_ids = [module.rds_pg_security_group.security_group_id]
+  vpc_security_group_ids = [aws_security_group.postgres_sg.id]
+  publicly_accessible    = false
+  snapshot_identifier    = var.rds_snapshot_identifier
 
   maintenance_window              = "Mon:00:00-Mon:03:00"
   backup_window                   = "03:00-06:00"
@@ -90,9 +123,8 @@ provider "postgresql" {
   port            = module.rds_pg.db_instance_port
   username        = module.rds_pg.db_instance_username # Master username "root"
   password        = jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password.secret_string)["password"]
-  sslmode         = "disable"  # Review this setting for production environments
   database        = "postgres" # Connect to the default 'postgres' database for admin tasks
-  connect_timeout = 15
+  connect_timeout = 30
   superuser       = false
 }
 
@@ -110,89 +142,58 @@ resource "null_resource" "wait_for_db" {
   }
 }
 
-resource "postgresql_role" "this" {
-  provider = postgresql.rds_admin
-  for_each = var.databases
+# resource "postgresql_role" "this" {
+#   provider = postgresql.rds_admin
+#   for_each = var.databases
 
-  name       = "${each.key}-${each.value.owner}"
-  login      = true
-  password   = each.value.password
-  depends_on = [module.rds_pg] # 
-}
+#   name       = "${each.key}-${each.value.owner}"
+#   login      = true
+#   password   = each.value.password
+#   depends_on = [module.rds_pg] # 
+# }
 
-resource "postgresql_database" "this" {
-  provider = postgresql.rds_admin
-  for_each = var.databases
+# resource "postgresql_database" "this" {
+#   provider = postgresql.rds_admin
+#   for_each = var.databases
 
-  name              = each.key
-  owner             = postgresql_role.this[each.key].name
-  template          = "template0"
-  lc_collate        = "en_US.UTF-8"
-  connection_limit  = -1
-  allow_connections = true
+#   name              = each.key
+#   owner             = postgresql_role.this[each.key].name
+#   template          = "template0"
+#   lc_collate        = "en_US.UTF-8"
+#   connection_limit  = -1
+#   allow_connections = true
 
-  depends_on = [postgresql_role.this]
-}
+#   depends_on = [postgresql_role.this]
+# }
 
-resource "postgresql_grant" "this_table" {
-  provider = postgresql.rds_admin
-  for_each = var.databases
+# resource "postgresql_grant" "this_table" {
+#   provider = postgresql.rds_admin
+#   for_each = var.databases
 
-  database    = postgresql_database.this[each.key].name
-  role        = postgresql_role.this[each.key].name
-  schema      = "public"
-  object_type = "table"
-  privileges  = ["ALL"]
+#   database    = postgresql_database.this[each.key].name
+#   role        = postgresql_role.this[each.key].name
+#   schema      = "public"
+#   object_type = "table"
+#   privileges  = ["ALL"]
 
-  depends_on = [postgresql_database.this]
-  lifecycle {
-    ignore_changes = [privileges] # To prevent Terraform from revoking manually granted privileges
-  }
-}
+#   depends_on = [postgresql_database.this]
+#   lifecycle {
+#     ignore_changes = [privileges] # To prevent Terraform from revoking manually granted privileges
+#   }
+# }
 
-resource "postgresql_grant" "this_schema" {
-  provider = postgresql.rds_admin
-  for_each = var.databases
+# resource "postgresql_grant" "this_schema" {
+#   provider = postgresql.rds_admin
+#   for_each = var.databases
 
-  database    = postgresql_database.this[each.key].name
-  role        = postgresql_role.this[each.key].name
-  schema      = "public"
-  object_type = "schema"
-  privileges  = ["CREATE", "USAGE"] # Grant CREATE and USAGE on public schema
+#   database    = postgresql_database.this[each.key].name
+#   role        = postgresql_role.this[each.key].name
+#   schema      = "public"
+#   object_type = "schema"
+#   privileges  = ["CREATE", "USAGE"] # Grant CREATE and USAGE on public schema
 
-  depends_on = [postgresql_database.this]
-  lifecycle {
-    ignore_changes = [privileges]
-  }
-}
-
-module "backup" {
-  source  = "lgallard/backup/aws"
-  version = "0.22.0"
-
-  vault_name = "${var.prefix_env}-pg-vault"
-  plan_name  = "${var.prefix_env}-pg-backup-plan"
-
-  rules = [
-    {
-      name     = "db-backup"
-      schedule = var.backup_schedule # e.g., "cron(0 5 * * ? *)"
-      lifecycle = {
-        delete_after = var.backup_lifecycle # e.g., 35 days
-      },
-      recovery_point_tags = {
-        Environment = var.prefix_env
-      }
-    },
-  ]
-
-  selections = [
-    {
-      name      = "postgres"
-      resources = [module.rds_pg.db_instance_arn]
-    },
-  ]
-
-  depends_on = [module.rds_pg]
-  tags       = var.tags
-}
+#   depends_on = [postgresql_database.this]
+#   lifecycle {
+#     ignore_changes = [privileges]
+#   }
+# }

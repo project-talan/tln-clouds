@@ -4,20 +4,23 @@ controller:
       service.beta.kubernetes.io/aws-load-balancer-type: nlb
       service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+      service.beta.kubernetes.io/aws-load-balancer-alpn-policy: HTTP2Preferred
+      service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
     targetPorts:
       https: http
   config:
     use-proxy-protocol: "false"
     use-forwarded-headers: "true"
-    use-forward-headers: "true"
     use-http2: "true"
     enable-access-log-for-default-backend: "true"
     enable-real-ip: "true"
     use-gzip: "true"
-    gzip-level: 9
+    gzip-level: 6
     enable-brotli: "true"
-    brotli-level: 11
+    brotli-level: 5
     server-tokens: "false"
     ssl-redirect: "true"
     ssl-ciphers: EECDH+AESGCM:EDH+AESGCM:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-CHACHA20-POLY1305
     ssl-protocols: TLSv1.2 TLSv1.3
+    limit-connections: "20"
+    limit-rpm: "50"

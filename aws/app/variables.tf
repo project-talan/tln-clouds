@@ -33,7 +33,7 @@ variable "rds_pg_max_allocated_storage" {
   type = string
   default = "30"
 }
-variable rds_manage_master_user_password {
+variable "rds_manage_master_user_password" {
   type    = bool
   default = true
 }
@@ -68,7 +68,7 @@ variable "backup_lifecycle" {
   type = string
   default = "1"
 }
-variable "snapshot_identifier" {
+variable "rds_snapshot_identifier" {
   type    = string
   default = null
 }

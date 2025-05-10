@@ -25,7 +25,7 @@ provider "registry.terraform.io/cyrilgdn/postgresql" {
 
 provider "registry.terraform.io/hashicorp/aws" {
   version     = "5.96.0"
-  constraints = ">= 3.29.0, >= 4.26.0, >= 4.40.0, >= 5.36.0, 5.96.0"
+  constraints = ">= 4.26.0, >= 4.40.0, >= 5.36.0, 5.96.0"
   hashes = [
     "h1:a/VEUu6BGQSPlUAzbN+zqaDCdi0QGh/VzBgo2gCran0=",
     "zh:3f7e734abb9d647c851f5cb987837d7c073c9cbf1f520a031027d827f93d3b68",

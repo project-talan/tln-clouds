@@ -110,3 +110,7 @@ variable "rds_manage_master_user_password" {
   type        = bool
   default     = false
 }
+variable "rds_snapshot_identifier" {
+  type        = string
+  default     = ""
+}
