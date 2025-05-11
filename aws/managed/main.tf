@@ -15,7 +15,7 @@ locals {
     aws_authenticator_additional_args = []
     aws_authenticator_env_variables   = {}
   })
-  eks_managed_node_groups = var.aws_k8s_managed_node_groups
+  eks_managed_node_groups = var.aws_k8s_node_groups
 }
 
 module "eks" {
@@ -62,22 +62,6 @@ module "eks" {
   }
 
   eks_managed_node_groups = local.eks_managed_node_groups
-  # {
-  #   ng1 = {
-  #     name = "ng1"
-
-  #     instance_types = [var.aws_k8s_nodes_size]
-
-  #     min_size     = var.aws_k8s_nodes_min
-  #     desired_size = var.aws_k8s_nodes_desired
-  #     max_size     = var.aws_k8s_nodes_max
-  #     //?????? var.aws_k8s_nodes_disk
-
-  #     vpc_security_group_ids = [
-  #       aws_security_group.ng1.id
-  #     ]
-  #   }
-  # }
 }
 
 
