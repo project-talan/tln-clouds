@@ -72,4 +72,3 @@ variable "rds_snapshot_identifier" {
   type    = string
   default = null
 }
-

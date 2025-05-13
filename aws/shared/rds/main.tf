@@ -32,10 +32,10 @@ resource "aws_vpc_security_group_ingress_rule" "allow_k8s_nodes" {
   ip_protocol                  = "tcp"
   to_port                      = 5432
   description                  = "Allow Postgresql traffic from kubernetes nodes"
-    lifecycle {
+  lifecycle {
     create_before_destroy = true
   }
-  tags                         = var.tags
+  tags = var.tags
 }
 
 resource "aws_vpc_security_group_egress_rule" "allow_all_outbound" {
@@ -44,7 +44,7 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_outbound" {
   ip_protocol       = "-1" # All protocols
   description       = "Allow all outbound traffic"
   tags              = var.tags
-    lifecycle {
+  lifecycle {
     create_before_destroy = true
   }
 }
@@ -128,72 +128,58 @@ provider "postgresql" {
   superuser       = false
 }
 
+resource "postgresql_role" "this" {
+  provider = postgresql.rds_admin
+  for_each = var.databases
 
-resource "null_resource" "wait_for_db" {
-  depends_on = [module.rds_pg]
+  name       = "${each.key}-${each.value.owner}"
+  login      = true
+  password   = each.value.password
+  depends_on = [module.rds_pg] # 
+}
 
-  provisioner "local-exec" {
-    command = <<EOT
-      until PGPASSWORD="${jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password.secret_string)["password"]}" psql -h ${module.rds_pg.db_instance_address} -U ${module.rds_pg.db_instance_username} -d postgres -c '\q'; do
-        echo "Waiting for PostgreSQL to be available..."
-        sleep 5
-      done
-    EOT
+resource "postgresql_database" "this" {
+  provider = postgresql.rds_admin
+  for_each = var.databases
+
+  name              = each.key
+  owner             = postgresql_role.this[each.key].name
+  template          = "template0"
+  lc_collate        = "en_US.UTF-8"
+  connection_limit  = -1
+  allow_connections = true
+
+  depends_on = [postgresql_role.this]
+}
+
+resource "postgresql_grant" "this_table" {
+  provider = postgresql.rds_admin
+  for_each = var.databases
+
+  database    = postgresql_database.this[each.key].name
+  role        = postgresql_role.this[each.key].name
+  schema      = "public"
+  object_type = "table"
+  privileges  = ["ALL"]
+
+  depends_on = [postgresql_database.this]
+  lifecycle {
+    ignore_changes = [privileges] # To prevent Terraform from revoking manually granted privileges
   }
 }
 
-# resource "postgresql_role" "this" {
-#   provider = postgresql.rds_admin
-#   for_each = var.databases
+resource "postgresql_grant" "this_schema" {
+  provider = postgresql.rds_admin
+  for_each = var.databases
 
-#   name       = "${each.key}-${each.value.owner}"
-#   login      = true
-#   password   = each.value.password
-#   depends_on = [module.rds_pg] # 
-# }
+  database    = postgresql_database.this[each.key].name
+  role        = postgresql_role.this[each.key].name
+  schema      = "public"
+  object_type = "schema"
+  privileges  = ["CREATE", "USAGE"] # Grant CREATE and USAGE on public schema
 
-# resource "postgresql_database" "this" {
-#   provider = postgresql.rds_admin
-#   for_each = var.databases
-
-#   name              = each.key
-#   owner             = postgresql_role.this[each.key].name
-#   template          = "template0"
-#   lc_collate        = "en_US.UTF-8"
-#   connection_limit  = -1
-#   allow_connections = true
-
-#   depends_on = [postgresql_role.this]
-# }
-
-# resource "postgresql_grant" "this_table" {
-#   provider = postgresql.rds_admin
-#   for_each = var.databases
-
-#   database    = postgresql_database.this[each.key].name
-#   role        = postgresql_role.this[each.key].name
-#   schema      = "public"
-#   object_type = "table"
-#   privileges  = ["ALL"]
-
-#   depends_on = [postgresql_database.this]
-#   lifecycle {
-#     ignore_changes = [privileges] # To prevent Terraform from revoking manually granted privileges
-#   }
-# }
-
-# resource "postgresql_grant" "this_schema" {
-#   provider = postgresql.rds_admin
-#   for_each = var.databases
-
-#   database    = postgresql_database.this[each.key].name
-#   role        = postgresql_role.this[each.key].name
-#   schema      = "public"
-#   object_type = "schema"
-#   privileges  = ["CREATE", "USAGE"] # Grant CREATE and USAGE on public schema
-
-#   depends_on = [postgresql_database.this]
-#   lifecycle {
-#     ignore_changes = [privileges]
-#   }
-# }
+  depends_on = [postgresql_database.this]
+  lifecycle {
+    ignore_changes = [privileges]
+  }
+}
