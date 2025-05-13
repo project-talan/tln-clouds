@@ -135,7 +135,7 @@ resource "postgresql_role" "this" {
   name       = "${each.key}-${each.value.owner}"
   login      = true
   password   = each.value.password
-  depends_on = [module.rds_pg] # 
+  depends_on = [module.rds_pg, resource.aws_vpc_security_group_ingress_rule.allow_bastion]
 }
 
 resource "postgresql_database" "this" {
