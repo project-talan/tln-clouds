@@ -25,6 +25,7 @@ module "secondary_certificate" {
   zone_id                   = aws_route53_zone.secondary.zone_id
 
   wait_for_validation = true
+  validation_method   = "DNS"
 }
 
 resource "aws_route53_record" "record" {

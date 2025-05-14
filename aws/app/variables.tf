@@ -53,6 +53,32 @@ variable "rds_multi_az" {
   type    = bool
   default = false
 }
+
+
+
+variable "rds_pg" {
+  type = object({
+    size = string
+    allocated_storage = string
+    max_allocated_storage = string
+    master_user_password = bool
+    engine_version = string
+    family = string
+    major_engine_version = string
+    multi_az = bool
+  })
+  default = {
+    size = "db.t4g.micro"
+    allocated_storage = "20"
+    max_allocated_storage = "30"
+    master_user_password = true
+    engine_version = "17.4"
+    family = "postgres17"
+    major_engine_version = "17"
+    multi_az = false
+  }
+}
+
 variable "databases" {
   description = "A map of databases, their owners and passwords"
   type = map(object({
