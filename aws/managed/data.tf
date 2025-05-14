@@ -2,6 +2,7 @@ locals {
   tags = { group = var.group_id, env = var.env_id }
 }
 
+
 data "aws_availability_zones" "available" {
   state = "available"
 }
@@ -36,4 +37,7 @@ data "aws_security_group" "bastion" {
   }
 
   vpc_id = data.aws_vpc.main.id
+}
+data "aws_region" "current" {
+  provider = aws
 }
