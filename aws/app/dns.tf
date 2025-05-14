@@ -18,13 +18,14 @@ resource "aws_route53_record" "ns" {
 
 module "secondary_certificate" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "4.5.0"
+  version = "5.1.1"
 
   domain_name               = local.subdomain_name
   subject_alternative_names = ["*.${local.subdomain_name}"]
   zone_id                   = aws_route53_zone.secondary.zone_id
 
   wait_for_validation = true
+  validation_method   = "DNS"
 }
 
 resource "aws_route53_record" "record" {
