@@ -16,6 +16,7 @@ variable "vpc_id" {
 variable "subnet_id" {
   description = "The public subnet ID where the jump server instance will be launched."
   type        = string
+  default     = null
 }
 
 variable "instance_type" {
@@ -41,7 +42,6 @@ variable "allowed_ssh_cidr_blocks" {
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
-
 variable "tags" {
   description = "A map of tags to assign to the resources."
   type        = map(string)

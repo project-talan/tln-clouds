@@ -33,7 +33,7 @@ locals {
 resource "aws_security_group" "jumpserver_sg" {
   name        = "${var.resources_prefix}-sg"
   description = "Allow SSH access to the jump server"
-  vpc_id      = var.vpc_id
+  vpc_id      = data.aws_vpc.jumpbox.id
 
   tags = local.tags
 }
