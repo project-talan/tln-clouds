@@ -122,6 +122,6 @@ variable "cognito_enable_pre_auth_lambda" {
 
 variable "cognito_pre_auth_lambda_source_path" {
   type    = string
-  default = ""
+  default = "src/cognito-pre-auth.py"
 }
 

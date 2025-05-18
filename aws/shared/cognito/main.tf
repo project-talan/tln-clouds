@@ -62,7 +62,7 @@ resource "aws_iam_policy" "cognito_pre_auth_aim_policy" {
       {
         Action = "cognito-idp:AdminUpdateUserAttributes"
         Effect = "Allow"
-        Resource = "*"
+        Resource = module.cognito_user_pool.arn
       },
     ]
   })
