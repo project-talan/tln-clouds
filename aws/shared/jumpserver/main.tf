@@ -1,3 +1,8 @@
+locals {
+  create_security_group = var.use_default_vpc ? false : true
+  create_outbound_rule  = var.use_default_vpc ? false : true
+  security_group_id     = var.use_default_vpc ? data.aws_security_group.jumpbox.id : aws_security_group.jumpserver_sg[0].id
+}
 data "aws_ami" "ubuntu" {
   most_recent = true
   filter {
@@ -18,7 +23,7 @@ locals {
   ami_id = data.aws_ami.ubuntu.id
 
   flattened_custom_packages_map = flatten([
-    for key, value in var.custom_packages:
+    for key, value in var.custom_packages :
     [key, value]
   ])
 
@@ -31,6 +36,7 @@ locals {
 }
 
 resource "aws_security_group" "jumpserver_sg" {
+  count       = local.create_security_group ? 1 : 0 #checking if we need to create a new security group or use the default one
   name        = "${var.resources_prefix}-sg"
   description = "Allow SSH access to the jump server"
   vpc_id      = data.aws_vpc.jumpbox.id
@@ -41,7 +47,7 @@ resource "aws_security_group" "jumpserver_sg" {
 resource "aws_vpc_security_group_ingress_rule" "allow_ssh" {
   for_each = toset(var.allowed_ssh_cidr_blocks)
 
-  security_group_id = aws_security_group.jumpserver_sg.id
+  security_group_id = local.security_group_id
   cidr_ipv4         = each.key
   from_port         = 22
   ip_protocol       = "tcp"
@@ -53,7 +59,8 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ssh" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "allow_all_outbound" {
-  security_group_id = aws_security_group.jumpserver_sg.id
+  count             = local.create_outbound_rule ? 1 : 0 #default security group already allows all outbound
+  security_group_id = local.security_group_id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" # All protocols
   description       = "Allow all outbound traffic"
@@ -80,7 +87,7 @@ resource "aws_instance" "jumpserver" {
   subnet_id                   = var.subnet_id
   associate_public_ip_address = true # Jump server needs public IP
 
-  vpc_security_group_ids = [aws_security_group.jumpserver_sg.id]
+  vpc_security_group_ids = [local.security_group_id]
   key_name               = aws_key_pair.ssh.key_name
   user_data = base64encode(templatefile("${path.module}/templates/template.sh.tftpl", {
     custom_packages = join(",", local.flattened_custom_packages_map)

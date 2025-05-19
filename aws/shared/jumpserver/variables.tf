@@ -11,8 +11,13 @@ variable "files_prefix" {
 variable "vpc_id" {
   description = "The VPC ID where the jump server and security group will be created."
   type        = string
+  default     = null
 }
-
+variable "use_default_vpc" {
+  description = "The VPC ID where the jump server and security group will be created."
+  type        = bool
+  default     = false
+}
 variable "subnet_id" {
   description = "The public subnet ID where the jump server instance will be launched."
   type        = string

@@ -1,8 +1,8 @@
 module "shared" {
-  source = "../../shared"
-  org_id = var.org_id
+  source     = "../../shared"
+  org_id     = var.org_id
   project_id = var.project_id
-  group_id = var.group_id
+  group_id   = var.group_id
   env_id     = var.env_id
 }
 
@@ -23,14 +23,14 @@ module "root_certificate" {
   validation_method   = "DNS"
 }
 
-# # Uncomment to provision a jumpbox for secure ETL across multiple environments
-# module "jumpbox" {
-#   source = "../shared/jumpserver"
-#   resources_prefix = "${module.shared.prefix_env}-jumpbox"
-#   files_prefix     = "${var.group_id}-${var.env_id}-jumpbox"
-#   vpc_id           = "vpc-fe292a9a"
-#   subnet_id        = ""
-#   instance_type    = var.jumpbox_instance_type
-#   custom_packages  = var.jumpbox_custom_packages
-#   tags             = module.shared.tags
-# }
+# Uncomment to provision a jumpbox for secure ETL across multiple environments
+module "jumpbox" {
+  source = "../shared/jumpserver"
+  use_default_vpc  = true 
+
+  resources_prefix = "${module.shared.prefix_env}-jumpbox"
+  files_prefix     = "${var.group_id}-${var.env_id}-jumpbox"
+  instance_type    = var.jumpbox_instance_type
+  custom_packages  = var.jumpbox_custom_packages
+  tags             = module.shared.tags
+}
