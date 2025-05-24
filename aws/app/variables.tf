@@ -20,7 +20,7 @@ variable "dns_records" {
 variable "use_primary_domain" {
   type = bool
 }
-variable "rds_pg" {
+variable "postgresql" {
   type = object({
     size = string
     allocated_storage = string

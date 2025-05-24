@@ -1,17 +1,17 @@
 
 locals {
-  rds_instance_size               = var.rds_pg.size
-  rds_allocated_storage           = var.rds_pg.allocated_storage
-  rds_max_allocated_storage       = var.rds_pg.max_allocated_storage
-  rds_master_user_password        = var.rds_pg.master_user_password
-  rds_engine_version              = var.rds_pg.engine_version
-  rds_family                      = var.rds_pg.family
-  rds_major_engine_version        = var.rds_pg.major_engine_version
-  rds_multi_az                    = var.rds_pg.multi_az
-  rds_manage_master_user_password = var.rds_pg.manage_master_user_password
-  rds_snapshot_identifier         = var.rds_pg.rds_snapshot_identifier
-  rds_backup_schedule             = var.rds_pg.backup_schedule
-  rds_backup_lifecycle            = var.rds_pg.backup_lifecycle
+  rds_instance_size               = var.postgresql.size
+  rds_allocated_storage           = var.postgresql.allocated_storage
+  rds_max_allocated_storage       = var.postgresql.max_allocated_storage
+  rds_master_user_password        = var.postgresql.master_user_password
+  rds_engine_version              = var.postgresql.engine_version
+  rds_family                      = var.postgresql.family
+  rds_major_engine_version        = var.postgresql.major_engine_version
+  rds_multi_az                    = var.postgresql.multi_az
+  rds_manage_master_user_password = var.postgresql.manage_master_user_password
+  rds_snapshot_identifier         = var.postgresql.rds_snapshot_identifier
+  rds_backup_schedule             = var.postgresql.backup_schedule
+  rds_backup_lifecycle            = var.postgresql.backup_lifecycle
 }
 
 module "rds" {

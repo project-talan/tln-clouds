@@ -80,7 +80,7 @@
     ```
     tln construct aws -- --backend cloud --init --apply --layer group --state project,provider,group
     ```
-  3. **Network - configure VPC, Bastion**
+  3. **Network layer - configure VPC, Bastion**
     ```
     tln construct aws -- --backend cloud --init --apply --layer network --state project,provider,group,env,layer
     ```
