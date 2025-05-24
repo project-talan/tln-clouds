@@ -12,6 +12,10 @@ variable "domain_name" {
   type = string
   default = ""
 }
+variable "env_id" {
+  type = string
+  default = ""
+}
 
 variable "jumpbox_instance_type" {
   description = "Instance type for the bastion host."
@@ -21,8 +25,8 @@ variable "jumpbox_instance_type" {
 variable "jumpbox_custom_packages" {
   type        = map(string)
   default     = {
-    openvpn: "2.6.13"
-    easy-rsa: "3.2.2"
+    openvpn: "2.6.12"
+    easy-rsa: "3.1.7"
   }
 }
 

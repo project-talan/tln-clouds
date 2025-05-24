@@ -49,9 +49,7 @@
     TF_VAR_dns_records=dev01.myproject.io,api
     TF_VAR_use_primary_domain=false
 
-    TF_VAR_rds_pg_db_size=db.t3.micro
-    TF_VAR_rds_pg_db_allocated_storage=20
-    TF_VAR_rds_pg_max_allocated_storage=30
+    TF_VAR_postgresql={ size = "db.t4g.micro", allocated_storage = "20", max_allocated_storage = "30", master_user_password = true, engine_version = "17.4", family = "postgres17", major_engine_version = "17", multi_az = false, manage_master_user_password = true, backup_schedule = "cron(0 */2 * * ? *)", backup_lifecycle = "1", rds_snapshot_identifier = null }
     TF_VAR_databases={ "iam" = { owner = "admin", password = "admin" }, "billing" = { owner = "admin", password = "admin" } }
     ```
 
@@ -80,9 +78,12 @@
     ```
     tln construct aws -- --backend cloud --init --apply --layer group --state project,provider,group
     ```
-  3. **Network and Managed layers - configure VPC, Bastion, K8s**
+  3. **Network layer - configure VPC, Bastion**
     ```
     tln construct aws -- --backend cloud --init --apply --layer network --state project,provider,group,env,layer
+    ```
+  4. **Managed layer - K8s**
+    ```
     tln construct aws -- --backend cloud --init --apply --layer managed --state project,provider,group,env,layer
     ```
 * At this point you have ready to use cloud infrastructure with K8s and secure access via bastion
