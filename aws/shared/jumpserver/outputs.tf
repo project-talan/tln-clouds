@@ -16,7 +16,7 @@ output "key_name" {
 
 output "security_group_id" {
   description = "The ID of the security group attached to the jump server."
-  value       = data.aws_security_group.jumpbox.id
+  value       = data.aws_security_group.jumpserver.id
 }
 
 output "jumpserver_remote_address" {

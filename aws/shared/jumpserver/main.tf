@@ -1,7 +1,7 @@
 locals {
   create_security_group = var.use_default_vpc ? false : true
   create_outbound_rule  = var.use_default_vpc ? false : true
-  security_group_id     = var.use_default_vpc ? data.aws_security_group.jumpbox.id : aws_security_group.jumpserver_sg[0].id
+  security_group_id     = var.use_default_vpc ? data.aws_security_group.jumpserver.id : aws_security_group.jumpserver_sg[0].id
 }
 data "aws_ami" "ubuntu" {
   most_recent = true
@@ -39,7 +39,7 @@ resource "aws_security_group" "jumpserver_sg" {
   count       = local.create_security_group ? 1 : 0 #checking if we need to create a new security group or use the default one
   name        = "${var.resources_prefix}-sg"
   description = "Allow SSH access to the jump server"
-  vpc_id      = data.aws_vpc.jumpbox.id
+  vpc_id      = data.aws_vpc.jumpserver.id
 
   tags = local.tags
 }

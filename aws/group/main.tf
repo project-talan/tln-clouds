@@ -28,8 +28,8 @@ module "jumpbox" {
   source = "../shared/jumpserver"
   use_default_vpc  = true 
 
-  resources_prefix = "${module.shared.prefix_env}-jumpbox"
-  files_prefix     = "${var.group_id}-${var.env_id}-jumpbox"
+  resources_prefix = "${module.shared.prefix_group}-jumpbox"
+  files_prefix     = "${var.group_id}-jumpbox"
   instance_type    = var.jumpbox_instance_type
   custom_packages  = var.jumpbox_custom_packages
   tags             = module.shared.tags
