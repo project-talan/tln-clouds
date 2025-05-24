@@ -80,9 +80,12 @@
     ```
     tln construct aws -- --backend cloud --init --apply --layer group --state project,provider,group
     ```
-  3. **Network and Managed layers - configure VPC, Bastion, K8s**
+  3. **Network - configure VPC, Bastion**
     ```
     tln construct aws -- --backend cloud --init --apply --layer network --state project,provider,group,env,layer
+    ```
+  4. **Managed layer - K8s**
+    ```
     tln construct aws -- --backend cloud --init --apply --layer managed --state project,provider,group,env,layer
     ```
 * At this point you have ready to use cloud infrastructure with K8s and secure access via bastion
