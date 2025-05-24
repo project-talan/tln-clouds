@@ -1,56 +1,54 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sphrx-app
+  name: tlnclouds-app
   labels:
-    app: sphrx
+    app: tlnclouds
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: sphrx
+      app: tlnclouds
   template:
     metadata:
       labels:
-        app: sphrx
+        app: tlnclouds
     spec:
       containers:
-        - name: sphrx-container
-          image: vladyslavkurmaz/ai.spherax.web.landing:25.5.0
+        - name: tlnclouds-container
+          image: nginx:latest
           ports:
             - containerPort: 80
-
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: sphrx-service
+  name: tlnclouds-service
 spec:
   selector:
-    app: sphrx
+    app: tlnclouds
   ports:
     - protocol: TCP
       port: 80
       targetPort: 80
   type: ClusterIP
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: sphrx-ingress
+  name: tlnclouds-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: dev01.sphrx.xyz
+    - host: dev01.tlnclouds.xyz
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: sphrx-service
+                name: tlnclouds-service
                 port:
                   number: 80
   ingressClassName: nginx
