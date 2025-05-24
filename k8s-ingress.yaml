@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: tlnclouds-container
-          image: nginx:latest
+          image: containous/whoami
           ports:
             - containerPort: 80
 ---
