@@ -39,6 +39,7 @@ module "vpc" {
 
 module "bastion" {
   source = "../shared/jumpserver"
+  use_default_vpc  = false
 
   resources_prefix = "${module.shared.prefix_env}-bastion"
   files_prefix     = "${var.group_id}-${var.env_id}-bastion"
