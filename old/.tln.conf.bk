@@ -1,0 +1,251 @@
+const path = require('path');
+const fs = require('fs');
+const os = require('os');
+
+const isWindows = os.platform() === 'win32';
+const wrap = (v) => isWindows ? `%${v}%` : `\${${v}}`;
+
+const buildScript = (layers, reverse, fn) => {
+  const arr = layers.split(',');
+  if (reverse) {
+    arr.reverse();
+  }
+  const r = []
+  if (isWindows) {
+    r.push(`set cwd=${wrap('cd')}`);
+  } else {
+    r.push('cwd=$(pwd)');
+  }
+  arr.map(l => {
+    const { cmds, cmd } = fn(l);
+    r.push(`cd ${wrap('cwd')} && cd ${l}`);
+    r.push(...cmds);
+    r.push(`${cmd}`);
+  });
+  return r;
+}
+
+const getBackendConfig = (backend, layer, env) => {
+  const cmds = [];
+  let params = '';
+  const name = env.TLN_CLOUDS_STATE.split(',').map(v => {
+    if (v === 'project' ) 
+      return env.TF_VAR_project_id;
+    else if (v === 'provider' ) 
+      return env.TLN_COMPONENT_ID;
+    else if (v === 'group' )
+      return env.TF_VAR_group_id;
+    else if (v === 'env' )
+      return env.TF_VAR_env_id;
+    else if (v === 'layer' )
+      return layer;
+    else if (v === 'tenant' )
+      return env.TF_VAR_tenant_id;
+    return v;
+  });
+  const wName = name.join('-');
+  const pName = name.join('/');
+  if (backend) {
+    cmds.push(`echo 'terraform {' > backend.tf`);
+    switch (backend) {
+      case 'cloud':
+        cmds.push(`echo '  cloud {' >> backend.tf`);
+        cmds.push(`echo '    organization = "${env.TF_VAR_org_id}"' >> backend.tf`);
+        cmds.push(`echo '    workspaces {' >> backend.tf`);
+        cmds.push(`echo '      project = "${env.TF_VAR_project_id}"' >> backend.tf`);
+        cmds.push(`echo '      name = "${wName}"' >> backend.tf`);
+        cmds.push(`echo '    }' >> backend.tf`);
+        cmds.push(`echo '  }' >> backend.tf`);
+        break;
+      case 'remote':
+        cmds.push(`echo '  backend "remote" {' >> backend.tf`);
+        cmds.push(`echo '    organization = "${env.TF_VAR_org_id}"' >> backend.tf`);
+        cmds.push(`echo '    workspaces { name = "${wName}" }' >> backend.tf`);
+        cmds.push(`echo '  }' >> backend.tf`);
+        break;
+      case 'pg':
+        cmds.push(`echo '  backend "pg" {' >> backend.tf`);
+        cmds.push(`echo '    conn_str = "${env.TF_VAR_backend_pg_conn_str}"' >> backend.tf`);
+        cmds.push(`echo '    schema_name = "${wName}"' >> backend.tf`);
+        cmds.push(`echo '  }' >> backend.tf`);
+        break;
+      case 's3':
+        //terraform init -backend-config="access_key=<your access key>" -backend-config="secret_key=<your secret key>"
+        cmds.push(`echo '  backend "s3" {' >> backend.tf`);
+        cmds.push(`echo '    bucket = "${env.TF_VAR_backend_s3_bucket}"' >> backend.tf`);
+        cmds.push(`echo '    key = "tfenvs/${pName}/terraform.tfstate"' >> backend.tf`);
+        cmds.push(`echo '    dynamodb_table = "${env.TF_VAR_backend_s3_dynamodb_table}"' >> backend.tf`);
+        cmds.push(`echo '    region = "${env.TF_VAR_backend_s3_region}"' >> backend.tf`);
+        cmds.push(`echo '  }' >> backend.tf`);
+        break;
+    }
+    cmds.push(`echo '}' >> backend.tf`);
+    if (env.TLN_CLOUDS_UPGRADE) {
+      params = ' -upgrade';
+    }
+  } else {
+    params = ' -reconfigure';
+    cmds.push('rm -f backend.tf');
+  }
+  return {cmds, params};
+}
+
+const getScript = (env, reverse) => {
+  return buildScript(env.TLN_CLOUDS_LAYERS, reverse, layer => {
+    const { cmds, params } = getBackendConfig(env.TLN_CLOUDS_BACKEND, layer, env);
+    //
+    const tCmds = [];
+    const destroy = reverse?' -destroy':'';
+    if (env.TLN_CLOUDS_INIT) {
+      tCmds.push(`terraform init${params}`);
+    }
+    if (env.TLN_CLOUDS_PLAN) {
+      tCmds.push(`terraform plan${destroy}`);
+    }
+    if (env.TLN_CLOUDS_APPLY) {
+      tCmds.push(`terraform apply${destroy}${env.TLN_CLOUDS_AUTO_APPROVE?' -auto-approve':''}`);
+    }
+    return { cmds: cmds || [], cmd: tCmds.join(' && ')};
+  });
+}
+
+const getTerraformOpts = (env) => {
+  const i = env.TLN_CLOUDS_INIT?' --init':'';
+  const p = env.TLN_CLOUDS_PLAN?' --plan':'';
+  const a = env.TLN_CLOUDS_APPLY?' --apply':'';
+  const aa = env.TLN_CLOUDS_AUTO_APPROVE?' --auto-approve':'';
+  const u = env.TLN_CLOUDS_UPGRADE?' --upgrade':'';
+  return `${i}${p}${a}${aa}${u}`;
+}
+
+const getConnectionOptions = (v, group, env) => {
+  const opts = v.split(':');
+  const layer = opts[0];
+  let prefix = '';
+  //
+  if (opts.length === 2) {
+    if (opts[1]) {
+      prefix = `${group}-${env}-${opts[1]}`;
+    } else {
+      prefix = `${group}`;
+    }
+  } else {
+    prefix = `${group}-${env}`;
+  }
+  return {layer, prefix};
+}
+
+module.exports = {
+  options: async (tln, args) => {
+    args
+      .prefix('TLN_CLOUDS')
+      .option('backend',      { describe: 'Defines which backend provider should be used (cloud, pg)', default: null, type: 'string' })
+      .option('tenant',       { describe: 'Tenant Id', default: null, type: 'string' })
+      .option('state',        { describe: 'Defines how store name will be built: project,provider,group,env,layer,tenant,<custom_string>', default: null, type: 'string' })
+      .option('init',         { describe: 'Run Terraform init', default: false, type: 'boolean' })
+      .option('upgrade',      { describe: 'Run Terraform upgrade mode for init', default: false, type: 'boolean' })
+      .option('plan',         { describe: 'Run Terraform plan', default: false, type: 'boolean' })
+      .option('apply',        { describe: 'Run Terraform apply', default: false, type: 'boolean' })
+      .option('auto-approve', { describe: 'Tun on auto approve for apply & destroy', default: false, type: 'boolean' })
+      .option('delete',       { describe: 'Resources deletion modifier', default: false, type: 'boolean' })
+      .option('layers',       { describe: 'Select which layers will be included', default: null, type: 'string' })
+      .option('bastion',      { describe: 'Bastion address in form user@ip', default: null, type: 'string' })
+      .option('conn-opts',    { describe: 'Connection options for sshuttle: <layer>[:<file-suffix]', default: 'network', type: 'string' })
+      .option('deamon',       { describe: 'Deamon mode for SSH connection', default: false, type: 'boolean' })
+      .option('ci',           { describe: 'CI mode', default: false, type: 'boolean' })
+    ;
+  },
+  env: async (tln, env) => {
+    if (env.TLN_CLOUDS_TENANT) {
+      env.TF_VAR_tenant_id = env.TLN_CLOUDS_TENANT;
+    }
+    // test dns name for whoami
+    const arr = ['api'];
+    if (env.TF_VAR_use_primary_domain === 'false') {
+      arr.push(env.TF_VAR_env_id);
+    }
+    arr.push(env.TF_VAR_domain_name);
+    env.TLN_CLOUDS_WHOAMI_HOST = arr.join('.');
+  },
+  dotenvs: async (tln) => { if (fs.existsSync('.env')) return ['.env']; else return [] },
+  inherits: async (tln) => [],
+  depends: async (tln) => [],
+  steps: async (tln) => [
+    { id: 'construct', builder: async (tln, script) => {
+        script.set(getScript(script.env, false));
+      }
+    },
+    { id: 'deconstruct', builder: async (tln, script) => {
+        script.set(getScript(script.env, true));
+      }
+    },
+    { id: 'get-bastion', builder: async (tln, script) => {
+      const {layer, prefix} = getConnectionOptions(script.env.TLN_CLOUDS_CONN_OPTS, script.env.TF_VAR_group_id, script.env.TF_VAR_env_id);
+      script.set([
+        `cat './${layer}/${prefix}-bastion.addr'`
+      ]);
+    }},
+    { id: 'sshuttle', builder: async (tln, script) => {
+        const daemon = script.env.TLN_CLOUDS_DEAMON ? ' --daemon' : '';
+        const ci =  script.env.TLN_CLOUDS_CI ? ' -q -o CheckHostIP=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' : '';
+        const {layer, prefix} = getConnectionOptions(script.env.TLN_CLOUDS_CONN_OPTS, script.env.TF_VAR_group_id, script.env.TF_VAR_env_id);
+        //
+        script.set([`
+sshuttle --dns${daemon} -vr ${script.env.TLN_CLOUDS_BASTION} 0/0 --ssh-cmd 'ssh${ci} -i ./${layer}/${prefix}-bastion-ssh-key.pem'
+       `]);
+      }
+    },
+    { id: 'connect', builder: async (tln, script) => {
+        script.set([
+          `tln sshuttle -- --conn-opts ${script.env.TLN_CLOUDS_CONN_OPTS} --bastion $(tln get-bastion -- --conn-opts ${script.env.TLN_CLOUDS_CONN_OPTS})`
+        ]);
+      }
+    },
+    { id: 'whoami', builder: async (tln, script) => {
+        const op = script.env.TLN_CLOUDS_DELETE ? 'delete' : 'apply';
+        script.set([
+          `envsubst < ${path.join(__dirname, 'whoami.yaml')} | kubectl ${op} -f -`
+        ]);
+      }
+    },
+    { id: 'disconnect', builder: async (tln, script) => {
+        script.set([
+          `pkill -f sshuttle`
+        ]);
+      }
+    },
+    { id: 'up', builder: async (tln, script) => {
+        const opts = getTerraformOpts(script.env);
+        script.set([`
+#tln construct -- --backend cloud${opts} --layers provider --state project,provider
+#tln construct -- --backend cloud${opts} --layers group --state project,provider,group
+#tln construct -- --backend cloud${opts} --layers network,managed --state project,provider,group,env,layer
+${script.env.TLN_CLOUDS_CI ? '#tln sshuttle -- --bastion \$(tln get-bastion) --deamon' : ''}
+#tln construct -- --backend cloud${opts} --layers app --state project,provider,group,env,layer
+        `].concat(
+          (script.env.TF_VAR_tenant_id) ? [
+            `tln construct -- --backend cloud${opts} --layers tenant --state project,provider,group,env,tenant --tenant ${script.env.TF_VAR_tenant_id}`
+          ]:[]
+        ));
+      }
+    },
+    { id: 'down', builder: async (tln, script) => {
+        const opts = getTerraformOpts(script.env);
+        script.set([
+          `${script.env.TLN_CLOUDS_CI ? '#tln sshuttle -- --bastion \$(tln get-bastion) --deamon' : ''}`,
+        ].concat((
+          (script.env.TF_VAR_tenant_id) ? [
+            `#tln deconstruct -- --backend cloud${opts} --layers tenant --state project,provider,group,env,tenant --tenant ${script.env.TF_VAR_tenant_id}`,
+          ]:[]
+        )).concat([`
+#tln deconstruct -- --backend cloud${opts} --layers app --state project,provider,group,env,layer
+tln deconstruct -- --backend cloud${opts} --layers network,managed --state project,provider,group,env,layer
+#tln deconstruct -- --backend cloud${opts} --layers group --state project,provider,group
+#tln deconstruct -- --backend cloud${opts} --layers provider --state project,provider
+        `]
+        ));
+      }
+    },
+  ],
+  components: async (tln) => []
+}

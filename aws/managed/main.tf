@@ -1,24 +1,42 @@
 module "shared" {
-  source = "../../shared"
-  org_id = var.org_id
+  source     = "../../shared"
+  org_id     = var.org_id
   project_id = var.project_id
-  group_id = var.group_id
-  env_id = var.env_id
+  group_id   = var.group_id
+  env_id     = var.env_id
+}
+locals {
+  kubeconfig = templatefile("kubeconfig.tpl", {
+    kubeconfig_name                   = module.eks.cluster_arn
+    endpoint                          = module.eks.cluster_endpoint
+    cluster_auth_base64               = module.eks.cluster_certificate_authority_data
+    aws_authenticator_command         = "aws"
+    aws_authenticator_command_args    = ["eks", "get-token", "--cluster-name", module.shared.k8s_name]
+    aws_authenticator_additional_args = []
+    aws_authenticator_env_variables   = {}
+  })
+  eks_managed_node_groups = var.aws_k8s_node_groups
 }
 
 module "eks" {
-  source  = "terraform-aws-modules/eks/aws"
-  version = "19.21.0"
+  depends_on = [module.shared]
+  source     = "terraform-aws-modules/eks/aws"
+  version    = "20.35.0"
 
   cluster_name    = module.shared.k8s_name
   cluster_version = var.aws_k8s_version
   vpc_id          = data.aws_vpc.main.id
   subnet_ids      = data.aws_subnets.private.ids
 
-  //kms_key_administrators = []
+  enable_cluster_creator_admin_permissions = true
+
+  # cluster_compute_config = {
+  #   enabled    = true
+  #   node_pools = ["system"]
+  # }
 
   eks_managed_node_group_defaults = {
-    ami_type = "AL2_x86_64"
+    ami_type = "BOTTLEROCKET_x86_64"
 
     attach_cluster_primary_security_group = true
 
@@ -43,32 +61,7 @@ module "eks" {
     }
   }
 
-  eks_managed_node_groups = {
-    ng1 = {
-      name = "ng1"
-
-      instance_types = [var.aws_k8s_nodes_size]
-
-      min_size     = var.aws_k8s_nodes_min
-      desired_size = var.aws_k8s_nodes_desired
-      max_size     = var.aws_k8s_nodes_max
-      //?????? var.aws_k8s_nodes_disk
-
-      vpc_security_group_ids = [
-        aws_security_group.ng1.id
-      ]
-    }
-  }
+  eks_managed_node_groups = local.eks_managed_node_groups
 }
 
-locals {
-  kubeconfig = templatefile("kubeconfig.tpl", {
-    kubeconfig_name                   = module.eks.cluster_arn
-    endpoint                          = module.eks.cluster_endpoint
-    cluster_auth_base64               = module.eks.cluster_certificate_authority_data
-    aws_authenticator_command         = "aws"
-    aws_authenticator_command_args    = ["--region", "eu-central-1", "eks", "get-token", "--cluster-name", module.shared.k8s_name]
-    aws_authenticator_additional_args = []
-    aws_authenticator_env_variables   = {}
-  })
-}
+

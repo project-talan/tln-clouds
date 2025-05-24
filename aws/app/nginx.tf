@@ -1,11 +1,12 @@
 resource "helm_release" "nginx" {
-  name        = "nginx"
-  namespace   = "nginx-ingress"
+  name             = "nginx"
+  namespace        = "nginx-ingress"
   create_namespace = true
+  lint             = true
+  repository       = "https://kubernetes.github.io/ingress-nginx"
+  chart            = "ingress-nginx"
+  version          = "4.12.2"
 
-  repository = "https://kubernetes.github.io/ingress-nginx"
-  chart      = "ingress-nginx"
-  version    = "4.10.0"
 
   set {
     name  = "controller.replicaCount"
@@ -28,11 +29,20 @@ resource "helm_release" "nginx" {
     type  = "string"
   }
   set {
-    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-ssl-cert"
-    value = data.aws_acm_certificate.primary.arn
+    name  = "controller.config.annotations-risk-level"
+    value = "Critical"
     type  = "string"
   }
-
+  set {
+    name  = "controller.config.use-forwarded-headers"
+    value = "true"
+    type  = "string"
+  }
+  set {
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-ssl-cert"
+    value = var.use_primary_domain ? data.aws_acm_certificate.primary.arn : module.secondary_certificate.acm_certificate_arn
+    type  = "string"
+  }
   values = [
     "${file("${path.module}/charts/nginx/values.yaml")}"
   ]
