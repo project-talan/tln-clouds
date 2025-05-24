@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tlnclouds-app
+  labels:
+    app: tlnclouds
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tlnclouds
+  template:
+    metadata:
+      labels:
+        app: tlnclouds
+    spec:
+      containers:
+        - name: tlnclouds-container
+          image: containous/whoami
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tlnclouds-service
+spec:
+  selector:
+    app: tlnclouds
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tlnclouds-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: dev01.tlnclouds.xyz
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: tlnclouds-service
+                port:
+                  number: 80
+  ingressClassName: nginx
