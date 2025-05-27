@@ -46,11 +46,14 @@ variable "backup_schedule" {
   type        = string
 }
 
-variable "backup_lifecycle" {
+variable "backup_lifecycle_delete_after" {
+  type        = number
+  default     = 97 # lifecycle_delete_after cannot be less than 90 days apart from lifecycle_coldstorage_after
+}
+variable "backup_lifecycle_coldstorage_after" {
   type        = number
   default     = 7
 }
-
 variable "rds_engine_version" {
 
   type        = string

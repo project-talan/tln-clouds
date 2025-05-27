@@ -32,7 +32,8 @@ variable "postgresql" {
     multi_az = bool
     manage_master_user_password = bool
     backup_schedule = string
-    backup_lifecycle = string
+    backup_lifecycle_delete_after = string
+    backup_lifecycle_coldstorage_after = string
     rds_snapshot_identifier = string
   })
   default = {
@@ -46,7 +47,8 @@ variable "postgresql" {
     multi_az = false
     manage_master_user_password = true
     backup_schedule = "cron(0 */2 * * ? *)"
-    backup_lifecycle = "1"
+    backup_lifecycle_delete_after = "97"
+    backup_lifecycle_coldstorage_after = "7"
     rds_snapshot_identifier = null
   }
 }
