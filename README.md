@@ -118,7 +118,11 @@
     ```
     tln construct aws -- --backend cloud --init --apply --layer app --state project,provider,group,env,layer
     ```
-  3. **You can check endpoints availability in browser https://dev01.myprojecy.io & https://api.dev01.myproject.io**
+  3. **Deploy Tenant layer - Tenant specific DNS, database etc.**
+    ```
+    tln construct aws -- --backend cloud --init --apply --layer tenant --state project,provider,group,env,tenant
+    ```
+  4. **You can check endpoints availability in browser https://dev01.myprojecy.io & https://api.dev01.myproject.io**
 
 * Now you can deconstruct all layers and free all Cloud resources
 

@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
         - name: tlnclouds-container
-          image: containous/whoami
+#          image: containous/whoami
+          image: nginx:latest
           ports:
             - containerPort: 80
 ---
@@ -41,7 +42,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: dev01.tlnclouds.xyz
+    - host: dev01.sphrx.xyz
       http:
         paths:
           - path: /
