@@ -1,32 +1,64 @@
-// Uncomment the following code if you want to enable Cognito User Pool
-// NOTE: user_pool_name & domain should carefully reviewed and updated
 
-/*
 locals {
-  api_base_url = "http://localhost"
+  api_base_url = "${var.api_base_url}/iam"
 }
 
 module "cognito_user_pool" {
   source  = "lgallard/cognito-user-pool/aws"
-  version = "0.30.0"
+  version = "0.35.0"
 
-  user_pool_name                                        = module.shared.prefix_group
+  user_pool_name                                        = module.shared.prefix_env
   alias_attributes                                      = ["email", "preferred_username"]
   auto_verified_attributes                              = ["email"]
-  verification_message_template_default_email_option    = "CONFIRM_WITH_LINK"
-  admin_create_user_config_allow_admin_create_user_only = false
-  domain                                                = module.shared.prefix_group
 
-//  mfa_configuration           = "ON"
-//  software_token_mfa_configuration = {
-//    enabled = true
-//  }
+  deletion_protection = "ACTIVE"
+
+  mfa_configuration = "OPTIONAL"
+  software_token_mfa_configuration = {
+    enabled = true
+  }
+
+  admin_create_user_config = {
+    allow_admin_create_user_only = false
+  }
 
   email_configuration = {
     email_sending_account  = "DEVELOPER"
     reply_to_email_address = "no-reply@no-reply.${var.domain_name}"
-    source_arn             = module.ses.ses_domain_identity_arn
+    source_arn             = data.aws_ses_domain_identity.primary.arn
     from_email_address     = "no-reply@no-reply.${var.domain_name}"
+  }
+  /*
+  lambda_config = {
+    create_auth_challenge           = 
+    custom_message                  = 
+    define_auth_challenge           = 
+    post_authentication             = 
+    post_confirmation               = 
+    pre_authentication              = module.cognito_pre_auth_function.lambda_function_arn
+    pre_sign_up                     = 
+    pre_token_generation            = 
+    user_migration                  = 
+    verify_auth_challenge_response  = 
+  }
+  */
+
+  password_policy = {
+    minimum_length                   = 10
+    require_lowercase                = false
+    require_numbers                  = true
+    require_symbols                  = true
+    require_uppercase                = true
+    temporary_password_validity_days = 120
+    password_history_size            = 5    
+  }
+
+  user_pool_add_ons = {
+    advanced_security_mode = "ENFORCED"
+  }
+
+  verification_message_template = {
+    default_email_option = "CONFIRM_WITH_CODE"
   }
 
   string_schemas = [
@@ -43,48 +75,15 @@ module "cognito_user_pool" {
     },
   ]
 
-//  lambda_config = {
-//    pre_authentication = module.cognito_pre_auth_function.lambda_function_arn
-//  }
-
-  clients = [
-    {
-      name = "Web"
-      access_token_validity = 24
-      id_token_validity = 24
-      refresh_token_validity  = 30
-      token_validity_units = {
-        access_token  = "hours"
-        id_token      = "hours"
-        refresh_token = "days"
-      }
-      callback_urls = [
-        "${local.api_base_url}/iam/login/oauth2/code/cognito",
-        "${local.api_base_url}/iam/swagger-ui/oauth2-redirect.html"
-      ]
-      logout_urls                  = [
-        "${local.api_base_url}/iam/auth/complete",
-      ]
-      default_redirect_uri         = "${local.api_base_url}/iam/login/oauth2/code/cognito"
-      generate_secret              = true
-      allowed_oauth_scopes         = ["openid", "email"]
-      supported_identity_providers = ["COGNITO"]
-      allowed_oauth_flows          = ["code"]
-      explicit_auth_flows          = ["ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_PASSWORD_AUTH"]
-      allowed_oauth_flows_user_pool_client = true
-    }
-  ]
+  domain = module.shared.prefix_env
 
 //  depends_on = [ module.cognito_pre_auth_function ]
-
   tags = module.shared.tags
 }
-*/
 
 /*
 module "cognito_pre_auth_function" {
   source = "terraform-aws-modules/lambda/aws"
-  version = "7.13.0"
 
   function_name = "${module.shared.prefix_group}-cognito-pre-auth"
   description   = "Cognito Pre-auth function"
