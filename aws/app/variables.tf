@@ -20,6 +20,10 @@ variable "dns_records" {
 variable "use_primary_domain" {
   type = bool
 }
+variable "api_base_url" {
+  type = string
+}
+
 variable "postgresql" {
   type = object({
     size = string
