@@ -33,7 +33,7 @@ variable "postgresql" {
     manage_master_user_password = bool
     backup_schedule = string
     backup_lifecycle_delete_after = number
-    backup_lifecycle_coldstorage_after = string
+    backup_lifecycle_coldstorage_after = number
     rds_snapshot_identifier = string
   })
   default = {
