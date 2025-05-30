@@ -28,12 +28,20 @@ module "eks" {
   vpc_id          = data.aws_vpc.main.id
   subnet_ids      = data.aws_subnets.private.ids
 
-  enable_cluster_creator_admin_permissions = true
+  enable_cluster_creator_admin_permissions = true # Enable admin permissions for the cluster creator
+  enable_irsa                              = true # Enable IAM Roles for Service Accounts (IRSA)
 
   # cluster_compute_config = {
   #   enabled    = true
   #   node_pools = ["system"]
   # }
+
+  cluster_addons = {
+    "vpc-cni"        = {}
+    "coredns"        = {}
+    "kube-proxy"     = {}
+    "metrics-server" = {}
+  }
 
   eks_managed_node_group_defaults = {
     ami_type = "BOTTLEROCKET_x86_64"
