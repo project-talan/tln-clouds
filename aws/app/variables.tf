@@ -51,8 +51,8 @@ variable "postgresql" {
     multi_az = false
     manage_master_user_password = true
     backup_schedule = "cron(0 */2 * * ? *)"
-    backup_lifecycle_delete_after = "97"
-    backup_lifecycle_coldstorage_after = "7"
+    backup_lifecycle_delete_after = 97
+    backup_lifecycle_coldstorage_after = 7
     rds_snapshot_identifier = null
   }
 }
