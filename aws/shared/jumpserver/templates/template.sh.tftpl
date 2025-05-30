@@ -58,7 +58,7 @@ for key in "$${!package_versions[@]}"; do
     echo "Installing package: $key"
   fi  
   sudo apt-get update
-  full_package_version=$(apt-cache madison "$key" | grep "$${package_versions[$key]}" | awk '{print $3}')
+  full_package_version=$(apt-cache madison "$key" | grep "$${package_versions[$key]}" | awk '{print $3}' | head -n 1)
   sudo apt-get -y install "$key"="$full_package_version" 
 done
 

@@ -49,9 +49,7 @@
     TF_VAR_dns_records=dev01.myproject.io,api
     TF_VAR_use_primary_domain=false
 
-    TF_VAR_rds_pg_db_size=db.t3.micro
-    TF_VAR_rds_pg_db_allocated_storage=20
-    TF_VAR_rds_pg_max_allocated_storage=30
+    TF_VAR_postgresql={ size = "db.t4g.micro", allocated_storage = "20", max_allocated_storage = "30", master_user_password = true, engine_version = "17.4", family = "postgres17", major_engine_version = "17", multi_az = false, manage_master_user_password = true, backup_schedule = "cron(0 */2 * * ? *)", backup_lifecycle = "1", rds_snapshot_identifier = null }
     TF_VAR_databases={ "iam" = { owner = "admin", password = "admin" }, "billing" = { owner = "admin", password = "admin" } }
     ```
 
@@ -83,6 +81,10 @@
   3. **Network layer - configure VPC, Bastion**
     ```
     tln construct aws -- --backend cloud --init --apply --layer network --state project,provider,group,env,layer
+    ```
+  4. **Managed layer - K8s**
+    ```
+    tln construct aws -- --backend cloud --init --apply --layer managed --state project,provider,group,env,layer
     ```
 * At this point you have secure access via bastion to your cloud resources
   
@@ -121,7 +123,11 @@
     ```
     tln construct aws -- --backend cloud --init --apply --layer app --state project,provider,group,env,layer
     ```
-  3. **You can check endpoints availability in browser https://dev01.myprojecy.io & https://api.dev01.myproject.io**
+  3. **Deploy Tenant layer - Tenant specific DNS, database etc.**
+    ```
+    tln construct aws -- --backend cloud --init --apply --layer tenant --state project,provider,group,env,tenant
+    ```
+  4. **You can check endpoints availability in browser https://dev01.myprojecy.io & https://api.dev01.myproject.io**
 
 * Now you can deconstruct all layers and free all Cloud resources
 

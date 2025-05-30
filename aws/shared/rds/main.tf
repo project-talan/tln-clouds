@@ -51,7 +51,7 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_outbound" {
 
 module "rds_pg" {
   source  = "terraform-aws-modules/rds/aws"
-  version = "6.5.4"
+  version = "6.12.0"
 
   identifier = "${var.prefix_env}-pg-database"
 

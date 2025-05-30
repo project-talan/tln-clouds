@@ -20,43 +20,11 @@ variable "dns_records" {
 variable "use_primary_domain" {
   type = bool
 }
-
-variable "rds_pg_db_size" {
+variable "api_base_url" {
   type = string
-  default = "db.t4g.micro"
-}
-variable "rds_pg_db_allocated_storage" {
-  type = string
-  default = "20"
-}
-variable "rds_pg_max_allocated_storage" {
-  type = string
-  default = "30"
-}
-variable "rds_manage_master_user_password" {
-  type    = bool
-  default = true
-}
-variable "rds_engine_version" {
-  type    = string
-  default = "17.4"
-}
-variable "rds_family" {
-  type    = string
-  default = "postgres17"
-}
-variable "rds_major_engine_version" {
-  type    = string
-  default = "17"
-}
-variable "rds_multi_az" {
-  type    = bool
-  default = false
 }
 
-
-
-variable "rds_pg" {
+variable "postgresql" {
   type = object({
     size = string
     allocated_storage = string
@@ -66,6 +34,11 @@ variable "rds_pg" {
     family = string
     major_engine_version = string
     multi_az = bool
+    manage_master_user_password = bool
+    backup_schedule = string
+    backup_lifecycle_delete_after = number
+    backup_lifecycle_coldstorage_after = number
+    rds_snapshot_identifier = string
   })
   default = {
     size = "db.t4g.micro"
@@ -76,6 +49,11 @@ variable "rds_pg" {
     family = "postgres17"
     major_engine_version = "17"
     multi_az = false
+    manage_master_user_password = true
+    backup_schedule = "cron(0 */2 * * ? *)"
+    backup_lifecycle_delete_after = 97
+    backup_lifecycle_coldstorage_after = 7
+    rds_snapshot_identifier = null
   }
 }
 
@@ -85,16 +63,4 @@ variable "databases" {
     owner = string,
     password = string
   }))
-}
-variable "backup_schedule" {
-  type = string
-  default = "cron(0 */2 * * ? *)"
-}
-variable "backup_lifecycle" {
-  type = string
-  default = "1"
-}
-variable "rds_snapshot_identifier" {
-  type    = string
-  default = null
 }
