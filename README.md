@@ -155,13 +155,10 @@ tln [construct | deconstruct] [do | aws] [-u] -- [option, [option], ...]
 ```
 | Option  | Description | Example |
 | ------------- | ------------- | ------------- |
-| backend | Defines which backend provider should bu used (cloud, pg) | $ tln construct do -- --backend cloud <br /> $ tln construct aws -- --backend pg |
-| state | Defines how store name will be built: project, provider, env, layer, tenant, <custom_string> | $ tln construct do -- --backend cloud -- state project,provider,env,layer <br /> will use tln-clouds-do-dev-managed Terraform Cloud workspace  |
-| init | Run Terraform init | $ tln construct aws -- --backend cloud --init |
-| upgrade | Run Terraform upgrade mode for init | $ tln construct aws -- --backend cloud --init --upgrade |
-| plan | Run Terraform plan | $ tln construct aws -- --backend cloud --plan |
-| apply | Run Terraform apply | $ tln construct aws -- --backend cloud --apply |
-| auto-approve | Tun on auto approve for apply & destroy | $ tln construct aws -- --backend cloud --apply --auto-approve |
-| layers | Select which layers will be included | $ tln construct aws -- --backend cloud --apply --layers tenant <br /> will construct infrastructure for tenant layer only |
-| bastion | Bastion address in form user@ip | $ tln bridge aws -- --bastion devops@192.168.10.1 <br /> will establish ssh connection with local box and bastion |
-| bridge-port | Local port for bridge to bastion | $ tln connect aws -- --bridge-port 8888 <br /> will run shell with ssh connection into k8s cluster |
+| backend | Defines which backend provider should bu used (cloud, pg) | $ tln construct aws -- --backend cloud <br /> $ tln construct aws -- --backend pg |
+| state | Defines how store name will be built: project, provider, env, layer, tenant, <custom_string> | $ tln construct aws -- --backend cloud --layer network --state project,provider,env,layer <br /> will use myproject-aws-dev-dev01-network Terraform Cloud workspace |
+| init | Run Terraform init | $ tln construct aws -- --backend cloud --init --layer network --state project,provider,env,layer |
+| upgrade | Run Terraform upgrade mode for init | $ tln construct aws -- --backend cloud --init --upgrade --layer network --state project,provider,env,layer |
+| plan | Run Terraform plan | $ tln construct aws -- --backend cloud --plan --layer network --state project,provider,env,layer |
+| apply | Run Terraform apply | $ tln construct aws -- --backend cloud --apply --layer network --state project,provider,env,layer |
+| auto-approve | Tun on auto approve for apply & destroy | $ tln construct aws -- --backend cloud --apply --auto-approve --layer network --state project,provider,env,layer |
