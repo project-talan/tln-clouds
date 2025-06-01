@@ -24,6 +24,7 @@ module "root_certificate" {
 }
 
 # Uncomment to provision a jumpbox for secure ETL across multiple environments
+/*
 module "jumpbox" {
   source = "../shared/jumpserver"
   use_default_vpc  = true 
@@ -34,3 +35,8 @@ module "jumpbox" {
   custom_packages  = var.jumpbox_custom_packages
   tags             = module.shared.tags
 }
+output "jumpbox_remote_address" {
+  description = "SSH connection string for the bastion host (user@ip)."
+  value       = module.jumpbox.jumpserver_remote_address
+}
+*/

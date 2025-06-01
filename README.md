@@ -86,9 +86,10 @@
     ```
     tln construct aws -- --backend cloud --init --apply --layer managed --state project,provider,group,env,layer
     ```
-* At this point you have ready to use cloud infrastructure with K8s and secure access via bastion
+* At this point you have secure access via bastion to your cloud resources
   
-  1. **Initiate sshuttle connection to the cluster via bastion (first terminal)**
+
+  1. **Initiate sshuttle connection to your cloud network via bastion (first terminal)**
     ```
     tln connect aws -- --layer network --prefix bastion
     ```
@@ -96,15 +97,19 @@
     ```
     tln shell aws
     ```
-  3. **Check cluster (second terminal)**
+  3. **Install Managed layer (K8s) (third terminal)**
+    ```
+    tln construct aws -- --backend cloud --init --apply --layer managed --state project,provider,group,env,layer
+    ```
+  4. **Check cluster (second terminal)**
     ```
     kubectl get pods -A
     ```
-  4. **Close shell (second terminal)**
+  5. **Close shell (second terminal)**
     ```
     ^D
     ```
-  5. **Close sshuttle connection (first terminal)**
+  6. **Close sshuttle connection (first terminal)**
     ```
     ^C
     ```
