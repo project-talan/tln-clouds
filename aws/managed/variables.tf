@@ -56,7 +56,7 @@ variable "cluster_autoscaler" {
     extra_args             = map(any)
   })
   default = {
-    enabled                = true
+    enabled                = false
     helm_chart_version     = "9.46.2"
     priority_class_name    = "system-cluster-critical"
     helm_release_name      = "cluster-autoscaler"

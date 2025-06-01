@@ -7,7 +7,7 @@ module "backup" {
 
   rules = [
     {
-      name     = "db-backup"
+      name     = "${var.prefix_env}-db-backup"
       schedule = var.backup_schedule # e.g., "cron(0 5 * * ? *)"
       lifecycle = {
         # Note: lifecycle_delete_after cannot be less than 90 days apart from lifecycle_coldstorage_after
@@ -19,10 +19,12 @@ module "backup" {
       }
     },
   ]
-  selection_tags = [
+
+  selections = [
     {
-      Environment = var.prefix_env
-    }
+      name      = "postgres"
+      resources = [module.rds_pg.db_instance_arn]
+    },
   ]
 
   depends_on = [module.rds_pg]
