@@ -34,7 +34,6 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
 > * You will need **domain name** to configure all layers (myproject.io as an example below)
 * Use **.env.template** file as an examples and fill it with actual values
   * root .env
-    ```
     TF_TOKEN_app_terraform_io=<your_terraform_cloud_token>
 
     TF_VAR_org_id=<your_terraform_cloud_org>
@@ -42,19 +41,28 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
     TF_VAR_group_id=dev
     TF_VAR_env_id=dev01
     TF_VAR_tenant_id=demo
-    
+
+    TF_VAR_account_id=<your_aws_account_id>
+
     TF_VAR_registry=
     TF_VAR_repositories=["dev.myproject.services.iam","dev.myproject.web.landing"]
     TF_VAR_image_tag_mutability=
 
-    TF_VAR_domain_name=myproject.io
-    TF_VAR_dns_records=dev01.myproject.io,api
+    TF_VAR_domain_name=myproject.dev
+    TF_VAR_dns_records=dev01.myproject.dev,api
     TF_VAR_use_primary_domain=false
+    TF_VAR_api_base_url=https://api.dev01.myproject.dev
 
-    TF_VAR_postgresql={ size = "db.t4g.micro", allocated_storage = "20", max_allocated_storage = "30", master_user_password = true, engine_version = "17.4", family = "postgres17", major_engine_version = "17", multi_az = false, manage_master_user_password = true, backup_schedule = "cron(0 */2 * * ? *)", backup_lifecycle = "1", rds_snapshot_identifier = null }
-    TF_VAR_databases={ "iam" = { owner = "admin", password = "admin" }, "billing" = { owner = "admin", password = "admin" } }
+
+    TF_VAR_postgresql={ size = "db.t4g.micro", allocated_storage = "20", max_allocated_storage = "30", master_user_password = true, engine_version = "17.4", family = "postgres17", major_engine_version = "17", multi_az = false, manage_master_user_password = true, backup_schedule = "cron(0 */2 * * ? *)", backup_lifecycle_delete_after = 97, backup_lifecycle_coldstorage_after = 7, rds_snapshot_identifier = null }
+    TF_VAR_databases={ "iam" = { owner = "admin", password = "admin" }, "notify" = { owner = "admin", password = "admin" } }
+
+    TF_VAR_db_instance_identifier=
+    TF_VAR_tenant_databases={}
+    TF_VAR_user_pool_id=
+    TF_VAR_use_cognito_provider=false
+    TF_VAR_identity_providers={"demo-oidc":{"provider_type":"OIDC","provider_details":{"attributes_request_method":"POST","attributes_url":"https://idp.dev01.myproject.dev/realms/demo/protocol/openid-connect/userinfo","authorize_scopes":"openid profile email","authorize_url":"https://idp.dev01.myproject.dev/realms/demo/protocol/openid-connect/auth","client_id":"demo","client_secret":"...","jwks_uri":"https://idp.dev01.myproject.dev/realms/demo/protocol/openid-connect/certs","oidc_issuer":"https://idp.dev01.tlnclouds.xyz/realms/demo","token_url":"https://idp.dev01.myproject.dev/realms/demo/protocol/openid-connect/token"}}}
     ```
-
 ### AWS
   * Create **aws/.env** file using **aws/.env.template** as an example
     ```
@@ -63,14 +71,14 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
     AWS_REGION=eu-central-1
     AWS_DEFAULT_REGION=eu-central-1
 
-    TF_VAR_aws_k8s_version=1.32
-    TF_VAR_aws_k8s_node_groups={ng1 = { name = "ng1", "instance_types" = ["t3.small"], "min_size": 1, "desired_size": 2, "max_size": 3, "disk_size": 20 }}
+    TF_VAR_aws_k8s_version=1.33
+    TF_VAR_aws_k8s_node_groups={ng1 = { name = "ng1", "instance_types" = ["t3.small"], "min_size": 1, "desired_size": 2, "max_size": 3, "disk_size": 20 }}    
     ```
 * **Install dependencies**
   ```
   tln install aws --depends
   ```
-* Construct four AWS Infrastructure Instance layers
+* Construct six AWS Infrastructure Instance layers
 
   * **Provider layer - configure ERC**
     ```
@@ -131,11 +139,11 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
     ```
     tln deconstruct aws -- --backend cloud --init --apply --layer network --state project,provider,group,env,layer
     ```
-  *. **Delete Groupr layer**
+  * **Delete Groupr layer**
     ```
     tln deconstruct aws -- --backend cloud --init --apply --layer group --state project,provider,group
     ```
-5. **Delete Provider layer**
+* **Delete Provider layer**
   ```
   tln deconstruct aws -- --backend cloud --init --apply --layer provider --state project,provider
   ```
