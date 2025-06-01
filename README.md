@@ -1,13 +1,15 @@
 # Description
+Talan Clouds is a modular infrastructure platform designed to simplify and standardize cloud-native deployments across environments. It integrates best practices for security, scalability, and automation using Terraform, Kubernetes, and Cloud provider services. Built for flexibility and team collaboration, Talan Clouds accelerates application delivery in modern DevOps ecosystems.
+
 ## Cloud Agnostic IaC based SaaS Skeleton.
 ![Infrastructure Instance](ii.png)
 
 ## Features
-* Supports AWS (Azure, GCP are in progress)
-* Provides Multi-tenancy feature via layers architecture (provider, group, network, managed, app, tenant)
-* Implements easy-to-construct multiple environment approach, controls by single environment variable - **TF_VAR_env_id**
-* IaC via Terraform and Helm
-* Utilises multiple backend providers - Local, Cloud, PG (S3 - in progress)
+* ✅ AWS Support out of the box (Azure and GCP support in progress)
+* 🏢 Multi-tenancy architecture using layered design: provider, group, network, managed, app, and tenant
+* 🌍 Environment isolation made easy — define multiple environments with a single variable: **TF_VAR_env_id**
+* 🛠️ Infrastructure as Code using Terraform and Helm
+* 🔗 Multiple backend providers supported: Local, Cloud, PostgreSQL (S3 support coming soon)
 
 ## Infrastructure Instance layers
 ![Infrastructure Instance Layers](layers.png)
@@ -70,94 +72,73 @@
   ```
 * Construct four AWS Infrastructure Instance layers
 
-  1. **Provider layer - configure ERC**
+  * **Provider layer - configure ERC**
     ```
     tln construct aws -- --backend cloud --init --apply --layer provider --state project,provider
     ```
-  2. **Groupr layer - configure Route53, certificate & validation. You will need to modify DNS nameservers at your registrar side**
+    * **Groupr layer - configure Route53, certificate & validation. You will need to modify DNS nameservers at your registrar side**
+      ```
+      tln construct aws -- --backend cloud --init --apply --layer group --state project,provider,group
+      ```
+      * **Network layer - configure VPC, Bastion**
+        ```
+        tln construct aws -- --backend cloud --init --apply --layer network --state   project,provider,group,env,layer
+        ```
+      * **Managed layer - K8s**
+        ```
+        tln construct aws -- --backend cloud --init --apply --layer managed --state project,provider,group,env,layer
+        ```
+      * **At this point you have secure access via bastion to your cloud resources, initiate sshuttle connection to your cloud network via bastion (first terminal)**
+        ```
+        tln connect aws -- --layer network --prefix bastion
+        ```
+      * **Open another shell with necessary environment variables (second terminal)**
+        ```
+        tln shell aws
+        kubectl get pods -A
+        ```
+      * **Check cluster (second terminal)**
+        ```
+        kubectl get pods -A
+        ```
+      * **Deploy App layer - configure Nginx ingress, Postgres DBs, DNS records (second terminal)**
+        ```
+        tln construct aws -- --backend cloud --init --apply --layer app --state project,provider,group,env,layer
+        ```
+        * **Deploy Tenant (demo) layer - Tenant specific DNS, database etc.**
+          ```
+          tln construct aws -- --backend cloud --init --apply --layer tenant --state project,provider,group,env,tenant
+          ```
+        * **You can check endpoints availability in browser https://dev01.myprojecy.io & https://api.dev01.myproject.io**
+        * Now you can deconstruct all layers and free all Cloud resources
+        * **Undeploy Tenant (demo)**
+          ```
+          tln deconstruct aws -- --backend cloud --init --apply --layer tenant --state project,provider,group,env,tenant
+          ```
+      * **Undeploy App layer**
+        ```
+        tln deconstruct aws -- --backend cloud --init --apply --layer app --state   project,provider,group,env,layer
+        ```
+      * **Close sshuttle connection (first terminal)**
+        ```
+        ^C
+        ```
+    * **Delete Managed layer**
+      ```
+      tln deconstruct aws -- --backend cloud --init --apply --layer managed --state project,provider,group,env,layer
+      ```
+    * **Delete Network layer**
     ```
-    tln construct aws -- --backend cloud --init --apply --layer group --state project,provider,group
-    ```
-  3. **Network layer - configure VPC, Bastion**
-    ```
-    tln construct aws -- --backend cloud --init --apply --layer network --state project,provider,group,env,layer
-    ```
-  4. **Managed layer - K8s**
-    ```
-    tln construct aws -- --backend cloud --init --apply --layer managed --state project,provider,group,env,layer
-    ```
-* At this point you have secure access via bastion to your cloud resources
-  
-
-  1. **Initiate sshuttle connection to your cloud network via bastion (first terminal)**
-    ```
-    tln connect aws -- --layer network --prefix bastion
-    ```
-  2. **Open shell with necessary environment variables (second terminal)**
-    ```
-    tln shell aws
-    ```
-  3. **Install Managed layer (K8s) (third terminal)**
-    ```
-    tln construct aws -- --backend cloud --init --apply --layer managed --state project,provider,group,env,layer
-    ```
-  4. **Check cluster (second terminal)**
-    ```
-    kubectl get pods -A
-    ```
-  5. **Close shell (second terminal)**
-    ```
-    ^D
-    ```
-  6. **Close sshuttle connection (first terminal)**
-    ```
-    ^C
-    ```
-* You can go extra mile and deploy your SaaS-specific resources
-
-  1. **Start secure sshuttle connection (first terminal)**
-    ```
-    tln connect aws -- --layer network --prefix bastion
-    ```
-  2. **Deploy App layer - configure Nginx ingress, Postgres DBs, DNS records (second terminal)**
-    ```
-    tln construct aws -- --backend cloud --init --apply --layer app --state project,provider,group,env,layer
-    ```
-  3. **Deploy Tenant layer - Tenant specific DNS, database etc.**
-    ```
-    tln construct aws -- --backend cloud --init --apply --layer tenant --state project,provider,group,env,tenant
-    ```
-  4. **You can check endpoints availability in browser https://dev01.myprojecy.io & https://api.dev01.myproject.io**
-
-* Now you can deconstruct all layers and free all Cloud resources
-
-  1. **Undeploy App layer (second terminal)**
-    ```
-    tln deconstruct aws -- --backend cloud --init --apply --layer app --state project,provider,group,env,layer
-    ```
-  2. **Close sshuttle connection (first terminal)**
-    ```
-    ^C
-    ```
-  3. **Delete Network and Managed layers**
-    ```
-    tln deconstruct aws -- --backend cloud --init --apply --layer managed --state project,provider,group,env,layer
     tln deconstruct aws -- --backend cloud --init --apply --layer network --state project,provider,group,env,layer
     ```
-  4. **Delete Groupr layer**
+  *. **Delete Groupr layer**
     ```
     tln deconstruct aws -- --backend cloud --init --apply --layer group --state project,provider,group
     ```
-  5. **Delete Provider layer**
-    ```
-    tln deconstruct aws -- --backend cloud --init --apply --layer provider --state project,provider
-    ```
-
-### Azure
-  In development
-
-### GCP
-  In development
+5. **Delete Provider layer**
+  ```
+  tln deconstruct aws -- --backend cloud --init --apply --layer provider --state project,provider
+  ```
 
 ## Command line options
 General format
