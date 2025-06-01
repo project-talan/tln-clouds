@@ -32,37 +32,36 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
 > * Commands below assume that Terraform Cloud is used as a storage for states<br/>
 > * By skipping **--backend cloud** local backend will be used<br/>
 > * You will need **domain name** to configure all layers (myproject.io as an example below)
-* Use **.env.template** file as an examples and fill it with actual values
-  * root .env
-    TF_TOKEN_app_terraform_io=<your_terraform_cloud_token>
+* Use **.env.template** file as an examples and fill it with actual values insode **root .env**
+  ```
+  TF_TOKEN_app_terraform_io=<your_terraform_cloud_token>
 
-    TF_VAR_org_id=<your_terraform_cloud_org>
-    TF_VAR_project_id=myproject
-    TF_VAR_group_id=dev
-    TF_VAR_env_id=dev01
-    TF_VAR_tenant_id=demo
+  TF_VAR_org_id=<your_terraform_cloud_org>
+  TF_VAR_project_id=myproject
+  TF_VAR_group_id=dev
+  TF_VAR_env_id=dev01
+  TF_VAR_tenant_id=demo
 
-    TF_VAR_account_id=<your_aws_account_id>
+  TF_VAR_account_id=<your_aws_account_id>
 
-    TF_VAR_registry=
-    TF_VAR_repositories=["dev.myproject.services.iam","dev.myproject.web.landing"]
-    TF_VAR_image_tag_mutability=
+  TF_VAR_registry=
+  TF_VAR_repositories=["dev.myproject.services.iam","dev.myproject.web.landing"]
+  TF_VAR_image_tag_mutability=
 
-    TF_VAR_domain_name=myproject.dev
-    TF_VAR_dns_records=dev01.myproject.dev,api
-    TF_VAR_use_primary_domain=false
-    TF_VAR_api_base_url=https://api.dev01.myproject.dev
+  TF_VAR_domain_name=myproject.dev
+  TF_VAR_dns_records=dev01.myproject.dev,api
+  TF_VAR_use_primary_domain=false
+  TF_VAR_api_base_url=https://api.dev01.myproject.dev
 
+  TF_VAR_postgresql={ size = "db.t4g.micro", allocated_storage = "20", max_allocated_storage = "30", master_user_password = true, engine_version = "17.4", family = "postgres17", major_engine_version = "17", multi_az = false, manage_master_user_password = true, backup_schedule = "cron(0 */2 * * ? *)", backup_lifecycle_delete_after = 97, backup_lifecycle_coldstorage_after = 7, rds_snapshot_identifier = null }
+  TF_VAR_databases={ "iam" = { owner = "admin", password = "admin" }, "notify" = { owner = "admin", password = "admin" } }
 
-    TF_VAR_postgresql={ size = "db.t4g.micro", allocated_storage = "20", max_allocated_storage = "30", master_user_password = true, engine_version = "17.4", family = "postgres17", major_engine_version = "17", multi_az = false, manage_master_user_password = true, backup_schedule = "cron(0 */2 * * ? *)", backup_lifecycle_delete_after = 97, backup_lifecycle_coldstorage_after = 7, rds_snapshot_identifier = null }
-    TF_VAR_databases={ "iam" = { owner = "admin", password = "admin" }, "notify" = { owner = "admin", password = "admin" } }
-
-    TF_VAR_db_instance_identifier=
-    TF_VAR_tenant_databases={}
-    TF_VAR_user_pool_id=
-    TF_VAR_use_cognito_provider=false
-    TF_VAR_identity_providers={"demo-oidc":{"provider_type":"OIDC","provider_details":{"attributes_request_method":"POST","attributes_url":"https://idp.dev01.myproject.dev/realms/demo/protocol/openid-connect/userinfo","authorize_scopes":"openid profile email","authorize_url":"https://idp.dev01.myproject.dev/realms/demo/protocol/openid-connect/auth","client_id":"demo","client_secret":"...","jwks_uri":"https://idp.dev01.myproject.dev/realms/demo/protocol/openid-connect/certs","oidc_issuer":"https://idp.dev01.tlnclouds.xyz/realms/demo","token_url":"https://idp.dev01.myproject.dev/realms/demo/protocol/openid-connect/token"}}}
-    ```
+  TF_VAR_db_instance_identifier=
+  TF_VAR_tenant_databases={}
+  TF_VAR_user_pool_id=
+  TF_VAR_use_cognito_provider=false
+  TF_VAR_identity_providers={"demo-oidc":{"provider_type":"OIDC","provider_details":{"attributes_request_method":"POST","attributes_url":"https://idp.dev01.myproject.dev/realms/demo/protocol/openid-connect/userinfo","authorize_scopes":"openid profile email","authorize_url":"https://idp.dev01.myproject.dev/realms/demo/protocol/openid-connect/auth","client_id":"demo","client_secret":"...","jwks_uri":"https://idp.dev01.myproject.dev/realms/demo/protocol/openid-connect/certs","oidc_issuer":"https://idp.dev01.myproject.dev/realms/demo","token_url":"https://idp.dev01.myproject.dev/realms/demo/protocol/openid-connect/token"}}}
+  ```
 ### AWS
   * Create **aws/.env** file using **aws/.env.template** as an example
     ```
@@ -149,16 +148,16 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
   ```
 
 ## Command line options
-General format
-```
-tln [construct | deconstruct] [do | aws] [-u] -- [option, [option], ...]
-```
-| Option  | Description | Example |
-| ------------- | ------------- | ------------- |
-| backend | Defines which backend provider should bu used (cloud, pg) | $ tln construct aws -- --backend cloud <br /> $ tln construct aws -- --backend pg |
-| state | Defines how store name will be built: project, provider, env, layer, tenant, <custom_string> | $ tln construct aws -- --backend cloud --layer network --state project,provider,env,layer <br /> will use myproject-aws-dev-dev01-network Terraform Cloud workspace |
-| init | Run Terraform init | $ tln construct aws -- --backend cloud --init --layer network --state project,provider,env,layer |
-| upgrade | Run Terraform upgrade mode for init | $ tln construct aws -- --backend cloud --init --upgrade --layer network --state project,provider,env,layer |
-| plan | Run Terraform plan | $ tln construct aws -- --backend cloud --plan --layer network --state project,provider,env,layer |
-| apply | Run Terraform apply | $ tln construct aws -- --backend cloud --apply --layer network --state project,provider,env,layer |
-| auto-approve | Tun on auto approve for apply & destroy | $ tln construct aws -- --backend cloud --apply --auto-approve --layer network --state project,provider,env,layer |
+  General format
+  ```
+  tln [construct | deconstruct] [aws | azure | gcp] [-u] -- [option, [option], ...]
+  ```
+  | Option  | Description | Example |
+  | ------------- | ------------- | ------------- |
+  | backend | Defines which backend provider should bu used (cloud, pg) | $ tln construct aws -- --backend cloud <br /> $ tln construct aws -- --backend pg |
+  | state | Defines how store name will be built: project, provider, env, layer, tenant, <custom_string> | $ tln construct aws -- --backend cloud --layer network --state project,provider,env,layer <br /> will use myproject-aws-dev-dev01-network Terraform Cloud workspace |
+  | init | Run Terraform init | $ tln construct aws -- --backend cloud --init --layer network --state project,provider,env,layer |
+  | upgrade | Run Terraform upgrade mode for init | $ tln construct aws -- --backend cloud --init --upgrade --layer network --state project,provider,env,layer |
+  | plan | Run Terraform plan | $ tln construct aws -- --backend cloud --plan --layer network --state project,provider,env,layer |
+  | apply | Run Terraform apply | $ tln construct aws -- --backend cloud --apply --layer network --state project,provider,env,layer |
+  | auto-approve | Tun on auto approve for apply & destroy | $ tln construct aws -- --backend cloud --apply --auto-approve --layer network --state project,provider,env,layer |
