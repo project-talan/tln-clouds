@@ -1,3 +1,6 @@
+locals {
+  db_identifier = "${var.prefix_env}-pg-database"
+}
 resource "aws_security_group" "postgres_sg" {
   name        = "${var.prefix_env}-sg"
   description = "Allow connection to Postgres server"
@@ -53,7 +56,7 @@ module "rds_pg" {
   source  = "terraform-aws-modules/rds/aws"
   version = "6.12.0"
 
-  identifier = "${var.prefix_env}-pg-database"
+  identifier = "${local.db_identifier}"
 
   engine               = "postgres"
   engine_version       = var.rds_engine_version
@@ -90,7 +93,7 @@ module "rds_pg" {
   monitoring_interval                   = var.rds_monitoring_interval
   monitoring_role_name                  = "${var.prefix_env}-pg-mntr"
   monitoring_role_use_name_prefix       = true # To avoid conflict if name exists
-  monitoring_role_description           = "Monitoring role for RDS instance ${var.prefix_env}-pg-database"
+  monitoring_role_description           = "Monitoring role for RDS instance ${local.db_identifier}"
 
 
   ca_cert_identifier          = var.rds_ca_cert_identifier
