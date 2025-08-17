@@ -15,8 +15,9 @@ jobs:
         with:
           node-version: "20.9.0"
 
-      - name: Install tln cli
-        run: npm i -g tln-cli@1.102.0 && tln --version
+      - name: Install helpers
+      - run: npm i -g tln-cli@1.112.0 tln-pm@0.21.0 && tln --version && tpm --version
+
 
       - uses: actions/checkout@v4
         with:
