@@ -19,7 +19,7 @@
 *.ipr
 
 # Dont remove it, cause .env file placed in root folder
-**/.env
+**/.env*
 .kube.config*
 **/backend.tf
 

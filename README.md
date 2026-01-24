@@ -18,11 +18,11 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
 * Install [Nodejs 20.x or higher](https://nodejs.org)
 * Install helpers [tln](https://www.npmjs.com/package/tln-cli) & [tpm](https://github.com/project-talan/tln-pm)
     ```
-    npm i -g tln-cli@1.110.0 tln-pm@0.19.0 && brew install wget
+    npm i -g tln-cli@1.116.0 tln-pm@0.23.0 && brew install wget
     ```
 * Goto **projects** folder from **tln** installation above and clone repository
   ```
-  git clone --depth 1 --branch v25.5.0 git@github.com:project-talan/tln-clouds.git && cd tln-clouds
+  git clone --depth 1 --branch v26.2.0 git@github.com:project-talan/tln-clouds.git && cd tln-clouds
   ```
 * For local development just clone repository as usual
   ```
