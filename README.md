@@ -14,7 +14,7 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
 ## Infrastructure Instance layers
 ![Infrastructure Instance Layers](layers.png)
 
-## Quick start
+# Quick start
 * Install [Nodejs 20.x or higher](https://nodejs.org)
 * Install helpers [tln](https://www.npmjs.com/package/tln-cli) & [tpm](https://github.com/project-talan/tln-pm)
     ```
@@ -62,7 +62,7 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
   TF_VAR_use_cognito_provider=false
   TF_VAR_identity_providers={"demo-oidc":{"provider_type":"OIDC","provider_details":{"attributes_request_method":"POST","attributes_url":"https://idp.dev01.myproject.dev/realms/demo/protocol/openid-connect/userinfo","authorize_scopes":"openid profile email","authorize_url":"https://idp.dev01.myproject.dev/realms/demo/protocol/openid-connect/auth","client_id":"demo","client_secret":"...","jwks_uri":"https://idp.dev01.myproject.dev/realms/demo/protocol/openid-connect/certs","oidc_issuer":"https://idp.dev01.myproject.dev/realms/demo","token_url":"https://idp.dev01.myproject.dev/realms/demo/protocol/openid-connect/token"}}}
   ```
-### AWS
+## AWS
   * Create **aws/.env** file using **aws/.env.template** as an example
     ```
     AWS_ACCESS_KEY_ID=<your_aws_id>
@@ -161,3 +161,35 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
   | plan | Run Terraform plan | $ tln construct aws -- --backend cloud --plan --layer network --state project,provider,env,layer |
   | apply | Run Terraform apply | $ tln construct aws -- --backend cloud --apply --layer network --state project,provider,env,layer |
   | auto-approve | Tun on auto approve for apply & destroy | $ tln construct aws -- --backend cloud --apply --auto-approve --layer network --state project,provider,env,layer |
+
+# Development
+## Project management
+[tpm detailed documentation](https://github.com/project-talan/tln-pm)
+
+- Switch to the main branch (trunk-based branching model is issued)
+  ```
+  git checkout main
+  git pull origin main
+  ```
+- List tasks assigned to you, **use tpmw on Windows instead**
+  ```
+  tpm ls --backlog
+  ```
+  ```
+  tpmw ls --backlog
+  ```
+- Pickup task, create branch, change task status and create draft Pull Request (aws component was used as an example)
+  ```
+  git checkout -b aws/010
+  tpm update aws 010 --dev
+  git add -A
+  git commit -m "feat(aws/010): bump terraform version"
+  git push origin aws/010
+  ```
+- Once task is ready: change status and move PR from draft to ready for review state
+  ```
+  tpm update aws 010 --done
+  git add -A
+  git commit -m "feat(aws/010): close"
+  git push origin aws/landing/010
+  ```
