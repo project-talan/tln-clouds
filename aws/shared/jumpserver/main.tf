@@ -89,7 +89,7 @@ resource "aws_instance" "jumpserver" {
 
   vpc_security_group_ids = [local.security_group_id]
   key_name               = aws_key_pair.ssh.key_name
-  user_data = base64encode(templatefile("${path.module}/templates/template.sh.tftpl", {
+  user_data_base64 = base64encode(templatefile("${path.module}/templates/template.sh.tftpl", {
     custom_packages = join(",", local.flattened_custom_packages_map)
   }))
 
