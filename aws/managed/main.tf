@@ -21,10 +21,10 @@ locals {
 module "eks" {
   depends_on = [module.shared]
   source     = "terraform-aws-modules/eks/aws"
-  version    = "20.35.0"
+  version    = "21.15.1"
 
-  cluster_name    = module.shared.k8s_name
-  cluster_version = var.aws_k8s_version
+  name    = module.shared.k8s_name
+  kubernetes_version = var.aws_k8s_version
   vpc_id          = data.aws_vpc.main.id
   subnet_ids      = data.aws_subnets.private.ids
 
@@ -36,13 +36,13 @@ module "eks" {
   #   node_pools = ["system"]
   # }
 
-  cluster_addons = {
+  addons = {
     "vpc-cni"        = {}
     "coredns"        = {}
     "kube-proxy"     = {}
     "metrics-server" = {}
   }
-
+/*
   eks_managed_node_group_defaults = {
     ami_type = "BOTTLEROCKET_x86_64"
 
@@ -51,13 +51,13 @@ module "eks" {
     # Disabling and using externally provided security groups
     create_security_group = false
   }
-
+*/
   // https://stackoverflow.com/questions/74687452/eks-error-syncing-load-balancer-failed-to-ensure-load-balancer-multiple-tagge
   node_security_group_tags = {
     "kubernetes.io/cluster/${module.shared.k8s_name}" = null
   }
 
-  cluster_security_group_additional_rules = {
+  security_group_additional_rules = {
     ingress_bastion_host = {
       description                = "Bastion traffic"
       protocol                   = "tcp"

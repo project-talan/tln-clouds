@@ -57,7 +57,7 @@ variable "cluster_autoscaler" {
   })
   default = {
     enabled                = false
-    helm_chart_version     = "9.46.2"
+    helm_chart_version     = "9.54.1"
     priority_class_name    = "system-cluster-critical"
     helm_release_name      = "cluster-autoscaler"
     helm_release_namespace = "kube-system"

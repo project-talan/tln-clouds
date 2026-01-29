@@ -22,7 +22,7 @@ resource "aws_iam_role_policy" "cluster-autoscaling-policy" {
   role   = aws_iam_role.eks_autoscaling[0].id
   policy = data.aws_iam_policy_document.eks_cluster-autoscaler_policy[0].json
 }
-
+/*
 resource "helm_release" "cluster_autoscaler" {
   depends_on = [module.eks]
   count      = local.deploy_cluster_autoscaler == true ? 1 : 0
@@ -34,7 +34,7 @@ resource "helm_release" "cluster_autoscaler" {
   timeout    = 300
   values = [
     yamlencode({
-      awsRegion     = data.aws_region.current.name
+      awsRegion     = data.aws_region.current.id
       cloudProvider = "aws"
       autoDiscovery = {
         clusterName = local.cluster_name
@@ -61,10 +61,11 @@ resource "helm_release" "cluster_autoscaler" {
     content {
       name  = "extraArgs.${set.key}"
       value = set.value
+      type  = "string"
     }
   }
 }
-
+*/
 
 data "aws_iam_policy_document" "eks_cluster-autoscaler_trust_policy" {
   count = local.deploy_cluster_autoscaler == true ? 1 : 0
