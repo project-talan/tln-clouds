@@ -42,16 +42,16 @@ module "eks" {
     "kube-proxy"     = {}
     "metrics-server" = {}
   }
-/*
-  eks_managed_node_group_defaults = {
-    ami_type = "BOTTLEROCKET_x86_64"
 
-    attach_cluster_primary_security_group = true
+  # eks_managed_node_group_defaults = {
+  #   ami_type = "BOTTLEROCKET_x86_64"
 
-    # Disabling and using externally provided security groups
-    create_security_group = false
-  }
-*/
+  #   attach_cluster_primary_security_group = true
+
+  #   # Disabling and using externally provided security groups
+  #   create_security_group = false
+  # }
+
   // https://stackoverflow.com/questions/74687452/eks-error-syncing-load-balancer-failed-to-ensure-load-balancer-multiple-tagge
   node_security_group_tags = {
     "kubernetes.io/cluster/${module.shared.k8s_name}" = null
