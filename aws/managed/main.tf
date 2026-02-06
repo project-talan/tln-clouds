@@ -25,23 +25,28 @@ module "eks" {
 
   name    = module.shared.k8s_name
   kubernetes_version = var.aws_k8s_version
-  vpc_id          = data.aws_vpc.main.id
-  subnet_ids      = data.aws_subnets.private.ids
+
+  addons = {
+    vpc-cni                = {before_compute = true}
+    coredns                = {}
+    kube-proxy             = {}
+    metrics-server = {}
+  }
+
 
   enable_cluster_creator_admin_permissions = true # Enable admin permissions for the cluster creator
   enable_irsa                              = true # Enable IAM Roles for Service Accounts (IRSA)
+  
+  vpc_id          = data.aws_vpc.main.id
+  subnet_ids      = data.aws_subnets.private.ids
+
+
 
   # cluster_compute_config = {
   #   enabled    = true
   #   node_pools = ["system"]
   # }
 
-  addons = {
-    "vpc-cni"        = {}
-    "coredns"        = {}
-    "kube-proxy"     = {}
-    "metrics-server" = {}
-  }
 
   # eks_managed_node_group_defaults = {
   #   ami_type = "BOTTLEROCKET_x86_64"
@@ -71,5 +76,4 @@ module "eks" {
 
   eks_managed_node_groups = local.eks_managed_node_groups
 }
-
 
