@@ -89,7 +89,7 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
       ```
       * **Network layer - configure VPC, Bastion**
         ```
-        tln construct aws -- --backend cloud --init --apply --layer network --state   project,provider,group,env,layer
+        tln construct aws -- --backend cloud --init --apply --layer network --state project,provider,group,env,layer
         ```
       * **Managed layer - K8s**
         ```
@@ -124,7 +124,7 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
           ```
       * **Undeploy App layer**
         ```
-        tln deconstruct aws -- --backend cloud --init --apply --layer app --state   project,provider,group,env,layer
+        tln deconstruct aws -- --backend cloud --init --apply --layer app --state project,provider,group,env,layer
         ```
       * **Close sshuttle connection (first terminal)**
         ```
@@ -193,3 +193,6 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
   git commit -m "feat(aws/010): close"
   git push origin aws/landing/010
   ```
+
+# Troubleshooting
+* sshuttle + Linux

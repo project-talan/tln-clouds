@@ -2,7 +2,7 @@
 **/.terraform/*
 **/.terraform*
 **/.terra*
-./vscode
+**/.vscode
 # .tfstate files
 *.tfstate
 *.tfstate.*
@@ -31,3 +31,4 @@
 
 # ignore .code-workspace
 *.code-workspace
+**/*.bkp
