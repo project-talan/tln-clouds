@@ -1,6 +1,6 @@
 module "backup" {
   source  = "lgallard/backup/aws"
-  version = "0.23.8"
+  version = "1.7.0"
 
   vault_name = "${var.prefix_env}-pg-vault"
   plan_name  = "${var.prefix_env}-pg-backup-plan"
@@ -20,12 +20,8 @@ module "backup" {
     },
   ]
 
-  selections = [
-    {
-      name      = "postgres"
-      resources = [module.rds_pg.db_instance_arn]
-    },
-  ]
+  selection_name      = "postgres"
+  selection_resources = [module.rds_pg.db_instance_arn]
 
   depends_on = [module.rds_pg]
   tags       = var.tags
