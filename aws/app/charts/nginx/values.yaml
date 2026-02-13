@@ -1,4 +1,14 @@
 controller:
+  replicaCount: 2
+
+  nodeSelector:
+    kubernetes.io/os: linux
+
+  admissionWebhooks:
+    patch:
+      nodeSelector:
+        kubernetes.io/os: linux
+
   service:
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-type: nlb
@@ -6,11 +16,15 @@ controller:
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
       service.beta.kubernetes.io/aws-load-balancer-alpn-policy: HTTP2Preferred
       service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
+
     targetPorts:
       https: http
+
   config:
-    use-proxy-protocol: "false"
+    annotations-risk-level: "Critical"
     use-forwarded-headers: "true"
+
+    use-proxy-protocol: "false"
     use-http2: "true"
     enable-access-log-for-default-backend: "true"
     enable-real-ip: "true"
@@ -24,3 +38,7 @@ controller:
     ssl-protocols: TLSv1.2 TLSv1.3
     limit-connections: "20"
     limit-rpm: "50"
+
+defaultBackend:
+  nodeSelector:
+    kubernetes.io/os: linux
