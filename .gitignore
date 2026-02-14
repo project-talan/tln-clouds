@@ -1,6 +1,8 @@
 #  Local .terraform directories
 **/.terraform/*
-
+**/.terraform*
+**/.terra*
+**/.vscode
 # .tfstate files
 *.tfstate
 *.tfstate.*
@@ -29,3 +31,4 @@
 
 # ignore .code-workspace
 *.code-workspace
+**/*.bkp
