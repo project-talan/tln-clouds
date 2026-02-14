@@ -102,8 +102,15 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
       * **Open another shell with necessary environment variables (second terminal)**
         ```
         tln shell aws
-        kubectl get pods -A
         ```
+        * **Check pods in cluster**
+          ```
+          kubectl get pods -A
+          ```
+        * **Install test traefik/whoami component into cluster**
+          ```
+          tln whoaml -- [--plan]
+          ```
       * **Deploy App layer - configure Nginx ingress, Postgres DBs, DNS records (second terminal)**
         ```
         tln construct aws -- --backend cloud --init --apply --layer app --state project,provider,group,env,layer
