@@ -1,7 +1,13 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: whoami
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: whoami
+  namespace: whoami
 spec:
   selector:
     component: whoami
@@ -15,6 +21,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: whoami
+  namespace: whoami
 spec:
   replicas: 1
   selector:
@@ -40,12 +47,15 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-whoami
+  namespace: whoami
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: "/$2"
+    nginx.ingress.kubernetes.io/path-regex: "true"
 spec:
+  ingressClassName: nginx
   rules:
-    - host: "api.dev01.cloudplayground.xyz"
+    - host: "${TLN_CLOUDS_WHOAMI_HOST}"
       http:
         paths:
           - path: "/whoami(/|$)(.*)"
@@ -55,4 +65,3 @@ spec:
                 name: whoami
                 port:
                   number: 80
-  ingressClassName: nginx
