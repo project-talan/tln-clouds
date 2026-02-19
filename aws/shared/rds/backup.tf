@@ -1,6 +1,6 @@
 module "backup" {
   source  = "lgallard/backup/aws"
-  version = "0.23.8"
+  version = "0.22.0"
 
   vault_name = "${var.prefix_env}-pg-vault"
   plan_name  = "${var.prefix_env}-pg-backup-plan"
