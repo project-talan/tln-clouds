@@ -109,7 +109,7 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
           ```
         * **Install test traefik/whoami component into cluster**
           ```
-          tln whoaml -- [--plan]
+          tln whoami aws -- [--plan]
           ```
       * **Deploy App layer - configure Nginx ingress, Postgres DBs, DNS records (second terminal)**
         ```
