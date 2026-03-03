@@ -15,19 +15,27 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
 ![Infrastructure Instance Layers](layers.png)
 
 ## Quick start
-* Install [Nodejs 20.x or higher](https://nodejs.org)
+* Install [Nodejs 22.x or higher](https://nodejs.org)
 * Install helpers [tln](https://www.npmjs.com/package/tln-cli) & [tpm](https://github.com/project-talan/tln-pm)
     ```
-    npm i -g tln-cli@1.110.0 tln-pm@0.19.0 && brew install wget
+    npm i -g tln-cli@1.116.0 tln-pm@0.23.0
     ```
-* Goto **projects** folder from **tln** installation above and clone repository
+* Install wget if needed
+    ```
+    brew install wget
+    ```
+* Go to your home folder and prepare local dev environment (change **projects** folder name if it's already used)
   ```
-  git clone --depth 1 --branch v25.5.0 git@github.com:project-talan/tln-clouds.git && cd tln-clouds
+  cd ~ && mkdir projects && cd projects && tln config --terse && mkdir project-talan && cd project-talan && tln config --terse
   ```
-* For local development just clone repository as usual
-  ```
-  git clone git@github.com:project-talan/tln-clouds.git && cd tln-clouds
-  ```
+  * Clone stable version
+    ```
+    git clone --depth 1 --branch v25.5.0 git@github.com:project-talan/tln-clouds.git && cd tln-clouds
+    ```
+  * or main branch
+    ```
+    git clone git@github.com:project-talan/tln-clouds.git && cd tln-clouds
+    ```
 > Important<br>
 > * Commands below assume that Terraform Cloud is used as a storage for states<br/>
 > * By skipping **--backend cloud** local backend will be used<br/>
