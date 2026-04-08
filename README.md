@@ -15,7 +15,7 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
 ![Infrastructure Instance Layers](layers.png)
 
 ## Quick start
-* Install [Nodejs 22.x or higher](https://nodejs.org)
+* Install [Nodejs 24.x LTS](https://nodejs.org)
 * Install helpers [tln](https://www.npmjs.com/package/tln-cli) & [tpm](https://github.com/project-talan/tln-pm)
     ```
     npm i -g tln-cli@1.116.0 tln-pm@0.23.0
@@ -87,7 +87,7 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
   ```
 * Construct six AWS Infrastructure Instance layers
 
-  * **Provider layer - configure ERC**
+  * **Provider layer - configure ECR**
     ```
     tln construct aws -- --backend cloud --init --apply --layer provider --state project,provider
     ```
