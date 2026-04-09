@@ -51,7 +51,7 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_outbound" {
 
 module "rds_pg" {
   source  = "terraform-aws-modules/rds/aws"
-  version = "6.12.0"
+  version = "7.2.0"
 
   identifier = "${var.prefix_env}-pg-database"
 
@@ -102,19 +102,32 @@ module "rds_pg" {
       value = "0" # Review this setting for production environments
     }
   ]
+  allow_major_version_upgrade = var.rds_allow_major_version_upgrade //true
+  apply_immediately = var.rds_apply_immediately  //true
 
   tags = var.tags
 }
+
 data "aws_secretsmanager_secret" "rds_pg" {
+  count = module.rds_pg.db_instance_master_user_secret_arn != null ? 1 : 0
   arn = module.rds_pg.db_instance_master_user_secret_arn
 }
+
 data "aws_secretsmanager_secret_version" "rds_pg" {
-  secret_id = data.aws_secretsmanager_secret.rds_pg.id
+  count     = length(data.aws_secretsmanager_secret.rds_pg)
+  secret_id = data.aws_secretsmanager_secret.rds_pg[0].id
 }
 
 data "aws_secretsmanager_secret_version" "rds_pg_master_password" {
   depends_on = [module.rds_pg]
-  secret_id  = data.aws_secretsmanager_secret.rds_pg.id
+  count     = length(data.aws_secretsmanager_secret.rds_pg)
+  secret_id  = data.aws_secretsmanager_secret.rds_pg[0].id
+}
+
+locals {
+  # one() поверне перший елемент або null, якщо список порожній
+  secret_data = one(data.aws_secretsmanager_secret_version.rds_pg_master_password)
+  db_password = local.secret_data != null ? jsondecode(local.secret_data.secret_string)["password"] : null
 }
 
 provider "postgresql" {
@@ -122,7 +135,7 @@ provider "postgresql" {
   host            = module.rds_pg.db_instance_address
   port            = module.rds_pg.db_instance_port
   username        = module.rds_pg.db_instance_username # Master username "root"
-  password        = jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password.secret_string)["password"]
+  password        = local.db_password //jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password[0].secret_string)["password"]
   database        = "postgres" # Connect to the default 'postgres' database for admin tasks
   connect_timeout = 30
   superuser       = false

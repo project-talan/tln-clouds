@@ -13,6 +13,8 @@ locals {
   rds_backup_schedule                    = var.postgresql.backup_schedule
   rds_backup_lifecycle_delete_after      = var.postgresql.backup_lifecycle_delete_after
   rds_backup_lifecycle_coldstorage_after = var.postgresql.backup_lifecycle_coldstorage_after
+  rds_allow_major_version_upgrade        = var.postgresql.allow_major_version_upgrade
+  rds_apply_immediately                  = var.postgresql.apply_immediately
 }
 
 module "rds" {
@@ -37,4 +39,6 @@ module "rds" {
   backup_schedule                    = local.rds_backup_schedule
   backup_lifecycle_delete_after      = local.rds_backup_lifecycle_delete_after
   backup_lifecycle_coldstorage_after = local.rds_backup_lifecycle_coldstorage_after
+  rds_allow_major_version_upgrade    = local.rds_allow_major_version_upgrade
+  rds_apply_immediately              = local.rds_apply_immediately
 }

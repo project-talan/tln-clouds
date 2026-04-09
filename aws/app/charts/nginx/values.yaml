@@ -5,7 +5,7 @@ controller:
       service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
       service.beta.kubernetes.io/aws-load-balancer-alpn-policy: HTTP2Preferred
-      service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
+      service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: ELBSecurityPolicy-TLS13-1-2-Res-2021-06  # TLS 1.3 + 1.2 only (https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html)
     targetPorts:
       https: http
   config:
