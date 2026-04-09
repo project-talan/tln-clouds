@@ -29,7 +29,8 @@ module "eks" {
   subnet_ids               = data.aws_subnets.private.ids
   control_plane_subnet_ids = data.aws_subnets.public.ids
 
-  endpoint_public_access  = true
+  endpoint_public_access  = false
+  endpoint_private_access = true
 
   enable_cluster_creator_admin_permissions = true # Enable admin permissions for the cluster creator
 
