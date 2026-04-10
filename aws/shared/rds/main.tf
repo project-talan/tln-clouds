@@ -120,7 +120,7 @@ data "aws_secretsmanager_secret_version" "rds_pg" {
 
 data "aws_secretsmanager_secret_version" "rds_pg_master_password" {
   depends_on = [module.rds_pg]
-  count     = length(data.aws_secretsmanager_secret.rds_pg)
+  count      = length(data.aws_secretsmanager_secret.rds_pg)
   secret_id  = data.aws_secretsmanager_secret.rds_pg[0].id
 }
 
