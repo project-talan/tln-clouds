@@ -10,6 +10,7 @@ module "shared" {
 module "aws_shared" {
   source = "../shared/database"
   databases = var.tenant_databases
+  db_instance_identifier = var.db_instance_identifier
 }
 
 resource "aws_route53_record" "record" {

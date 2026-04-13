@@ -1,0 +1,31 @@
+replicaCount: 2
+
+pgbouncer:
+  # 1. ПАРАМЕТРИ ПІДКЛЮЧЕННЯ ДО RDS
+  # Формат: [alias]: "host=[endpoint] port=5432 dbname=[db_name]"
+  #databases: |
+  #  main_db: "host=://amazonaws.com port=5432 dbname=postgres"
+
+  # 2. РЕЖИМ ПУЛІНГУ (Transaction - ідеально для мікросервісів)
+  poolMode: transaction
+
+  # 3. ЛІМІТИ З'ЄДНАНЬ
+  maxClientConn: 1000    # Скільки з'єднань від додатків приймає PgBouncer
+  defaultPoolSize: 20    # Скільки активних з'єднань PgBouncer тримає до RDS
+
+  # 4. АУТЕНТИФІКАЦІЯ
+  authType: md5          # Має збігатися з методом в RDS (md5 або scram-sha-256)
+
+# 5. ПРИВ'ЯЗКА СЕКРЕТУ (де ми сховали пароль)
+#auth:
+#  existingSecret: pgbouncer-creds
+
+# 6. СЕРВІС ДЛЯ ДОДАТКІВ (EKS Service)
+service:
+  type: ClusterIP
+  ports:
+    postgresql: 6432
+
+# 7. МОНІТОРИНГ (Опціонально: для Prometheus/Grafana)
+metrics:
+  enabled: true
