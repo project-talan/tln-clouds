@@ -4,7 +4,7 @@ resource "helm_release" "pgbouncer" {
   name             = "pgbouncer"
   repository       = "https://icoretech.github.io/helm"
   chart            = "pgbouncer"
-  namespace        = "database"
+  namespace        = "database-${keys(var.databases)[0]}"
   create_namespace = true
   cleanup_on_fail  = true
 
