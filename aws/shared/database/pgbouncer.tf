@@ -9,25 +9,37 @@ locals {
   rds_port = data.aws_db_instance.existing_rds.port
 }
 
+#data "aws_secretsmanager_secret" "rds_pg" {
+#  count = data.aws_db_instance.existing_rds != null ? 1 : 0
+#  arn = data.aws_db_instance.existing_rds.master_user_secret[0].secret_arn
+#}
+#
+#data "aws_secretsmanager_secret_version" "rds_pg" {
+#  count     = length(data.aws_secretsmanager_secret.rds_pg)
+#  secret_id = data.aws_secretsmanager_secret.rds_pg[0].id
+#}
+#
+#data "aws_secretsmanager_secret_version" "rds_pg_master_password" {
+#  count      = length(data.aws_secretsmanager_secret.rds_pg)
+#  secret_id  = data.aws_secretsmanager_secret.rds_pg[0].id
+#}
+#
+#locals {
+#  # one() поверне перший елемент або null, якщо список порожній
+#  secret_data = one(data.aws_secretsmanager_secret_version.rds_pg_master_password)
+#  db_password = local.secret_data != null ? jsondecode(local.secret_data.secret_string)["password"] : null
+#}
+
+data "aws_db_instance" "this" {
+  db_instance_identifier = var.db_instance_identifier
+}
+
 data "aws_secretsmanager_secret" "rds_pg" {
-  count = data.aws_db_instance.existing_rds != null ? 1 : 0
-  arn = data.aws_db_instance.existing_rds.master_user_secret[0].secret_arn
+  arn = data.aws_db_instance.this.master_user_secret[0].secret_arn
 }
 
 data "aws_secretsmanager_secret_version" "rds_pg" {
-  count     = length(data.aws_secretsmanager_secret.rds_pg)
-  secret_id = data.aws_secretsmanager_secret.rds_pg[0].id
-}
-
-data "aws_secretsmanager_secret_version" "rds_pg_master_password" {
-  count      = length(data.aws_secretsmanager_secret.rds_pg)
-  secret_id  = data.aws_secretsmanager_secret.rds_pg[0].id
-}
-
-locals {
-  # one() поверне перший елемент або null, якщо список порожній
-  secret_data = one(data.aws_secretsmanager_secret_version.rds_pg_master_password)
-  db_password = local.secret_data != null ? jsondecode(local.secret_data.secret_string)["password"] : null
+  secret_id = data.aws_secretsmanager_secret.rds_pg.id
 }
 
 resource "helm_release" "pgbouncer" {
@@ -71,7 +83,7 @@ resource "helm_release" "pgbouncer" {
         auth_type = "md5"
         server_tls_sslmode = "require"
         # Беремо пароль із вашого Secrets Manager або змінної
-        adminPassword = local.db_password
+        adminPassword = jsondecode(data.aws_secretsmanager_secret_version.rds_pg.secret_string)["password"]
         databases = {
           for name, data in var.databases : name => {
             host     = local.rds_host
