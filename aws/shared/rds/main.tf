@@ -126,7 +126,7 @@ module "rds_pg" {
 #}
 #
 #locals {
-#  # one() поверне перший елемент або null, якщо список порожній
+#  # one() Returns the first element or null if the list is empty.
 #  secret_data = one(data.aws_secretsmanager_secret_version.rds_pg_master_password)
 #  db_password = local.secret_data != null ? jsondecode(local.secret_data.secret_string)["password"] : null
 #}
