@@ -97,7 +97,7 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
       ```
       * **Network layer - configure VPC, Bastion**
         ```
-        tln construct aws -- --backend cloud --init --apply --layer network --state   project,provider,group,env,layer
+        tln construct aws -- --backend cloud --init --apply --layer network --state project,provider,group,env,layer
         ```
       * **Managed layer - K8s**
         ```
