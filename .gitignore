@@ -26,6 +26,7 @@
 # ignore .pem
 *.pem
 *.addr
+*.conf
 
 # ignore .code-workspace
 *.code-workspace
