@@ -41,7 +41,7 @@ resource "helm_release" "pgbouncer" {
         auth_type = "md5"
         server_tls_sslmode = "require"
         # Беремо пароль із вашого Secrets Manager або змінної
-        adminPassword = local.db_password
+        adminPassword = jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password.secret_string)["password"]
         databases = {
           for name, data in var.databases : name => {
             host     = module.rds_pg.db_instance_address

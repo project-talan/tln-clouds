@@ -108,26 +108,39 @@ module "rds_pg" {
   tags = var.tags
 }
 
+#data "aws_secretsmanager_secret" "rds_pg" {
+#  depends_on = [module.rds_pg]
+#  //count = module.rds_pg.db_instance_master_user_secret_arn != null ? 1 : 0
+#  arn = module.rds_pg.db_instance_master_user_secret_arn
+#}
+
+#data "aws_secretsmanager_secret_version" "rds_pg" {
+#  count     = length(data.aws_secretsmanager_secret.rds_pg)
+#  secret_id = data.aws_secretsmanager_secret.rds_pg.id
+#}
+#
+#data "aws_secretsmanager_secret_version" "rds_pg_master_password" {
+#  depends_on = [module.rds_pg]
+#  count      = length(data.aws_secretsmanager_secret.rds_pg)
+#  secret_id  = data.aws_secretsmanager_secret.rds_pg.id
+#}
+#
+#locals {
+#  # one() поверне перший елемент або null, якщо список порожній
+#  secret_data = one(data.aws_secretsmanager_secret_version.rds_pg_master_password)
+#  db_password = local.secret_data != null ? jsondecode(local.secret_data.secret_string)["password"] : null
+#}
+
 data "aws_secretsmanager_secret" "rds_pg" {
-  count = module.rds_pg.db_instance_master_user_secret_arn != null ? 1 : 0
   arn = module.rds_pg.db_instance_master_user_secret_arn
 }
-
 data "aws_secretsmanager_secret_version" "rds_pg" {
-  count     = length(data.aws_secretsmanager_secret.rds_pg)
-  secret_id = data.aws_secretsmanager_secret.rds_pg[0].id
+  secret_id = data.aws_secretsmanager_secret.rds_pg.id
 }
 
 data "aws_secretsmanager_secret_version" "rds_pg_master_password" {
   depends_on = [module.rds_pg]
-  count      = length(data.aws_secretsmanager_secret.rds_pg)
-  secret_id  = data.aws_secretsmanager_secret.rds_pg[0].id
-}
-
-locals {
-  # one() поверне перший елемент або null, якщо список порожній
-  secret_data = one(data.aws_secretsmanager_secret_version.rds_pg_master_password)
-  db_password = local.secret_data != null ? jsondecode(local.secret_data.secret_string)["password"] : null
+  secret_id  = data.aws_secretsmanager_secret.rds_pg.id
 }
 
 provider "postgresql" {
@@ -135,7 +148,7 @@ provider "postgresql" {
   host            = module.rds_pg.db_instance_address
   port            = module.rds_pg.db_instance_port
   username        = module.rds_pg.db_instance_username # Master username "root"
-  password        = local.db_password //jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password[0].secret_string)["password"]
+  password        = jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password.secret_string)["password"]
   database        = "postgres" # Connect to the default 'postgres' database for admin tasks
   connect_timeout = 30
   superuser       = false
