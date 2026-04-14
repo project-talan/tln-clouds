@@ -8,7 +8,7 @@
 #  create_namespace = true
 #  cleanup_on_fail  = true
 #
-#  # Змушує Kubernetes перестворити поди, якщо конфігурація змінилася
+#  # Forces Kubernetes to recreate pods if the configuration changes.
 #  force_update     = true
 #  recreate_pods    = true
 #  replace          = true
@@ -18,7 +18,7 @@
 #
 ##  set = {
 ##    name  = "config.userlist"
-##    # Ми використовуємо join, щоб перетворити список на ОДИН рядок з переносом \n
+##    # We use join to convert a list into a SINGLE string with newlines. \n
 ##    value = join("\n", [
 ##      for name, info in var.databases : "\"${info.owner}\" \"${info.password}\""
 ##    ])
@@ -40,7 +40,7 @@
 #      config = {
 #        auth_type = "md5"
 #        server_tls_sslmode = "require"
-#        # Беремо пароль із вашого Secrets Manager або змінної
+#        # Retrieving the password from AWS Secrets Manager or a variable.
 #        adminPassword = jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password.secret_string)["password"]
 #        databases = {
 #          for name, data in var.databases : name => {
@@ -51,13 +51,13 @@
 #            dbname   = name
 #          }
 #        }
-#        # Створюємо мапу, де ключі — це УНІКАЛЬНІ імена користувачів
+#        # Creating a map where the keys are unique usernames.
 #        userlist = {
 #          for name, info in var.databases :
 #          "${name}-${info.owner}" => info.password... # Три крапки групують дублікати
 #        }
-#        # Після групування ми беремо лише перший пароль для кожного користувача
-#        # (оскільки ми припускаємо, що пароль однаковий для того самого owner)
+#        # After grouping, we take only the first password for each user
+#        # (since we assume the password is the same for the same owner)
 #        userlist = {
 #          for owner, passwords in { for name, info in var.databases : "${name}-${info.owner}" => info.password... } :
 #          "${owner}" => "${passwords[0]}"
