@@ -21,6 +21,8 @@ controller:
         #change health check
       service.beta.kubernetes.io/aws-load-balancer-healthcheck-unhealthy-threshold: "5"
       service.beta.kubernetes.io/aws-load-balancer-healthcheck-interval: "30"
+       #alow 404
+      service.beta.kubernetes.io/aws-load-balancer-healthcheck-success-codes: "200,404"
       #another part
       service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
