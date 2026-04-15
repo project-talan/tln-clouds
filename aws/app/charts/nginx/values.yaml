@@ -16,6 +16,8 @@ controller:
 
         # 4. Making it accessible from the internet
       service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+        # Enables cross-zone load balancing
+      service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
         #another part
       service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
