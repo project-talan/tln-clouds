@@ -18,7 +18,10 @@ controller:
       service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
         # Enables cross-zone load balancing
       service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
-        #another part
+        #change health check
+      service.beta.kubernetes.io/aws-load-balancer-healthcheck-unhealthy-threshold: "5"
+      service.beta.kubernetes.io/aws-load-balancer-healthcheck-interval: "30"
+      #another part
       service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
       service.beta.kubernetes.io/aws-load-balancer-alpn-policy: HTTP2Preferred
