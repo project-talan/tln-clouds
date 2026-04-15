@@ -95,25 +95,25 @@ resource "aws_key_pair" "ssh" {
   tags = local.tags
 }
 
-# Server keys
-resource "wireguard_asymmetric_key" "server" {}
-
-# Single-user keys
-resource "wireguard_asymmetric_key" "client" {}
+## Server keys
+#resource "wireguard_asymmetric_key" "server" {}
+#
+## Single-user keys
+#resource "wireguard_asymmetric_key" "client" {}
 
 resource "aws_instance" "jumpserver" {
   ami                         = local.ami_id
   instance_type               = var.instance_type
   subnet_id                   = var.subnet_id
   associate_public_ip_address = true # Jump server needs public IP
-  source_dest_check           = false
+#  source_dest_check           = false
 
   vpc_security_group_ids = [local.security_group_id]
   key_name               = aws_key_pair.ssh.key_name
   user_data_base64 = base64encode(templatefile("${path.module}/templates/template.sh.tftpl", {
     custom_packages = join(",", local.flattened_custom_packages_map)
-    server_private_key = wireguard_asymmetric_key.server.private_key
-    client_public_key  = wireguard_asymmetric_key.client.public_key
+#    server_private_key = wireguard_asymmetric_key.server.private_key
+#    client_public_key  = wireguard_asymmetric_key.client.public_key
   }))
 
 
@@ -147,21 +147,21 @@ resource "local_sensitive_file" "bastion_address" {
   content         = "ubuntu@${aws_instance.jumpserver.public_ip}"
 }
 
-resource "local_file" "wg_client_config_file" {
-  filename        = "${var.files_prefix}wireguard_client.conf"
-  file_permission = "0600"
-
-  content = <<-EOT
-    [Interface]
-    MTU = 1280
-    PrivateKey = ${wireguard_asymmetric_key.client.private_key}
-    Address = 11.0.0.2/24
-    DNS = 1.1.1.1
-
-    [Peer]
-    PublicKey = ${wireguard_asymmetric_key.server.public_key}
-    Endpoint = ${aws_instance.jumpserver.public_ip}:51820
-    AllowedIPs = 0.0.0.0/0
-    PersistentKeepalive = 25
-  EOT
-}
+#resource "local_file" "wg_client_config_file" {
+#  filename        = "${var.files_prefix}wireguard_client.conf"
+#  file_permission = "0600"
+#
+#  content = <<-EOT
+#    [Interface]
+#    MTU = 1280
+#    PrivateKey = ${wireguard_asymmetric_key.client.private_key}
+#    Address = 11.0.0.2/24
+#    DNS = 1.1.1.1
+#
+#    [Peer]
+#    PublicKey = ${wireguard_asymmetric_key.server.public_key}
+#    Endpoint = ${aws_instance.jumpserver.public_ip}:51820
+#    AllowedIPs = 0.0.0.0/0
+#    PersistentKeepalive = 25
+#  EOT
+#}
