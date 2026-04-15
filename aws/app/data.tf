@@ -43,8 +43,8 @@ data "aws_eks_cluster" "eks" {
 
 data "aws_lb" "primary" {
   tags = {
-    "kubernetes.io/cluster/${module.shared.k8s_name}" = "owned",
-    "kubernetes.io/service-name" = "nginx-ingress/nginx-ingress-nginx-controller"
+    "elbv2.k8s.aws/cluster" = "${module.shared.k8s_name}",
+    "service.k8s.aws/stack" = "nginx-ingress/nginx-ingress-nginx-controller"
   }
 
   depends_on = [
