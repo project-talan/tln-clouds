@@ -1,7 +1,22 @@
 controller:
   service:
     annotations:
-      service.beta.kubernetes.io/aws-load-balancer-type: nlb
+      #old
+      #service.beta.kubernetes.io/aws-load-balancer-type: nlb
+
+      #new
+        # 1. Enabling the new controller
+      service.beta.kubernetes.io/aws-load-balancer-class: "service.k8s.aws"
+
+        # 2. Specifying that this is an external NLB
+      service.beta.kubernetes.io/aws-load-balancer-type: "external"
+
+        # 3. Selecting the operation mode (this is the specific 'switch' for the NLB)
+      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+
+        # 4. Making it accessible from the internet
+      service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+        #another part
       service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
       service.beta.kubernetes.io/aws-load-balancer-alpn-policy: HTTP2Preferred
