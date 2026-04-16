@@ -3,12 +3,12 @@ module "lb_controller_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "~> 5.39"
 
-  role_name                              = "${local.cluster_name}-aws-load-balancer-controller"
+  role_name                              = "${module.shared.k8s_name}-aws-load-balancer-controller"
   attach_load_balancer_controller_policy = true
 
   oidc_providers = {
     main = {
-      provider_arn               = module.eks.oidc_provider_arn
+      provider_arn               = data.aws_iam_openid_connect_provider.example.arn
       namespace_service_accounts = ["kube-system:aws-load-balancer-controller"]
     }
   }
@@ -24,7 +24,7 @@ resource "helm_release" "aws_load_balancer_controller" {
 
   set = [ {
     name  = "clusterName"
-    value = module.eks.cluster_name
+    value = "${module.shared.k8s_name}"
   },
     {
     name  = "serviceAccount.create"
@@ -44,7 +44,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   },
 {
     name  = "region"
-    value = data.aws_region.current.name # замініть на свій регіон
+    value = data.aws_region.current # change to you region
   }
         ]
 }
