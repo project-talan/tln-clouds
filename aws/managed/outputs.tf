@@ -1,3 +1,4 @@
+/*
 output "cluster_name" {
   value = module.eks.cluster_name
 }
@@ -37,3 +38,4 @@ output "self_managed_node_groups" {
 output "eks_managed_node_groups_autoscaling_group_names" {
   value = module.eks.self_managed_node_groups_autoscaling_group_names
 }
+*/

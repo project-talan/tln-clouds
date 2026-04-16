@@ -1,6 +1,6 @@
 locals {
-  cluster_name                       = module.shared.k8s_name
-  deploy_cluster_autoscaler          = var.cluster_autoscaler.enabled
+  cluster_name                      = module.shared.k8s_name
+  deploy_cluster_autoscaler         = var.cluster_autoscaler.enabled
   autoscaler_helm_chart_version     = var.cluster_autoscaler.helm_chart_version
   autoscaler_priority_class_name    = var.cluster_autoscaler.priority_class_name
   autoscaler_helm_release_name      = var.cluster_autoscaler.helm_release_name

@@ -5,6 +5,8 @@ module "shared" {
   group_id   = var.group_id
   env_id     = var.env_id
 }
+
+
 locals {
   kubeconfig = templatefile("kubeconfig.tpl", {
     kubeconfig_name                   = module.eks.cluster_arn
@@ -82,5 +84,3 @@ module "eks" {
   eks_managed_node_groups = local.eks_managed_node_groups
 
 }
-
-
