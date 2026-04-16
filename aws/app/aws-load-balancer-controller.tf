@@ -1,9 +1,9 @@
 # 1. IAM role only (required for access permissions)
 module "lb_controller_irsa_role" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "5.39"
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = "6.4"
 
-  role_name                              = "${module.shared.k8s_name}-aws-load-balancer-controller"
+  name                              = "${module.shared.k8s_name}-awsclb"
   attach_load_balancer_controller_policy = true
 
   oidc_providers = {
@@ -39,7 +39,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   },
     {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.lb_controller_irsa_role.iam_role_arn
+    value = module.lb_controller_irsa_role.arn
   },
     {
     name  = "vpcId"
