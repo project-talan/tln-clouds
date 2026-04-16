@@ -58,19 +58,19 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ssh" {
   })
 }
 
-resource "aws_vpc_security_group_ingress_rule" "allow_WireGuard" {
-  for_each = toset(var.allowed_ssh_cidr_blocks)
-
-  security_group_id = local.security_group_id
-  cidr_ipv4         = each.key
-  from_port         = 51820
-  ip_protocol       = "udp"
-  to_port           = 51820
-  description       = "Allow WireGuard from ${each.key}"
-  tags = merge(local.tags, {
-    RuleDescription = "Allow WireGuard from ${each.key}"
-  })
-}
+#resource "aws_vpc_security_group_ingress_rule" "allow_WireGuard" {
+#  for_each = toset(var.allowed_ssh_cidr_blocks)
+#
+#  security_group_id = local.security_group_id
+#  cidr_ipv4         = each.key
+#  from_port         = 51820
+#  ip_protocol       = "udp"
+#  to_port           = 51820
+#  description       = "Allow WireGuard from ${each.key}"
+#  tags = merge(local.tags, {
+#    RuleDescription = "Allow WireGuard from ${each.key}"
+#  })
+#}
 
 resource "aws_vpc_security_group_egress_rule" "allow_all_outbound" {
   count             = local.create_outbound_rule ? 1 : 0 #default security group already allows all outbound
@@ -112,9 +112,10 @@ resource "aws_instance" "jumpserver" {
   key_name               = aws_key_pair.ssh.key_name
   user_data_base64 = base64encode(templatefile("${path.module}/templates/template.sh.tftpl", {
     custom_packages = join(",", local.flattened_custom_packages_map)
-#    server_private_key = wireguard_asymmetric_key.server.private_key
-#    client_public_key  = wireguard_asymmetric_key.client.public_key
+    #    server_private_key = wireguard_asymmetric_key.server.private_key
+    #    client_public_key  = wireguard_asymmetric_key.client.public_key
   }))
+
 
 
   user_data_replace_on_change = true
