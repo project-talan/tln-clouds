@@ -23,7 +23,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   # Equvalent to 'helm upgrade --install'
   upgrade_install = true
 
-  version    = "1.7.2"
+  version    = "3.2.1"
 
   set = [ {
     name  = "clusterName"
