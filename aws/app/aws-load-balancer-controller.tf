@@ -16,6 +16,8 @@ module "lb_controller_irsa_role" {
 
 # 2. Direct Helm release (without unnecessary ingresses and certificates)
 resource "helm_release" "aws_load_balancer_controller" {
+  depends_on = [module.lb_controller_irsa_role]
+
   name       = "aws-load-balancer-controller"
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
@@ -29,6 +31,10 @@ resource "helm_release" "aws_load_balancer_controller" {
     name  = "clusterName"
     value = "${module.shared.k8s_name}"
   },
+    {
+      name  = "replicaCount"
+      value = "1"
+    },
     {
     name  = "serviceAccount.create"
     value = "true"
@@ -50,4 +56,13 @@ resource "helm_release" "aws_load_balancer_controller" {
     value = data.aws_region.current.id # change to you region
   }
         ]
+}
+
+# 2. timer for delete
+resource "time_sleep" "wait_after_nginx" {
+  # activating after nginx
+  depends_on = [helm_release.aws_load_balancer_controller]
+
+  # wait 320 second before delete next resource
+  destroy_duration = "320s"
 }

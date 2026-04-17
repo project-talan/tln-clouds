@@ -1,5 +1,9 @@
 resource "helm_release" "nginx" {
-  depends_on = [helm_release.aws_load_balancer_controller]
+  depends_on = [
+    module.lb_controller_irsa_role,
+    helm_release.aws_load_balancer_controller
+  ]
+
   name             = "nginx"
   namespace        = "nginx-ingress"
   create_namespace = true
