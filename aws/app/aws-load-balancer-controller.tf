@@ -63,6 +63,6 @@ resource "time_sleep" "wait_after_nginx" {
   # activating after nginx
   depends_on = [helm_release.aws_load_balancer_controller]
 
-  # wait 320 second before delete next resource
+  # wait 320 second before delete next resource (loadbalancer controller)
   destroy_duration = "320s"
 }
