@@ -42,6 +42,13 @@ resource "aws_cognito_identity_provider" "provider" {
     email    = "email"
     username = "sub"
   }
+
+  lifecycle {
+    ignore_changes = [
+      # do not change provider_details
+      provider_details["attributes_url_add_attributes"],
+    ]
+  }
 }
 
 
