@@ -51,6 +51,17 @@
 #            dbname   = name
 #          }
 #        }
+#        # do not use parametr, which JDBC driver send automatically.
+#        ignoreStartupParameters = "extra_float_digits,search_path"
+#
+#        # for support preparead in version(1.21+)
+#        # if you use old version, please use 0 and set up  JDBC URL
+#        maxPreparedStatements = 10
+#        #!!!!!!PLEASE USE THIS PARAMETR IN
+#        #JDBC URL_______?prepareThreshold=0&preparedStatementCacheQueries=0
+#
+#
+#
 #        # Creating a map where the keys are unique usernames.
 #        userlist = {
 #          for name, info in var.databases :
