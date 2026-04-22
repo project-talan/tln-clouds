@@ -3,7 +3,7 @@ module "lb_controller_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
   version = "6.4"
 
-  name                              = "${module.shared.k8s_name}-lbcr"
+  name                           = "${module.shared.k8s_name}-lbcr"
   attach_load_balancer_controller_policy = true
 
   oidc_providers = {
@@ -27,35 +27,36 @@ resource "helm_release" "aws_load_balancer_controller" {
 
   version    = "3.2.1"
 
-  set = [ {
-    name  = "clusterName"
-    value = "${module.shared.k8s_name}"
-  },
+  set = [
+    {
+      name  = "clusterName"
+      value = "${module.shared.k8s_name}"
+    },
     {
       name  = "replicaCount"
       value = "1"
     },
     {
-    name  = "serviceAccount.create"
-    value = "true"
-  },
+      name  = "serviceAccount.create"
+      value = "true"
+    },
     {
-    name  = "serviceAccount.name"
-    value = "aws-load-balancer-controller"
-  },
+      name  = "serviceAccount.name"
+      value = "aws-load-balancer-controller"
+    },
     {
-    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.lb_controller_irsa_role.arn
-  },
+      name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+      value = module.lb_controller_irsa_role.arn
+    },
     {
-    name  = "vpcId"
-    value = data.aws_vpc.main.id
-  },
-{
-    name  = "region"
-    value = data.aws_region.current.id # change to you region
-  }
-        ]
+      name  = "vpcId"
+      value = data.aws_vpc.main.id
+    },
+    {
+      name  = "region"
+      value = data.aws_region.current.id # change to you region
+    }
+  ]
 }
 
 # 2. timer for delete
