@@ -60,19 +60,8 @@ data "aws_region" "current" {
   provider = aws
 }
 
-data "aws_vpc" "main" {
-  filter {
-    name   = "tag:Name"
-    values = [module.shared.vpc_name]
-  }
-}
-
-data "aws_eks_cluster" "example" {
-  name = "${module.shared.k8s_name}"
-}
-
 data "aws_iam_openid_connect_provider" "example" {
-  url = data.aws_eks_cluster.example.identity[0].oidc[0].issuer
+  url = data.aws_eks_cluster.eks.identity[0].oidc[0].issuer
 }
 
 output "oidc_provider_arn" {

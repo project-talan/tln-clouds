@@ -50,7 +50,7 @@ resource "helm_release" "aws_load_balancer_controller" {
     },
     {
       name  = "vpcId"
-      value = data.aws_vpc.main.id
+      value = data.aws_vpc.primary.id
     },
     {
       name  = "region"
@@ -61,9 +61,9 @@ resource "helm_release" "aws_load_balancer_controller" {
 
 # 2. timer for delete
 resource "time_sleep" "wait_after_nginx" {
-  # activating after nginx
+  # activate after the load balancer controller release so its destruction is delayed
   depends_on = [helm_release.aws_load_balancer_controller]
 
-  # wait 320 second before delete next resource (loadbalancer controller)
+  # wait 320 seconds before deleting the load balancer controller
   destroy_duration = "320s"
 }
