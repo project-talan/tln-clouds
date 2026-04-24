@@ -81,17 +81,17 @@ module "eks" {
     }
   }
 
-  node_security_group_additional_rules = {
-    # Allow port 80 inside SG
-    ingress_self_80 = {
-      description = "Node to node ingress on port 80"
-      protocol    = "tcp"
-      from_port   = 80
-      to_port     = 80
-      type        = "ingress"
-      self        = true
-    }
-  }
+#  node_security_group_additional_rules = {
+#    # Allow port 80 inside SG
+#    ingress_self_80 = {
+#      description = "Node to node ingress on port 80"
+#      protocol    = "tcp"
+#      from_port   = 80
+#      to_port     = 80
+#      type        = "ingress"
+#      self        = true
+#    }
+#  }
 
   eks_managed_node_groups = local.eks_managed_node_groups
 
