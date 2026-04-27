@@ -133,6 +133,10 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
           ```
           tln deconstruct aws -- --backend cloud --init --apply --layer tenant --state project,provider,group,env,tenant
           ```
+        * **Delete whoami**
+          ```
+          tln whoami aws -- --delete
+          ```
       * **Undeploy App layer**
         ```
         tln deconstruct aws -- --backend cloud --init --apply --layer app --state project,provider,group,env,layer

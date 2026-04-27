@@ -1,7 +1,7 @@
 locals {
   api_base_url = "${var.api_base_url}/iam"
   host = var.use_primary_domain ? var.domain_name : "${var.env_id}.${var.domain_name}"
-  localHost = "tlnclouds.local"
+  local_host = "tlnclouds.local"
 
   callback_urls = [
     "${local.api_base_url}/auth/callback",
@@ -11,8 +11,8 @@ locals {
     "http://localhost:4000/iam/auth/callback",
     "http://localhost:4000/iam/swagger/v1/oauth2-redirect.html",
 
-    "https://api.${local.localHost}/iam/auth/callback",
-    "https://api.${local.localHost}/iam/swagger/v1/oauth2-redirect.html"
+    "https://api.${local.local_host}/iam/auth/callback",
+    "https://api.${local.local_host}/iam/swagger/v1/oauth2-redirect.html"
   ]
 
   logout_urls = [
@@ -24,8 +24,8 @@ locals {
   logout_urls_dev = [
     "http://localhost:3000",
 
-    "https://${local.localHost}",
-    "https://${var.tenant_id}.${local.localHost}"
+    "https://${local.local_host}",
+    "https://${var.tenant_id}.${local.local_host}"
   ]
 }
 
