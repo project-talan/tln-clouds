@@ -1,6 +1,32 @@
 locals {
   api_base_url = "${var.api_base_url}/iam"
-  logout_url = "https://${var.tenant_id}.${var.domain_name}"
+  host = var.use_primary_domain ? var.domain_name : "${var.env_id}.${var.domain_name}"
+  local_host = "tlnclouds.local"
+
+  callback_urls = [
+    "${local.api_base_url}/auth/callback",
+    "${local.api_base_url}/swagger/v1/oauth2-redirect.html",
+  ]
+  callback_urls_dev = [
+    "http://localhost:4000/iam/auth/callback",
+    "http://localhost:4000/iam/swagger/v1/oauth2-redirect.html",
+
+    "https://api.${local.local_host}/iam/auth/callback",
+    "https://api.${local.local_host}/iam/swagger/v1/oauth2-redirect.html"
+  ]
+
+  logout_urls = [
+    "https://${local.host}",
+    "https://admin.${local.host}",
+    "https://store.${local.host}",
+    "https://${var.tenant_id}.${local.host}"
+  ]
+  logout_urls_dev = [
+    "http://localhost:3000",
+
+    "https://${local.local_host}",
+    "https://${var.tenant_id}.${local.local_host}"
+  ]
 }
 
 resource "aws_cognito_identity_provider" "provider" {
@@ -15,6 +41,13 @@ resource "aws_cognito_identity_provider" "provider" {
   attribute_mapping = {
     email    = "email"
     username = "sub"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      # do not change provider_details
+      provider_details["attributes_url_add_attributes"],
+    ]
   }
 }
 
@@ -32,18 +65,12 @@ resource "aws_cognito_user_pool_client" "primary" {
     refresh_token = "days"
   }
 
-  callback_urls = [
-    "${local.api_base_url}/auth/callback",
-    "${local.api_base_url}/swagger/v1/oauth2-redirect.html",
-    "http://localhost:8001/iam/auth/callback"
-  ]
-  logout_urls = [
-    "${local.logout_url}",
-    "http://localhost:3000"
-  ]
+  callback_urls = var.group_id == "dev" ? concat(local.callback_urls, local.callback_urls_dev) : local.callback_urls
+  logout_urls   = var.group_id == "dev" ? concat(local.logout_urls, local.logout_urls_dev) : local.logout_urls
+
   default_redirect_uri = "${local.api_base_url}/auth/callback"
   generate_secret = true
-  allowed_oauth_scopes = ["email", "openid"]
+  allowed_oauth_scopes = ["email", "openid", "profile"]
   supported_identity_providers = concat(keys(var.identity_providers), var.use_cognito_provider?["COGNITO"]:[])
   allowed_oauth_flows = ["code"]
   explicit_auth_flows = ["ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_PASSWORD_AUTH"]

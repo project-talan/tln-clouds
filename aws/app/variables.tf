@@ -39,6 +39,8 @@ variable "postgresql" {
     backup_lifecycle_delete_after = number
     backup_lifecycle_coldstorage_after = number
     rds_snapshot_identifier = string
+    allow_major_version_upgrade = bool
+    apply_immediately = bool
   })
   default = {
     size = "db.t4g.micro"
@@ -54,6 +56,8 @@ variable "postgresql" {
     backup_lifecycle_delete_after = 97
     backup_lifecycle_coldstorage_after = 7
     rds_snapshot_identifier = null
+    allow_major_version_upgrade = false
+    apply_immediately = false
   }
 }
 

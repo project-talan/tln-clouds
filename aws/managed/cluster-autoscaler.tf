@@ -1,6 +1,6 @@
 locals {
-  cluster_name                       = module.shared.k8s_name
-  deploy_cluster_autoscaler          = var.cluster_autoscaler.enabled
+  cluster_name                      = module.shared.k8s_name
+  deploy_cluster_autoscaler         = var.cluster_autoscaler.enabled
   autoscaler_helm_chart_version     = var.cluster_autoscaler.helm_chart_version
   autoscaler_priority_class_name    = var.cluster_autoscaler.priority_class_name
   autoscaler_helm_release_name      = var.cluster_autoscaler.helm_release_name
@@ -34,11 +34,12 @@ resource "helm_release" "cluster_autoscaler" {
   timeout    = 300
   values = [
     yamlencode({
-      awsRegion     = data.aws_region.current.name
+      awsRegion     = data.aws_region.current.id
       cloudProvider = "aws"
       autoDiscovery = {
         clusterName = local.cluster_name
       }
+      extraArgs = { for k, v in local.autoscaler_extra_args : k => tostring(v) }
       priorityClassName = local.autoscaler_priority_class_name
       replicaCount      = 2
       tolerations       = []
@@ -56,13 +57,13 @@ resource "helm_release" "cluster_autoscaler" {
       }
     })
   ]
-  dynamic "set" {
-    for_each = local.autoscaler_extra_args
-    content {
-      name  = "extraArgs.${set.key}"
-      value = set.value
-    }
-  }
+  #dynamic "set" {
+  #  for_each = local.autoscaler_extra_args
+  #  content {
+  #    name  = "extraArgs.${set.key}"
+  #    value = set.value
+  #  }
+  #}
 }
 
 

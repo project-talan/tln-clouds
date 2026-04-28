@@ -43,8 +43,8 @@ data "aws_eks_cluster" "eks" {
 
 data "aws_lb" "primary" {
   tags = {
-    "kubernetes.io/cluster/${module.shared.k8s_name}" = "owned",
-    "kubernetes.io/service-name" = "nginx-ingress/nginx-ingress-nginx-controller"
+    "elbv2.k8s.aws/cluster" = "${module.shared.k8s_name}",
+    "service.k8s.aws/stack" = "nginx-ingress/nginx-ingress-nginx-controller"
   }
 
   depends_on = [
@@ -54,4 +54,16 @@ data "aws_lb" "primary" {
 
 data "aws_ses_domain_identity" "primary" {
   domain = var.domain_name
+}
+
+data "aws_region" "current" {
+  provider = aws
+}
+
+data "aws_iam_openid_connect_provider" "example" {
+  url = data.aws_eks_cluster.eks.identity[0].oidc[0].issuer
+}
+
+output "oidc_provider_arn" {
+  value = data.aws_iam_openid_connect_provider.example.arn
 }

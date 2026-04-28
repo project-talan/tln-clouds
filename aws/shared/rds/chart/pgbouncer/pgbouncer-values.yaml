@@ -1,0 +1,31 @@
+replicaCount: 2
+
+pgbouncer:
+  # 1. RDS connection parameters
+  # Format: [alias]: "host=[endpoint] port=5432 dbname=[db_name]"
+  #databases: |
+  #  main_db: "host=://amazonaws.com port=5432 dbname=postgres"
+
+  # 2. POOLING MODE (Transaction - ideal for microservices)
+  poolMode: transaction
+
+  # 3. CONNECTION LIMITS
+  maxClientConn: 1000    # "How many application connections does PgBouncer accept?"
+  defaultPoolSize: 20    # How many active connections PgBouncer maintains to RDS
+
+  # 4. AUTHENTICATION
+  authType: md5          # Must match the RDS method (md5 or scram-sha-256)
+
+# 5. SECRET BINDING (where the password is stored)
+#auth:
+#  existingSecret: pgbouncer-creds
+
+# 6. Service for Applications (EKS Service)
+service:
+  type: ClusterIP
+  ports:
+    postgresql: 6432
+
+# 7. MONITORING (Optional: for Prometheus/Grafana)
+metrics:
+  enabled: true

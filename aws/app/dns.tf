@@ -18,7 +18,7 @@ resource "aws_route53_record" "ns" {
 
 module "secondary_certificate" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "5.1.1"
+  version = "6.3.0"
 
   domain_name               = local.subdomain_name
   subject_alternative_names = ["*.${local.subdomain_name}"]

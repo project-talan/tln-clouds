@@ -57,17 +57,17 @@ variable "backup_lifecycle_coldstorage_after" {
 variable "rds_engine_version" {
 
   type        = string
-  default     = "17.4"
+  default     = "18.3"
 }
 
 variable "rds_family" {
   type        = string
-  default     = "postgres17"
+  default     = "postgres18"
 }
 
 variable "rds_major_engine_version" {
   type        = string
-  default     = "17"
+  default     = "18"
 }
 
 variable "rds_multi_az" {
@@ -116,4 +116,13 @@ variable "rds_manage_master_user_password" {
 variable "rds_snapshot_identifier" {
   type        = string
   default     = ""
+}
+variable "rds_allow_major_version_upgrade" {
+  type        = bool
+  default     = false
+}
+
+variable "rds_apply_immediately" {
+  type        = bool
+  default     = false
 }

@@ -8,7 +8,7 @@ module "shared" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "5.21.0"
+  version = "6.6.1"
 
   name = module.shared.vpc_name
   cidr = var.vpc_cidr
@@ -19,8 +19,9 @@ module "vpc" {
   database_subnets = var.database_subnets
 
   enable_nat_gateway   = true
-  single_nat_gateway   = true
+  #single_nat_gateway   = true
   enable_dns_hostnames = true
+  #enable_dns_support   = true
 
   public_subnet_tags = merge(module.shared.public_subnet_tags, {
     "kubernetes.io/cluster/${module.shared.k8s_name}" = "shared"

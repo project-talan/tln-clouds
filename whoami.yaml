@@ -23,7 +23,7 @@ metadata:
   name: whoami
   namespace: whoami
 spec:
-  replicas: 1
+  replicas: 10
   selector:
     matchLabels:
       component: whoami

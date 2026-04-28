@@ -18,7 +18,7 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
 * Install [Nodejs 24.x LTS](https://nodejs.org)
 * Install helpers [tln](https://www.npmjs.com/package/tln-cli) & [tpm](https://github.com/project-talan/tln-pm)
     ```
-    npm i -g tln-cli@1.116.0 tln-pm@0.23.0
+    npm i -g tln-cli@1.117.0 tln-pm@0.23.0
     ```
 * Install wget if needed
     ```
@@ -30,7 +30,7 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
   ```
   * Clone stable version
     ```
-    git clone --depth 1 --branch v25.5.0 git@github.com:project-talan/tln-clouds.git && cd tln-clouds
+    git clone --depth 1 --branch v26.4.0 git@github.com:project-talan/tln-clouds.git && cd tln-clouds
     ```
   * or main branch
     ```
@@ -97,7 +97,7 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
       ```
       * **Network layer - configure VPC, Bastion**
         ```
-        tln construct aws -- --backend cloud --init --apply --layer network --state   project,provider,group,env,layer
+        tln construct aws -- --backend cloud --init --apply --layer network --state project,provider,group,env,layer
         ```
       * **Managed layer - K8s**
         ```
@@ -132,6 +132,10 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
         * **Undeploy Tenant (demo)**
           ```
           tln deconstruct aws -- --backend cloud --init --apply --layer tenant --state project,provider,group,env,tenant
+          ```
+        * **Delete whoami**
+          ```
+          tln whoami aws -- --delete
           ```
       * **Undeploy App layer**
         ```

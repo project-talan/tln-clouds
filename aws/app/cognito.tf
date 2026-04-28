@@ -5,7 +5,7 @@ locals {
 
 module "cognito_user_pool" {
   source  = "lgallard/cognito-user-pool/aws"
-  version = "0.35.0"
+  version = "4.0.0"
 
   user_pool_name                                        = module.shared.prefix_env
   alias_attributes                                      = ["email", "preferred_username"]
@@ -79,6 +79,8 @@ module "cognito_user_pool" {
 
 //  depends_on = [ module.cognito_pre_auth_function ]
   tags = module.shared.tags
+
+  user_pool_tier = "PLUS"
 }
 
 /*

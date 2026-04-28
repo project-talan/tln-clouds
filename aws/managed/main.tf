@@ -5,6 +5,8 @@ module "shared" {
   group_id   = var.group_id
   env_id     = var.env_id
 }
+
+
 locals {
   kubeconfig = templatefile("kubeconfig.tpl", {
     kubeconfig_name                   = module.eks.cluster_arn
@@ -21,14 +23,19 @@ locals {
 module "eks" {
   depends_on = [module.shared]
   source     = "terraform-aws-modules/eks/aws"
-  version    = "20.35.0"
+  version    = "21.17.1"
 
-  cluster_name    = module.shared.k8s_name
-  cluster_version = var.aws_k8s_version
-  vpc_id          = data.aws_vpc.main.id
-  subnet_ids      = data.aws_subnets.private.ids
+  name                     = module.shared.k8s_name
+  kubernetes_version       = var.aws_k8s_version
+  vpc_id                   = data.aws_vpc.main.id
+  subnet_ids               = data.aws_subnets.private.ids
+  control_plane_subnet_ids = data.aws_subnets.public.ids
+
+  endpoint_public_access  = false
+  endpoint_private_access = true
 
   enable_cluster_creator_admin_permissions = true # Enable admin permissions for the cluster creator
+
   enable_irsa                              = true # Enable IAM Roles for Service Accounts (IRSA)
 
   # cluster_compute_config = {
@@ -36,28 +43,19 @@ module "eks" {
   #   node_pools = ["system"]
   # }
 
-  cluster_addons = {
-    "vpc-cni"        = {}
-    "coredns"        = {}
-    "kube-proxy"     = {}
+  addons = {
+    coredns                = {}
+    eks-pod-identity-agent = {
+      before_compute = true
+    }
+    kube-proxy             = {}
+    vpc-cni                = {
+      before_compute = true
+    }
     "metrics-server" = {}
   }
 
-  eks_managed_node_group_defaults = {
-    ami_type = "BOTTLEROCKET_x86_64"
-
-    attach_cluster_primary_security_group = true
-
-    # Disabling and using externally provided security groups
-    create_security_group = false
-  }
-
-  // https://stackoverflow.com/questions/74687452/eks-error-syncing-load-balancer-failed-to-ensure-load-balancer-multiple-tagge
-  node_security_group_tags = {
-    "kubernetes.io/cluster/${module.shared.k8s_name}" = null
-  }
-
-  cluster_security_group_additional_rules = {
+  security_group_additional_rules = {
     ingress_bastion_host = {
       description                = "Bastion traffic"
       protocol                   = "tcp"
@@ -69,7 +67,18 @@ module "eks" {
     }
   }
 
+  node_security_group_additional_rules = {
+    # Allow port 1-1024 inside SG
+    ingress_1_1024 = {
+      description = "Node to node ingress on port 1-1024"
+      protocol    = "tcp"
+      from_port   = 1
+      to_port     = 1024
+      type        = "ingress"
+      self        = true
+    }
+  }
+
   eks_managed_node_groups = local.eks_managed_node_groups
+
 }
-
-
