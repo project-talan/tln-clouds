@@ -69,7 +69,7 @@ module "eks" {
 
   node_security_group_additional_rules = {
     # Allow port 1-1024 inside SG
-    ingress_self_80 = {
+    ingress_1_1024 = {
       description = "Node to node ingress on port 1-1024"
       protocol    = "tcp"
       from_port   = 1
