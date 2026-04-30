@@ -35,6 +35,10 @@ module "s3_processor_lambda" {
       source_arn = module.s3_public.s3_bucket_arn
     }
   }
+
+  environment_variables = {
+    EKS_SERVICE_URL = "http://internal-lb-dns-name/api" //TODO find out the endpoint
+  }
 }
 
 resource "aws_security_group" "lambda_sg" {
