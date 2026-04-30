@@ -162,6 +162,18 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
   tln deconstruct aws -- --backend cloud --init --apply --layer provider --state project,provider
   ```
 
+
+## Ingegration
+Recommended aproach is to use git subtree to connect your main repository with tln clouds one
+* Bind repositories
+  ```
+  tln -u subtree-add -- --prefix platform/env --subtree https://github.com/project-talan/tln-clouds.git --ref v26.4.0
+  ```
+* Option upgrade to the new version
+  ```
+  tln -u subtree-pull -- --prefix platform/env --subtree https://github.com/project-talan/tln-clouds.git --ref v26.5.0 --squash
+  ```
+
 ## Command line options
   General format
   ```
