@@ -13,6 +13,18 @@ data "aws_vpc" "primary" {
   }
 }
 
+data "aws_subnets" "private" {
+  filter{
+    name   = "tag:Type"
+    values = ["private"]
+  }
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.primary.id]
+  }
+  #tags = merge(module.shared.tags, local.tags, module.shared.private_subnet_tags)
+}
+
 data "aws_route53_zone" "primary" {
   name = var.domain_name
 }
@@ -51,5 +63,26 @@ data "aws_secretsmanager_secret" "rds_pg" {
 
 data "aws_secretsmanager_secret_version" "rds_pg" {
   secret_id = data.aws_secretsmanager_secret.rds_pg.id
+}
+
+data "aws_security_group" "eks_cluster_sg" {
+  filter {
+    name   = "tag:aws:eks:cluster-name"
+    values = ["${module.shared.k8s_name}"] # Замініть на назву вашого кластера
+  }
+}
+
+data "aws_security_group" "eks_nodes_sg" {
+  filter {
+    name   = "tag:kubernetes.io/cluster/${module.shared.k8s_name}"
+    values = ["owned"]
+  }
+  filter {
+    name   = "group-name"
+    values = ["*node*"] # only SG where is word 'node'
+  }
+  # limit to your VPC
+  vpc_id = data.aws_vpc.primary.id
+
 }
 

@@ -1,4 +1,4 @@
-/*
+
 locals {
   public_bucket_name  = "${module.shared.prefix_tenant}-public"
   private_bucket_name = "${module.shared.prefix_tenant}-private"
@@ -6,7 +6,7 @@ locals {
 
 module "s3_public" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "4.11.0" // TODO: Update once all modules used support aws provider v6
+  version = "5.12.0" // TODO: Update once all modules used support aws provider v6
 
   bucket = local.public_bucket_name
 
@@ -35,9 +35,33 @@ module "s3_public" {
   }
 }
 
+resource "aws_s3_bucket_notification" "s3_public_notification" {
+  bucket = module.s3_public.s3_bucket_id
+
+  lambda_function {
+    lambda_function_arn = module.s3_processor_lambda.lambda_function_arn
+    events              = ["s3:ObjectCreated:*"]
+  }
+
+  # relations to processor policy
+  depends_on = [aws_iam_policy.s3_processor_policy, module.s3_processor_lambda]
+}
+
+resource "aws_s3_bucket_notification" "s3_private_notification" {
+  bucket = module.s3_private.s3_bucket_id
+
+  lambda_function {
+    lambda_function_arn = module.s3_processor_lambda.lambda_function_arn
+    events              = ["s3:ObjectCreated:*"]
+  }
+
+  # relations to processor policy
+  depends_on = [aws_iam_policy.s3_processor_policy, module.s3_processor_lambda]
+}
+
 module "s3_private" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "4.11.0"
+  version = "5.12.0"
 
   bucket                   = local.private_bucket_name
   acl                      = "private"
@@ -61,7 +85,9 @@ resource "aws_cloudfront_origin_access_control" "public_oac" {
 
 module "cloudfront" {
   source  = "terraform-aws-modules/cloudfront/aws"
-  version = "5.0.0"
+  version = "6.5.1"
+
+  depends_on = [module.acm]
 
   aliases = [local.static_domain_name]
 
@@ -93,7 +119,7 @@ module "cloudfront" {
   viewer_certificate = {
     acm_certificate_arn      = module.acm.arn
     ssl_support_method       = "sni-only"
-    minimum_protocol_version = "TLSv1.2_2021"
+    minimum_protocol_version = "TLSv1.3_2025"
   }
 }
 
@@ -112,4 +138,3 @@ resource "aws_route53_record" "this" {
 data "aws_route53_zone" "used" {
   zone_id = local.zone_id
 }
-*/

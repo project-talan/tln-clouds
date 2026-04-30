@@ -5,6 +5,10 @@
 *.tfstate
 *.tfstate.*
 
+#ignore lambda builds
+aws/app/builds/*
+aws/tenant/builds/*
+
 # .tfvars files
 *.tfvars
 *out.terraform*
