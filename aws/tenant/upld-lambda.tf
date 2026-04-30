@@ -37,7 +37,7 @@ module "s3_processor_lambda" {
   }
   //lambda could not resolbe the name with .svc.cluster.local
   environment_variables = {
-    EKS_SERVICE_URL = "https://api.${local.tenant_prefix}.${var.domain_name}" //TODO find out the endpoint
+    EKS_SERVICE_URL = "https://api.${var.env_id}.${var.domain_name}" //TODO find out the endpoint
   }
 }
 
