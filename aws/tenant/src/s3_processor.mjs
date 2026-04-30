@@ -1,6 +1,6 @@
 export const handler = async (event) => {
     // URL вашого сервісу в EKS (Internal Load Balancer або ClusterIP з VPC Lattice)
-    const EKS_SERVICE_URL = "http://cluster.local";
+    const EKS_SERVICE_URL = process.env.EKS_SERVICE_URL;
 
     for (const record of event.Records) {
         const bucket = record.s3.bucket.name;
