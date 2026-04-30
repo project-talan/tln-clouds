@@ -8,9 +8,9 @@ locals {
 }
 
 module "acm" {
-  providers = {
-    aws = aws.us_east_1
-  }
+#  providers = {
+#    aws = aws.us_east_1
+#  }
   source      = "../shared/acm"
   domain_name = local.static_domain_name
   zone_id     = local.zone_id
