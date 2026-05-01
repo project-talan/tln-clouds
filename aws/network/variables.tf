@@ -43,3 +43,8 @@ variable "bastion_custom_packages" {
     helm: "3.xx.x"
   }
 }
+
+variable "create_wg" {
+  description = "if true create wireguard resources"
+  type        = bool
+}

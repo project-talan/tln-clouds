@@ -49,6 +49,7 @@ module "bastion" {
   instance_type    = var.bastion_instance_type
   custom_packages  = var.bastion_custom_packages
   tags             = module.shared.tags
+  create_wg        = var.create_wg
 }
 
 
