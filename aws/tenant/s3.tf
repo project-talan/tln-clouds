@@ -6,7 +6,7 @@ locals {
 
 module "s3_public" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "5.12.0" // TODO: Update once all modules used support aws provider v6
+  version = "5.12.0"
 
   bucket = local.public_bucket_name
 

@@ -1,5 +1,5 @@
 export const handler = async (event) => {
-    // URL вашого сервісу в EKS (Internal Load Balancer або ClusterIP з VPC Lattice)
+    // URL of your EKS loadbalancer
     const EKS_SERVICE_URL = process.env.EKS_SERVICE_URL;
 
     for (const record of event.Records) {
@@ -14,17 +14,17 @@ export const handler = async (event) => {
             region: record.awsRegion
         };
 
-        console.log(`Надсилання події до EKS: ${key}`);
+        console.log(`Send event to EKS: ${key}`);
 
         try {
             const response = await fetch(EKS_SERVICE_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-api-key': process.env.SERVICE_API_KEY || '' // Якщо потрібна авторизація
+                    'x-api-key': process.env.SERVICE_API_KEY || '' // autorization
                 },
                 body: JSON.stringify(payload),
-                // Таймаут для запиту (важливо, щоб вкластися в 5-10 секунд)
+                // timeout for request (defaoult 5-10 second)
                 signal: AbortSignal.timeout(5000)
             });
 
@@ -33,11 +33,11 @@ export const handler = async (event) => {
             }
 
             const result = await response.json();
-            console.log(`Подію успішно оброблено сервісом в EKS:`, result);
+            console.log(`Event was received by EKS:`, result);
 
         } catch (error) {
-            console.error(`Помилка при надсиланні до EKS (${key}):`, error.message);
-            // Якщо це критично — викидаємо помилку, щоб S3 спробував пізніше (Retry)
+            console.error(`Error by sending to EKS (${key}):`, error.message);
+            // error for retry (Retry)
             throw error;
         }
     }

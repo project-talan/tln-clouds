@@ -18,6 +18,9 @@ module "s3_processor_lambda" {
   vpc_subnet_ids         = data.aws_subnets.private.ids
   vpc_security_group_ids = [aws_security_group.lambda_sg.id]
 
+  # Allow Terraform faster delete SG.
+  replace_security_groups_on_destroy = true
+
   //doesnot work if create role is set to false
   //attach_network_policy  = true
 
@@ -25,12 +28,12 @@ module "s3_processor_lambda" {
 
   # Allow S3 call this function
   allowed_triggers = {
-    AllowExecutionFromS3 = {
+    AllowExecutionFromS3Private = {
       principal  = "s3.amazonaws.com"
       source_arn = module.s3_private.s3_bucket_arn
     }
     # second bucket
-    SecondBucket = {
+    AllowExecutionFromS3Public = {
       principal  = "s3.amazonaws.com"
       source_arn = module.s3_public.s3_bucket_arn
     }
@@ -38,10 +41,15 @@ module "s3_processor_lambda" {
   //lambda could not resolbe the name with .svc.cluster.local
   environment_variables = {
     EKS_SERVICE_URL = "https://api.${var.env_id}.${var.domain_name}" //TODO find out the endpoint
+    SERVICE_API_KEY = "test" //TODO find out autorization
   }
 }
 
 resource "aws_security_group" "lambda_sg" {
+  depends_on = [
+    aws_iam_role_policy_attachment.lambda_vpc_access
+  ]
+
   name        = "${module.shared.prefix_group}-lambda-eks-client-sg"
   description = "Allow Lambda to contact EKS services"
   vpc_id      = data.aws_vpc.primary.id
@@ -78,6 +86,7 @@ resource "aws_security_group_rule" "allow_lambda_to_node" {
 
 # 1. create role
 resource "aws_iam_role" "s3_processor_role" {
+
   name = "${module.shared.prefix_group}-s3-processor-role"
 
   assume_role_policy = jsonencode({
@@ -94,6 +103,7 @@ resource "aws_iam_role" "s3_processor_role" {
 
 # 2. Plolicy
 resource "aws_iam_policy" "s3_processor_policy" {
+
   name = "${module.shared.prefix_group}-s3-processor-policy"
 
   policy = jsonencode({
@@ -120,6 +130,7 @@ resource "aws_iam_policy" "s3_processor_policy" {
 
 # 3. attach policy to role
 resource "aws_iam_role_policy_attachment" "s3_processor_attach" {
+
   role       = aws_iam_role.s3_processor_role.name
   policy_arn = aws_iam_policy.s3_processor_policy.arn
 }
