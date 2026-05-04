@@ -1,67 +1,68 @@
-locals {
-  auth_query_script = <<EOT
-      set -e # Зупинити скрипт, якщо будь-яка команда впаде
-      export PGPASSWORD='${jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password.secret_string)["password"]}'
-
-      # Додаємо -v ON_ERROR_STOP=1, щоб psql повертав помилку в Terraform
-      psql -h ${module.rds_pg.db_instance_address} -U ${module.rds_pg.db_instance_username} -d postgres -v ON_ERROR_STOP=1 <<EOF
-
-      GRANT pg_read_all_settings TO "${module.rds_pg.db_instance_username}";
-
-
-      CREATE SCHEMA IF NOT EXISTS pgbouncer;
-
-      CREATE OR REPLACE FUNCTION pgbouncer.get_auth(p_usename text)
-      RETURNS TABLE(usename text, passwd text) AS \$\$
-      BEGIN
-          RETURN QUERY
-          SELECT s.usename::text, s.passwd::text
-          FROM pg_catalog.pg_shadow s
-          WHERE s.usename = p_usename;
-      END;
-      \$\$ LANGUAGE plpgsql SECURITY DEFINER;
-      SET search_path = pg_catalog, pgbouncer;
-
-      ALTER FUNCTION pgbouncer.get_auth(text) OWNER TO "${module.rds_pg.db_instance_username}";
-
-      GRANT USAGE ON SCHEMA pgbouncer TO pgbouncer_auth;
-      GRANT EXECUTE ON FUNCTION pgbouncer.get_auth(text) TO pgbouncer_auth;
-EOF
-    EOT
-}
-
-resource "postgresql_role" "pgbouncer_auth" {
-  depends_on = [module.rds_pg, resource.aws_vpc_security_group_ingress_rule.allow_bastion]
-  provider = postgresql.rds_admin
-  name     = "pgbouncer_auth"
-  login    = true
-  password = jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password.secret_string)["password"]# Краще використовувати var або random_password
-}
-
-resource "postgresql_schema" "pgbouncer_schema" {
-  provider = postgresql.rds_admin
-  name  = "pgbouncer"
-  //owner = "postgres"
-}
-
-resource "postgresql_extension" "plpgsql" {
-  provider = postgresql.rds_admin
-  name = "plpgsql"
-}
-
-resource "null_resource" "setup_auth_function_1" {
-  depends_on = [postgresql_role.pgbouncer_auth, postgresql_schema.pgbouncer_schema]
-
-  # 1. Додаємо тригер тут
-  triggers = {
-    # Хеш від тексту команди. Якщо команда зміниться — тригер спрацює
-    command_hash = sha256(local.auth_query_script)
-  }
-
-  provisioner "local-exec" {
-    command = local.auth_query_script
-  }
-}
+#AUTH QURY does not work because of permission
+#locals {
+#  auth_query_script = <<EOT
+#      set -e # Зупинити скрипт, якщо будь-яка команда впаде
+#      export PGPASSWORD='${jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password.secret_string)["password"]}'
+#
+#      # Додаємо -v ON_ERROR_STOP=1, щоб psql повертав помилку в Terraform
+#      psql -h ${module.rds_pg.db_instance_address} -U ${module.rds_pg.db_instance_username} -d postgres -v ON_ERROR_STOP=1 <<EOF
+#
+#      GRANT pg_read_all_settings TO "${module.rds_pg.db_instance_username}";
+#
+#
+#      CREATE SCHEMA IF NOT EXISTS pgbouncer;
+#
+#      CREATE OR REPLACE FUNCTION pgbouncer.get_auth(p_usename text)
+#      RETURNS TABLE(usename text, passwd text) AS \$\$
+#      BEGIN
+#          RETURN QUERY
+#          SELECT s.usename::text, s.passwd::text
+#          FROM pg_catalog.pg_shadow s
+#          WHERE s.usename = p_usename;
+#      END;
+#      \$\$ LANGUAGE plpgsql SECURITY DEFINER;
+#      SET search_path = pg_catalog, pgbouncer;
+#
+#      ALTER FUNCTION pgbouncer.get_auth(text) OWNER TO "${module.rds_pg.db_instance_username}";
+#
+#      GRANT USAGE ON SCHEMA pgbouncer TO pgbouncer_auth;
+#      GRANT EXECUTE ON FUNCTION pgbouncer.get_auth(text) TO pgbouncer_auth;
+#EOF
+#    EOT
+#}
+#
+#resource "postgresql_role" "pgbouncer_auth" {
+#  depends_on = [module.rds_pg, resource.aws_vpc_security_group_ingress_rule.allow_bastion]
+#  provider = postgresql.rds_admin
+#  name     = "pgbouncer_auth"
+#  login    = true
+#  password = jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password.secret_string)["password"]# Краще використовувати var або random_password
+#}
+#
+#resource "postgresql_schema" "pgbouncer_schema" {
+#  provider = postgresql.rds_admin
+#  name  = "pgbouncer"
+#  //owner = "postgres"
+#}
+#
+#resource "postgresql_extension" "plpgsql" {
+#  provider = postgresql.rds_admin
+#  name = "plpgsql"
+#}
+#
+#resource "null_resource" "setup_auth_function_1" {
+#  depends_on = [postgresql_role.pgbouncer_auth, postgresql_schema.pgbouncer_schema]
+#
+#  # 1. Додаємо тригер тут
+#  triggers = {
+#    # Хеш від тексту команди. Якщо команда зміниться — тригер спрацює
+#    command_hash = sha256(local.auth_query_script)
+#  }
+#
+#  provisioner "local-exec" {
+#    command = local.auth_query_script
+#  }
+#}
 
 
 
@@ -124,10 +125,10 @@ resource "helm_release" "pgbouncer" {
             dbname=name }
         },
           {
-            postgres = {
+            # wildcard allow to connect to any db on this host
+            "*" = {
               host   = module.rds_pg.db_instance_address
               port   = 5432
-              dbname = "postgres"
             }
           }
         )
@@ -140,25 +141,25 @@ resource "helm_release" "pgbouncer" {
         #!!!!!!PLEASE USE THIS PARAMETR IN
         #JDBC URL_______?prepareThreshold=0&preparedStatementCacheQueries=0
 
-        auth_dbname: "postgres" # <--- Обов'язково, якщо функція в базі postgres
-        auth_user: "pgbouncer_auth"
-        auth_query: "SELECT * FROM pgbouncer.get_auth($1)"
+#        auth_dbname: "postgres" # <--- Обов'язково, якщо функція в базі postgres
+#        auth_user: "pgbouncer_auth"
+#        auth_query: "SELECT * FROM pgbouncer.get_auth($1)"
         //userlist = { "\"pgbouncer_auth\" \"${jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password.secret_string)["password"]}\"" }
 
         # Creating a map where the keys are unique usernames.
-#        userlist = {
-#          for name, info in var.databases :
-#          "${name}-${info.owner}" => info.password... # Три крапки групують дублікати
-#        }
-#        # After grouping, we take only the first password for each user
-#        # (since we assume the password is the same for the same owner)
-#        userlist = {
-#          for owner, passwords in { for name, info in var.databases : "${name}-${info.owner}" => info.password... } :
-#          "${owner}" => "${passwords[0]}"
-#        }
-#        userlist = [
-#          for name, info in var.databases : "\"${info.owner}\" \"${info.password}\""
-#        ]
+        userlist = {
+          for name, info in var.databases :
+          "${name}-${info.owner}" => info.password... # Три крапки групують дублікати
+        }
+        # After grouping, we take only the first password for each user
+        # (since we assume the password is the same for the same owner)
+        userlist = {
+          for owner, passwords in { for name, info in var.databases : "${name}-${info.owner}" => info.password... } :
+          "${owner}" => "${passwords[0]}"
+        }
+        userlist = [
+          for name, info in var.databases : "\"${info.owner}\" \"${info.password}\""
+        ]
       }
     })
   ]

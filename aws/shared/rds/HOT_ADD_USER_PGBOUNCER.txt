@@ -1,0 +1,19 @@
+1. take a look at current user list
+
+kubectl get secret pgbouncer-userlist-secret -n database-iam -o jsonpath='{.data.userlist\.txt}' | base64 -d
+
+2. encode a with new value in comand line
+
+base64 <<EOF
+"pgbouncer_auth" "text123"
+"admin_user" "admin_text"
+"app_user" "app_text"
+EOF
+
+3. edit file secret and insert a new value inside file userlist.txt
+
+kubectl edit secret  pgbouncer-userlist-secret -n database-iam
+
+4. then reload.
+
+kubectl rollout restart deployment pgbouncer -n database-iam
