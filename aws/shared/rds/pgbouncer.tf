@@ -157,9 +157,9 @@ resource "helm_release" "pgbouncer" {
           for owner, passwords in { for name, info in var.databases : "${name}-${info.owner}" => info.password... } :
           "${owner}" => "${passwords[0]}"
         }
-        userlist = [
-          for name, info in var.databases : "\"${info.owner}\" \"${info.password}\""
-        ]
+#        userlist = [
+#          for name, info in var.databases : "\"${info.owner}\" \"${info.password}\""
+#        ]
       }
     })
   ]
