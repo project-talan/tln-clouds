@@ -2,7 +2,7 @@
 
 kubectl get secret pgbouncer-userlist-secret -n database-iam -o jsonpath='{.data.userlist\.txt}' | base64 -d
 
-2. encode a with new value in comand line
+2. encode a with new value in command line
 
 base64 <<EOF
 "pgbouncer_auth" "text123"
