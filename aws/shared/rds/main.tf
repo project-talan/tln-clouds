@@ -73,6 +73,8 @@ module "rds_pg" {
   db_subnet_group_name   = var.db_subnet_group_name
   vpc_security_group_ids = [aws_security_group.postgres_sg.id]
   publicly_accessible    = false
+
+  # 🔍 parameter for restore db
   snapshot_identifier    = var.rds_snapshot_identifier
 
   maintenance_window              = "Mon:00:00-Mon:03:00"
