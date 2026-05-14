@@ -9,6 +9,10 @@
 *.tfvars
 *out.terraform*
 
+#lambda builds
+/aws/app/builds/*
+aws/tenant/builds/*
+
 # OSX
 **/.DS_Store
 
