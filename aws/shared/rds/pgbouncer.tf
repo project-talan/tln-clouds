@@ -36,7 +36,7 @@ resource "helm_release" "pgbouncer" {
             dbname=name }
         },
           {
-            # wildcard allow to connect to any db on this host
+            # wildcard allow to connect to any db on this host, support transaction mode
             "*" = {
               host   = module.rds_pg.db_instance_address
               port   = 5432
@@ -44,13 +44,20 @@ resource "helm_release" "pgbouncer" {
           }
         )
         # do not use parameter, which JDBC driver send automatically.
-        ignoreStartupParameters = "extra_float_digits,search_path"
+        ignore_startup_parameters = "extra_float_digits,search_path"
 
         # for support prepared in version(1.21+)
         # if you use old version, please use 0 and set up  JDBC URL
-        maxPreparedStatements = 10
+        max_prepared_statements = 10
         #!!!!!!PLEASE USE THIS PARAMETER IN connection string of your java application
         #JDBC URL_______?prepareThreshold=0&preparedStatementCacheQueries=0
+
+        #  POOLING MODE (Transaction - ideal for microservices)
+        pool_mode = "transaction"
+
+        #  CONNECTION LIMITS
+        max_client_conn = 1000    # "How many application connections does PgBouncer accept?"
+        max_db_connections = 20    # How many active connections PgBouncer maintains to RDS
 
         # Creating a map where the keys are unique usernames.
         userlist = {
