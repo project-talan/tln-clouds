@@ -21,7 +21,6 @@ resource "helm_release" "pgbouncer" {
 
     yamlencode({
       config = {
-        //auth_type = "md5"
         auth_type: "scram-sha-256"
         server_tls_sslmode = "require"
         # Retrieving the password from AWS Secrets Manager or a variable.
