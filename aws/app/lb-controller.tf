@@ -1,7 +1,7 @@
 # 1. IAM role only (required for access permissions)
 module "lb_controller_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
-  version = "6.4"
+  version = "6.6.1"
 
   name                           = "${module.shared.k8s_name}-lbcr"
   attach_load_balancer_controller_policy = true
@@ -25,7 +25,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   # Equvalent to 'helm upgrade --install'
   upgrade_install = true
 
-  version    = "3.2.1"
+  version    = "3.4.0"
 
   set = [
     {
@@ -54,7 +54,7 @@ resource "helm_release" "aws_load_balancer_controller" {
     },
     {
       name  = "region"
-      value = data.aws_region.current.id # change to you region
+      value = data.aws_region.current.region # change to you region
     }
   ]
 }

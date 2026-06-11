@@ -26,6 +26,10 @@ resource "helm_release" "nginx" {
     type  = "auto"
   },
     {
+      name  = "controller.service.loadBalancerClass"
+      value = "service.k8s.aws/nlb"
+    },
+    {
     name  = "controller.nodeSelector.kubernetes\\.io/os"
     value = "linux"
     type  = "string"

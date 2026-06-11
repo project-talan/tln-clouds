@@ -6,7 +6,7 @@ locals {
 
 module "s3_public" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "5.12.0"
+  version = "5.14.0"
 
   bucket = local.public_bucket_name
 
@@ -35,33 +35,33 @@ module "s3_public" {
   }
 }
 
-resource "aws_s3_bucket_notification" "s3_public_notification" {
-  bucket = module.s3_public.s3_bucket_id
-
-  lambda_function {
-    lambda_function_arn = module.s3_processor_lambda.lambda_function_arn
-    events              = ["s3:ObjectCreated:*"]
-  }
-
-  # relations to processor policy
-  depends_on = [aws_iam_policy.s3_processor_policy, module.s3_processor_lambda]
-}
-
-resource "aws_s3_bucket_notification" "s3_private_notification" {
-  bucket = module.s3_private.s3_bucket_id
-
-  lambda_function {
-    lambda_function_arn = module.s3_processor_lambda.lambda_function_arn
-    events              = ["s3:ObjectCreated:*"]
-  }
-
-  # relations to processor policy
-  depends_on = [aws_iam_policy.s3_processor_policy, module.s3_processor_lambda]
-}
+#resource "aws_s3_bucket_notification" "s3_public_notification" {
+#  bucket = module.s3_public.s3_bucket_id
+#
+#  lambda_function {
+#    lambda_function_arn = module.s3_processor_lambda.lambda_function_arn
+#    events              = ["s3:ObjectCreated:*"]
+#  }
+#
+#  # relations to processor policy
+#  depends_on = [aws_iam_policy.s3_processor_policy, module.s3_processor_lambda]
+#}
+#
+#resource "aws_s3_bucket_notification" "s3_private_notification" {
+#  bucket = module.s3_private.s3_bucket_id
+#
+#  lambda_function {
+#    lambda_function_arn = module.s3_processor_lambda.lambda_function_arn
+#    events              = ["s3:ObjectCreated:*"]
+#  }
+#
+#  # relations to processor policy
+#  depends_on = [aws_iam_policy.s3_processor_policy, module.s3_processor_lambda]
+#}
 
 module "s3_private" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "5.12.0"
+  version = "5.14.0"
 
   bucket                   = local.private_bucket_name
   acl                      = "private"
@@ -85,7 +85,7 @@ resource "aws_cloudfront_origin_access_control" "public_oac" {
 
 module "cloudfront" {
   source  = "terraform-aws-modules/cloudfront/aws"
-  version = "6.5.1"
+  version = "6.7.0"
 
   depends_on = [module.acm]
 
