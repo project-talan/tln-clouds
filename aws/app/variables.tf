@@ -25,7 +25,8 @@ variable "api_base_url" {
 }
 
 variable "postgresql" {
-  type = object({
+  type = list(object({
+    tenant = string
     size = string
     allocated_storage = string
     max_allocated_storage = string
@@ -41,8 +42,9 @@ variable "postgresql" {
     rds_snapshot_identifier = string
     allow_major_version_upgrade = bool
     apply_immediately = bool
-  })
-  default = {
+  }))
+  default = [{
+    tenant = "demo"
     size = "db.t4g.micro"
     allocated_storage = "20"
     max_allocated_storage = "30"
@@ -58,7 +60,7 @@ variable "postgresql" {
     rds_snapshot_identifier = null
     allow_major_version_upgrade = false
     apply_immediately = false
-  }
+  }]
 }
 
 variable "databases" {
