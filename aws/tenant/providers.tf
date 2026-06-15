@@ -1,4 +1,13 @@
 provider "aws" {
+  region = "eu-central-1"
+  default_tags {
+    tags = merge(module.shared.tags, { group = var.group_id, env = var.env_id, tenant = var.tenant_id } )
+  }
+}
+
+provider "aws" {
+  alias  = "us_east_1"  # this is for certificate of acm for CloudFront
+  region = "us-east-1"
   default_tags {
     tags = merge(module.shared.tags, { group = var.group_id, env = var.env_id, tenant = var.tenant_id } )
   }

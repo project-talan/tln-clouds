@@ -1,6 +1,6 @@
 module "backup" {
   source  = "lgallard/backup/aws"
-  version = "1.7.1"
+  version = "1.9.0"
 
   depends_on = [module.rds_pg]
 
