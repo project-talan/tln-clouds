@@ -50,3 +50,12 @@ module "rds" {
   rds_allow_major_version_upgrade    = each.value.rds_allow_major_version_upgrade
   rds_apply_immediately              = each.value.rds_apply_immediately
 }
+
+#module "db_objects" {
+#  for_each = local.postgresql_tenants
+#  source = "../shared/db_objects"
+#
+#  db_instance_identifier = "${module.shared.prefix_env}-${each.key}"
+#
+#  databases = var.databases
+#}

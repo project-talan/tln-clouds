@@ -36,12 +36,12 @@ provider "helm" {
   }
 }
 
-provider "postgresql" {
-  host      = data.aws_db_instance.this.address
-  port      = 5432
-  scheme    = "awspostgres"
-  username  = "root"
-  password  = jsondecode(data.aws_secretsmanager_secret_version.rds_pg.secret_string)["password"]
-  sslmode   = "disable"
-  superuser = false
-}
+#provider "postgresql" {
+#  host      = data.aws_db_instance.this.address
+#  port      = 5432
+#  scheme    = "awspostgres"
+#  username  = "root"
+#  password  = jsondecode(data.aws_secretsmanager_secret_version.rds_pg.secret_string)["password"]
+#  sslmode   = "disable"
+#  superuser = false
+#}
