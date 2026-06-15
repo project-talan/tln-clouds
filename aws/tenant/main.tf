@@ -7,11 +7,11 @@ module "shared" {
   tenant_id = var.tenant_id
 }
 
-#module "aws_shared" {
-#  source = "../shared/database"
-#  databases = var.tenant_databases
-#  db_instance_identifier = var.db_instance_identifier
-#}
+module "aws_shared" {
+  source = "../shared/database"
+  databases = var.tenant_databases
+  db_instance_identifier = var.db_instance_identifier
+}
 
 resource "aws_route53_record" "record" {
   zone_id  =  var.use_primary_domain ? data.aws_route53_zone.primary.zone_id : data.aws_route53_zone.secondary.zone_id

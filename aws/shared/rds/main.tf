@@ -143,17 +143,6 @@ data "aws_secretsmanager_secret_version" "rds_pg_master_password" {
   secret_id  = data.aws_secretsmanager_secret.rds_pg.id
 }
 
-#module "db_objects" {
-#  source = "../db_objects"
-#
-#  host     = module.rds_pg.db_instance_address
-#  port     = module.rds_pg.db_instance_port
-#  username = module.rds_pg.db_instance_username
-#  password = jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password.secret_string)["password"]
-#
-#  databases = var.databases
-#}
-
 #provider "postgresql" {
 #  alias           = "rds_admin"
 #  host            = module.rds_pg.db_instance_address
