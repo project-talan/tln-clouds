@@ -21,8 +21,6 @@ locals {
   }
 }
 
-#provider "postgresql" {}
-
 module "rds" {
   for_each = local.postgresql_tenants
   source = "../shared/rds"
@@ -51,11 +49,13 @@ module "rds" {
   rds_apply_immediately              = each.value.rds_apply_immediately
 }
 
-#module "db_objects" {
-#  for_each = local.postgresql_tenants
-#  source = "../shared/db_objects"
+#module "db_config" {
+#  source = "../shared/db_config"
 #
-#  db_instance_identifier = "${module.shared.prefix_env}-${each.key}"
+#  db_instance_identifier_main   = "${module.shared.prefix_env}-demo-pg-databas"
+#  db_instance_identifier_emteko = "${module.shared.prefix_env}-emteko-pg-databas"
+#  main-host                     = module.rds["demo"].db_instance_address
+#  emteko-host                   = module.rds["emteko"].db_instance_address
 #
 #  databases = var.databases
 #}
