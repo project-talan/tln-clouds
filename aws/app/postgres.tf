@@ -58,4 +58,6 @@ module "rds" {
 #  emteko-host                   = module.rds["emteko"].db_instance_address
 #
 #  databases = var.databases
+#
+#  depends_on = [module.rds]
 #}
