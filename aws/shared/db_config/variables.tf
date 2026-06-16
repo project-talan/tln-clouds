@@ -13,6 +13,10 @@ variable "databases" {
   }))
 }
 
-variable "db_instance_identifier" {
+variable "db_instance_identifier_main" {
+  type = string
+}
+
+variable "db_instance_identifier_emteko" {
   type = string
 }
