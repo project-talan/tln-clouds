@@ -52,8 +52,8 @@ module "rds" {
 #module "db_config" {
 #  source = "../shared/db_config"
 #
-#  db_instance_identifier_main   = "${module.shared.prefix_env}-demo-pg-databas"
-#  db_instance_identifier_emteko = "${module.shared.prefix_env}-emteko-pg-databas"
+#  db_instance_identifier_main   = module.rds["demo"].db_instance_identifier
+#  db_instance_identifier_emteko = module.rds["emteko"].db_instance_identifier
 #  main-host                     = module.rds["demo"].db_instance_address
 #  emteko-host                   = module.rds["emteko"].db_instance_address
 #
