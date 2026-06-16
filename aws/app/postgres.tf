@@ -49,15 +49,13 @@ module "rds" {
   rds_apply_immediately              = each.value.rds_apply_immediately
 }
 
-#module "db_config" {
-#  source = "../shared/db_config"
-#
-#  db_instance_identifier_main   = module.rds["demo"].db_instance_identifier
-#  db_instance_identifier_emteko = module.rds["emteko"].db_instance_identifier
-#  main-host                     = module.rds["demo"].db_instance_address
-#  emteko-host                   = module.rds["emteko"].db_instance_address
-#
-#  databases = var.databases
-#
-#  depends_on = [module.rds]
-#}
+module "db_config" {
+  source = "../shared/db_config"
+
+  db_instance_identifier_main   = module.rds["demo"].db_instance_identifier
+  db_instance_identifier_emteko = module.rds["emteko"].db_instance_identifier
+  main-host                     = module.rds["demo"].db_instance_address
+  emteko-host                   = module.rds["emteko"].db_instance_address
+
+  databases = var.databases
+}
