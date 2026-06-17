@@ -17,7 +17,7 @@ resource "postgresql_role" "emteko" {
   login      = true
   password   = each.value.password
 
-  depends_on = [resource.aws_vpc_security_group_ingress_rule.allow_bastion_emteko]
+  depends_on = [ aws_vpc_security_group_ingress_rule.allow_bastion_emteko ]
 
 
 }
