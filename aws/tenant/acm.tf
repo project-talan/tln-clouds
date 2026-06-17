@@ -1,4 +1,4 @@
-/*
+
 locals {
   tenant_prefix        = var.use_primary_domain ? var.tenant_id : "${var.tenant_id}.${var.env_id}"
   static_domain_prefix = "${var.static_subdomain}.${local.tenant_prefix}"
@@ -15,4 +15,3 @@ module "acm" {
   domain_name = local.static_domain_name
   zone_id     = local.zone_id
 }
-*/

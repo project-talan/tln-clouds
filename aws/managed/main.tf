@@ -23,7 +23,7 @@ locals {
 module "eks" {
   depends_on = [module.shared]
   source     = "terraform-aws-modules/eks/aws"
-  version    = "21.17.1"
+  version    = "21.23.0"
 
   name                     = module.shared.k8s_name
   kubernetes_version       = var.aws_k8s_version

@@ -1,4 +1,4 @@
-/*
+
 terraform {
   required_providers {
     aws = {
@@ -9,7 +9,7 @@ terraform {
 
 module "acm" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "5.2.0"
+  version = "6.3.0"
 
   domain_name = var.domain_name
   zone_id     = var.zone_id
@@ -26,4 +26,3 @@ module "acm" {
     Name = var.domain_name
   }
 }
-*/

@@ -34,7 +34,7 @@ resource "helm_release" "cluster_autoscaler" {
   timeout    = 300
   values = [
     yamlencode({
-      awsRegion     = data.aws_region.current.id
+      awsRegion     = data.aws_region.current.region
       cloudProvider = "aws"
       autoDiscovery = {
         clusterName = local.cluster_name

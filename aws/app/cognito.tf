@@ -5,7 +5,7 @@ locals {
 
 module "cognito_user_pool" {
   source  = "lgallard/cognito-user-pool/aws"
-  version = "4.0.0"
+  version = "4.0.4"
 
   user_pool_name                                        = module.shared.prefix_env
   alias_attributes                                      = ["email", "preferred_username"]

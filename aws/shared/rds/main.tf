@@ -12,19 +12,19 @@ resource "aws_security_group" "postgres_sg" {
   tags = var.tags
 }
 
-resource "aws_vpc_security_group_ingress_rule" "allow_bastion" {
-  security_group_id            = aws_security_group.postgres_sg.id
-  referenced_security_group_id = var.bastion_security_group_id
-  from_port                    = 5432
-  ip_protocol                  = "tcp"
-  to_port                      = 5432
-  description                  = "Allow Postgresql traffic from bastion"
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags = var.tags
-}
+#resource "aws_vpc_security_group_ingress_rule" "allow_bastion" {
+#  security_group_id            = aws_security_group.postgres_sg.id
+#  referenced_security_group_id = var.bastion_security_group_id
+#  from_port                    = 5432
+#  ip_protocol                  = "tcp"
+#  to_port                      = 5432
+#  description                  = "Allow Postgresql traffic from bastion"
+#  lifecycle {
+#    create_before_destroy = true
+#  }
+#
+#  tags = var.tags
+#}
 resource "aws_vpc_security_group_ingress_rule" "allow_k8s_nodes" {
   security_group_id            = aws_security_group.postgres_sg.id
   referenced_security_group_id = var.node_security_group_id
@@ -108,29 +108,6 @@ module "rds_pg" {
   tags = var.tags
 }
 
-#data "aws_secretsmanager_secret" "rds_pg" {
-#  depends_on = [module.rds_pg]
-#  //count = module.rds_pg.db_instance_master_user_secret_arn != null ? 1 : 0
-#  arn = module.rds_pg.db_instance_master_user_secret_arn
-#}
-
-#data "aws_secretsmanager_secret_version" "rds_pg" {
-#  count     = length(data.aws_secretsmanager_secret.rds_pg)
-#  secret_id = data.aws_secretsmanager_secret.rds_pg.id
-#}
-#
-#data "aws_secretsmanager_secret_version" "rds_pg_master_password" {
-#  depends_on = [module.rds_pg]
-#  count      = length(data.aws_secretsmanager_secret.rds_pg)
-#  secret_id  = data.aws_secretsmanager_secret.rds_pg.id
-#}
-#
-#locals {
-#  # one() Returns the first element or null if the list is empty.
-#  secret_data = one(data.aws_secretsmanager_secret_version.rds_pg_master_password)
-#  db_password = local.secret_data != null ? jsondecode(local.secret_data.secret_string)["password"] : null
-#}
-
 data "aws_secretsmanager_secret" "rds_pg" {
   arn = module.rds_pg.db_instance_master_user_secret_arn
 }
@@ -143,69 +120,70 @@ data "aws_secretsmanager_secret_version" "rds_pg_master_password" {
   secret_id  = data.aws_secretsmanager_secret.rds_pg.id
 }
 
-provider "postgresql" {
-  alias           = "rds_admin"
-  host            = module.rds_pg.db_instance_address
-  port            = module.rds_pg.db_instance_port
-  username        = module.rds_pg.db_instance_username # Master username "root"
-  password        = jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password.secret_string)["password"]
-  database        = "postgres" # Connect to the default 'postgres' database for admin tasks
-  connect_timeout = 30
-  superuser       = false
-}
+#provider "postgresql" {
+#  alias           = "rds_admin"
+#  host            = module.rds_pg.db_instance_address
+#  port            = module.rds_pg.db_instance_port
+#  username        = module.rds_pg.db_instance_username # Master username "root"
+#  password        = jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password.secret_string)["password"]
+#  database        = "postgres" # Connect to the default 'postgres' database for admin tasks
+#  connect_timeout = 30
+#  superuser       = false
+#}
 
-resource "postgresql_role" "this" {
-  provider = postgresql.rds_admin
-  for_each = var.databases
-
-  name       = "${each.key}-${each.value.owner}"
-  login      = true
-  password   = each.value.password
-  depends_on = [module.rds_pg, resource.aws_vpc_security_group_ingress_rule.allow_bastion]
-}
-
-resource "postgresql_database" "this" {
-  provider = postgresql.rds_admin
-  for_each = var.databases
-
-  name              = each.key
-  owner             = postgresql_role.this[each.key].name
-  template          = "template0"
-  lc_collate        = "en_US.UTF-8"
-  connection_limit  = -1
-  allow_connections = true
-
-  depends_on = [postgresql_role.this]
-}
-
-resource "postgresql_grant" "this_table" {
-  provider = postgresql.rds_admin
-  for_each = var.databases
-
-  database    = postgresql_database.this[each.key].name
-  role        = postgresql_role.this[each.key].name
-  schema      = "public"
-  object_type = "table"
-  privileges  = ["ALL"]
-
-  depends_on = [postgresql_database.this]
-  lifecycle {
-    ignore_changes = [privileges] # To prevent Terraform from revoking manually granted privileges
-  }
-}
-
-resource "postgresql_grant" "this_schema" {
-  provider = postgresql.rds_admin
-  for_each = var.databases
-
-  database    = postgresql_database.this[each.key].name
-  role        = postgresql_role.this[each.key].name
-  schema      = "public"
-  object_type = "schema"
-  privileges  = ["CREATE", "USAGE"] # Grant CREATE and USAGE on public schema
-
-  depends_on = [postgresql_database.this]
-  lifecycle {
-    ignore_changes = [privileges]
-  }
-}
+#resource "postgresql_role" "this" {
+#  //provider = postgresql.rds_admin
+#  for_each = var.databases
+#
+#  name       = "${each.key}-${each.value.owner}"
+#  login      = true
+#  password   = each.value.password
+#
+#  depends_on = [module.rds_pg, resource.aws_vpc_security_group_ingress_rule.allow_bastion]
+#}
+#
+#resource "postgresql_database" "this" {
+#  //provider = postgresql.rds_admin
+#  for_each = var.databases
+#
+#  name              = each.key
+#  owner             = postgresql_role.this[each.key].name
+#  template          = "template0"
+#  lc_collate        = "en_US.UTF-8"
+#  connection_limit  = -1
+#  allow_connections = true
+#
+#  depends_on = [postgresql_role.this]
+#}
+#
+#resource "postgresql_grant" "this_table" {
+#  provider = postgresql.rds_admin
+#  for_each = var.databases
+#
+#  database    = postgresql_database.this[each.key].name
+#  role        = postgresql_role.this[each.key].name
+#  schema      = "public"
+#  object_type = "table"
+#  privileges  = ["ALL"]
+#
+#  depends_on = [postgresql_database.this]
+#  lifecycle {
+#    ignore_changes = [privileges] # To prevent Terraform from revoking manually granted privileges
+#  }
+#}
+#
+#resource "postgresql_grant" "this_schema" {
+#  provider = postgresql.rds_admin
+#  for_each = var.databases
+#
+#  database    = postgresql_database.this[each.key].name
+#  role        = postgresql_role.this[each.key].name
+#  schema      = "public"
+#  object_type = "schema"
+#  privileges  = ["CREATE", "USAGE"] # Grant CREATE and USAGE on public schema
+#
+#  depends_on = [postgresql_database.this]
+#  lifecycle {
+#    ignore_changes = [privileges]
+#  }
+#}
