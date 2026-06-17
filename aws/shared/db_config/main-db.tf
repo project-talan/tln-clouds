@@ -17,6 +17,8 @@ resource "postgresql_role" "main" {
   login      = true
   password   = each.value.password
 
+  depends_on = [resource.aws_vpc_security_group_ingress_rule.allow_bastion_main]
+
 }
 
 resource "postgresql_database" "main" {

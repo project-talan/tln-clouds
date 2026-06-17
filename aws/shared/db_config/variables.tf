@@ -20,3 +20,20 @@ variable "db_instance_identifier_main" {
 variable "db_instance_identifier_emteko" {
   type = string
 }
+
+variable "rds_security_group_id_main" {
+  type = string
+}
+
+variable "rds_security_group_id_emteko" {
+  type = string
+}
+
+variable "tags" {
+  type        = map(string)
+  default     = {}
+}
+
+variable "bastion_security_group_id" {
+  type        = string
+}

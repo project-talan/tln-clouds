@@ -54,8 +54,14 @@ module "db_config" {
 
   db_instance_identifier_main   = module.rds["demo"].db_instance_identifier
   db_instance_identifier_emteko = module.rds["emteko"].db_instance_identifier
+  rds_security_group_id_main    = module.rds["demo"].rds_security_group_id
+  rds_security_group_id_emteko  = module.rds["emteko"].rds_security_group_id
+  bastion_security_group_id     = data.aws_security_group.bastion.id
+
   main-host                     = module.rds["demo"].db_instance_address
   emteko-host                   = module.rds["emteko"].db_instance_address
 
-  databases = var.databases
+  databases                     = var.databases
+
+  tags                          = module.shared.tags
 }

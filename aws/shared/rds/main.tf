@@ -12,19 +12,19 @@ resource "aws_security_group" "postgres_sg" {
   tags = var.tags
 }
 
-resource "aws_vpc_security_group_ingress_rule" "allow_bastion" {
-  security_group_id            = aws_security_group.postgres_sg.id
-  referenced_security_group_id = var.bastion_security_group_id
-  from_port                    = 5432
-  ip_protocol                  = "tcp"
-  to_port                      = 5432
-  description                  = "Allow Postgresql traffic from bastion"
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags = var.tags
-}
+#resource "aws_vpc_security_group_ingress_rule" "allow_bastion" {
+#  security_group_id            = aws_security_group.postgres_sg.id
+#  referenced_security_group_id = var.bastion_security_group_id
+#  from_port                    = 5432
+#  ip_protocol                  = "tcp"
+#  to_port                      = 5432
+#  description                  = "Allow Postgresql traffic from bastion"
+#  lifecycle {
+#    create_before_destroy = true
+#  }
+#
+#  tags = var.tags
+#}
 resource "aws_vpc_security_group_ingress_rule" "allow_k8s_nodes" {
   security_group_id            = aws_security_group.postgres_sg.id
   referenced_security_group_id = var.node_security_group_id
@@ -209,77 +209,4 @@ data "aws_secretsmanager_secret_version" "rds_pg_master_password" {
 #  lifecycle {
 #    ignore_changes = [privileges]
 #  }
-#}
-
-#resource "null_resource" "postgresql_provisioning" {
-#  for_each = var.databases
-#
-#  # trigger
-#  triggers = {
-#    db_name  = each.key
-#    owner    = each.value.owner
-#    password = each.value.password
-#
-#    # dynamic from module
-#    host     = module.rds_pg.db_instance_address
-#    port     = module.rds_pg.db_instance_port
-#    username = module.rds_pg.db_instance_username
-#    password_master = jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password.secret_string)["password"]
-#  }
-#
-#  provisioner "local-exec" {
-#    command = <<EOT
-#      set -e
-#
-#      export PGPASSWORD='${self.triggers.password_master}'
-#
-#      ROLE_NAME="${self.triggers.db_name}-${self.triggers.owner}"
-#
-#      # step 1: role creation
-#      echo "Checking/Creating role: $ROLE_NAME..."
-#      psql -h ${self.triggers.host} -p ${self.triggers.port} -U ${self.triggers.username} -d postgres -c \
-#        "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '$ROLE_NAME') THEN CREATE ROLE \"$ROLE_NAME\" WITH LOGIN PASSWORD '${self.triggers.password}'; END IF; END \$\$;"
-#
-#      # --- SET ROLE ---
-#      # set up master user role permission
-#      echo "Granting role $ROLE_NAME to master user ${self.triggers.username}..."
-#      psql -h ${self.triggers.host} -p ${self.triggers.port} -U ${self.triggers.username} -d postgres -c \
-#        "GRANT \"$ROLE_NAME\" TO \"${self.triggers.username}\";"
-#      # --------------------------------
-#
-#      # step 2: create db
-#      echo "Creating database: ${self.triggers.db_name}..."
-#      set +e
-#      psql -h ${self.triggers.host} -p ${self.triggers.port} -U ${self.triggers.username} -d postgres -c \
-#        "CREATE DATABASE \"${self.triggers.db_name}\" WITH OWNER \"$ROLE_NAME\" TEMPLATE template0 LC_COLLATE 'en_US.UTF-8' CONNECTION LIMIT -1;"
-#      set -e
-#
-#      # check database init
-#      echo "Verifying if database ${self.triggers.db_name} exists..."
-#      DB_EXISTS=$(psql -h ${self.triggers.host} -p ${self.triggers.port} -U ${self.triggers.username} -d postgres -tAc "SELECT 1 FROM pg_database WHERE datname='${self.triggers.db_name}'")
-#
-#      if [ "$DB_EXISTS" != "1" ]; then
-#        echo "ERROR: Database ${self.triggers.db_name} was NOT created successfully!"
-#        exit 1
-#      fi
-#
-#      # step 3: add grat to schema public
-#      echo "Granting schema privileges on ${self.triggers.db_name}..."
-#      psql -h ${self.triggers.host} -p ${self.triggers.port} -U ${self.triggers.username} -d "${self.triggers.db_name}" -c \
-#        "GRANT CREATE, USAGE ON SCHEMA public TO \"$ROLE_NAME\";"
-#
-#      # step 4: add grant to table
-#      echo "Granting table privileges on ${self.triggers.db_name}..."
-#      psql -h ${self.triggers.host} -p ${self.triggers.port} -U ${self.triggers.username} -d "${self.triggers.db_name}" -c \
-#        "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO \"$ROLE_NAME\";"
-#
-#      echo "Database ${self.triggers.db_name} and role $ROLE_NAME provisioned successfully!"
-#    EOT
-#  }
-#
-#  # dependency
-#  depends_on = [
-#    module.rds_pg,
-#    resource.aws_vpc_security_group_ingress_rule.allow_bastion
-#  ]
 #}
