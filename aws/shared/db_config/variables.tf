@@ -13,13 +13,13 @@ variable "databases" {
   }))
 }
 
-variable "db_instance_identifier_main" {
-  type = string
-}
-
-variable "db_instance_identifier_emteko" {
-  type = string
-}
+#variable "db_instance_identifier_main" {
+#  type = string
+#}
+#
+#variable "db_instance_identifier_emteko" {
+#  type = string
+#}
 
 variable "rds_security_group_id_main" {
   type = string
@@ -36,4 +36,12 @@ variable "tags" {
 
 variable "bastion_security_group_id" {
   type        = string
+}
+
+variable "db_instance_master_user_secret_arn_main" {
+  type = string
+}
+
+variable "db_instance_master_user_secret_arn_emteko" {
+  type = string
 }

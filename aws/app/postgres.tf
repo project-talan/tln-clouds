@@ -52,8 +52,8 @@ module "rds" {
 module "db_config" {
   source = "../shared/db_config"
 
-  db_instance_identifier_main   = module.rds["demo"].db_instance_identifier
-  db_instance_identifier_emteko = module.rds["emteko"].db_instance_identifier
+  db_instance_master_user_secret_arn_main   = module.rds["demo"].db_instance_master_user_secret_arn
+  db_instance_master_user_secret_arn_emteko = module.rds["emteko"].db_instance_master_user_secret_arn
   rds_security_group_id_main    = module.rds["demo"].rds_security_group_id
   rds_security_group_id_emteko  = module.rds["emteko"].rds_security_group_id
   bastion_security_group_id     = data.aws_security_group.bastion.id

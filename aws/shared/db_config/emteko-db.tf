@@ -3,7 +3,7 @@ provider "postgresql" {
   host            = var.emteko-host
   port            = 5432
   username        = "root" # Master username "root"
-  password        = jsondecode(data.aws_secretsmanager_secret_version.rds_pg_emteko.secret_string)["password"]
+  password        = jsondecode(data.aws_secretsmanager_secret_version.rds_pg_master_password_emteko.secret_string)["password"]
   database        = "postgres" # Connect to the default 'postgres' database for admin tasks
   connect_timeout = 30
   superuser       = false
