@@ -17,16 +17,15 @@ resource "aws_route53_record" "ns" {
 }
 
 resource "aws_route53_record" "caa_example" {
-  zone_id = data.aws_route53_zone.primary.zone_id # ID your Hosted Zone
+  zone_id = aws_route53_zone.secondary.zone_id # ID your Hosted Zone
   name    = local.subdomain_name
   type    = "CAA"
   ttl     = "3600"
 
   records = [
-    "0 issue \"letsencrypt.org\"",     # Allow Let's Encrypt
     "0 issue \"amazon.com\"",          # Allow AWS ACM
     "0 issuewild \"amazonses.com\"",   # Allow Wildcard для SES
-    "0 iodef \"mailto:admin@example.com\"" # Where to send letter about issue
+    "0 iodef \"mailto:admin@${var.domain_name}\"" # Where to send letter about issue
   ]
 }
 
