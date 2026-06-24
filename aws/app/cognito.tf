@@ -28,20 +28,20 @@ module "cognito_user_pool" {
     source_arn             = data.aws_ses_domain_identity.primary.arn
     from_email_address     = "no-reply@no-reply.${var.domain_name}"
   }
-  /*
+
   lambda_config = {
-    create_auth_challenge           = 
-    custom_message                  = 
-    define_auth_challenge           = 
-    post_authentication             = 
-    post_confirmation               = 
+    create_auth_challenge           = ""
+    custom_message                  = ""
+    define_auth_challenge           = ""
+    post_authentication             = ""
+    post_confirmation               = ""
     pre_authentication              = module.cognito_pre_auth_function.lambda_function_arn
-    pre_sign_up                     = 
-    pre_token_generation            = 
-    user_migration                  = 
-    verify_auth_challenge_response  = 
+    pre_sign_up                     = ""
+    pre_token_generation            = ""
+    user_migration                  = ""
+    verify_auth_challenge_response  = ""
   }
-  */
+
 
   password_policy = {
     minimum_length                   = 10
@@ -77,23 +77,32 @@ module "cognito_user_pool" {
 
   domain = module.shared.prefix_env
 
-//  depends_on = [ module.cognito_pre_auth_function ]
+  depends_on = [ module.cognito_pre_auth_function ]
   tags = module.shared.tags
 
   user_pool_tier = "PLUS"
 }
 
-/*
+
 module "cognito_pre_auth_function" {
   source = "terraform-aws-modules/lambda/aws"
+  version = "8.8.0"
 
   function_name = "${module.shared.prefix_group}-cognito-pre-auth"
   description   = "Cognito Pre-auth function"
-  handler       = "cognito-pre-auth.lambda_handler"
-  runtime       = "python3.12"
+  handler       = "cognito-pre-auth.handler" //"cognito-pre-auth.lambda_handler"
+  runtime       = "nodejs20.x" //"python3.12"
 
+  create_role   = false
   lambda_role   = aws_iam_role.cognito_pre_auth_aim.arn
-  source_path = "src/cognito-pre-auth.py"
+  source_path   = "src/cognito-pre-auth.mjs" //"src/cognito-pre-auth.py"
+
+  # set up 512 МБ memory
+  memory_size = 512
+
+  # Timeout 4-5 second,
+  # because Cognito doesnot wait longer than 5
+  timeout = 5
 
   depends_on = [ aws_iam_role_policy_attachment.cognito_pre_auth_policy_attachment ]
 
@@ -145,4 +154,3 @@ resource "aws_lambda_permission" "cognito_pre_auth_function_invoke_permission" {
   principal     = "cognito-idp.amazonaws.com"
   source_arn    = module.cognito_user_pool.arn
 }
-*/

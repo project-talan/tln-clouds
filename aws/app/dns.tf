@@ -16,6 +16,19 @@ resource "aws_route53_record" "ns" {
   records = aws_route53_zone.secondary.name_servers
 }
 
+resource "aws_route53_record" "caa_record" {
+  zone_id = aws_route53_zone.secondary.zone_id # ID your Hosted Zone
+  name    = local.subdomain_name
+  type    = "CAA"
+  ttl     = "3600"
+
+  records = [
+    "0 issue \"amazon.com\"",          # Allow AWS ACM
+    "0 issuewild \"amazonses.com\"",   # Allow Wildcard для SES
+    "0 iodef \"mailto:security@${var.domain_name}\"" # Where to send letter about issue
+  ]
+}
+
 module "secondary_certificate" {
   source  = "terraform-aws-modules/acm/aws"
   version = "6.3.0"

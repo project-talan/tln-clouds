@@ -5,6 +5,9 @@
 *.tfstate
 *.tfstate.*
 
+# bulds of zip archive
+aws/app/builds/*
+
 # .tfvars files
 *.tfvars
 *out.terraform*

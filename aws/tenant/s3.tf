@@ -93,7 +93,8 @@ module "cloudfront" {
   viewer_certificate = {
     acm_certificate_arn      = module.acm.arn
     ssl_support_method       = "sni-only"
-    minimum_protocol_version = "TLSv1.2_2021"
+    # the newest policy (only TLS 1.3)
+    minimum_protocol_version = "TLSv1.3_2025"
   }
 }
 
