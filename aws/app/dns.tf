@@ -16,7 +16,7 @@ resource "aws_route53_record" "ns" {
   records = aws_route53_zone.secondary.name_servers
 }
 
-resource "aws_route53_record" "caa_example" {
+resource "aws_route53_record" "caa_record" {
   zone_id = aws_route53_zone.secondary.zone_id # ID your Hosted Zone
   name    = local.subdomain_name
   type    = "CAA"
@@ -25,7 +25,7 @@ resource "aws_route53_record" "caa_example" {
   records = [
     "0 issue \"amazon.com\"",          # Allow AWS ACM
     "0 issuewild \"amazonses.com\"",   # Allow Wildcard для SES
-    "0 iodef \"mailto:admin@${var.domain_name}\"" # Where to send letter about issue
+    "0 iodef \"mailto:security@${var.domain_name}\"" # Where to send letter about issue
   ]
 }
 
