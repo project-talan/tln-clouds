@@ -15,6 +15,7 @@ locals {
   rds_backup_lifecycle_coldstorage_after = var.postgresql.backup_lifecycle_coldstorage_after
   rds_allow_major_version_upgrade        = var.postgresql.allow_major_version_upgrade
   rds_apply_immediately                  = var.postgresql.apply_immediately
+  rds_force_ssl                          = var.postgresql.force_ssl
 }
 
 module "rds" {
@@ -41,4 +42,5 @@ module "rds" {
   backup_lifecycle_coldstorage_after = local.rds_backup_lifecycle_coldstorage_after
   rds_allow_major_version_upgrade    = local.rds_allow_major_version_upgrade
   rds_apply_immediately              = local.rds_apply_immediately
+  rds_force_ssl                      = local.rds_force_ssl
 }

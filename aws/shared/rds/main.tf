@@ -98,8 +98,9 @@ module "rds_pg" {
 
   parameters = [
     {
+      # Reject non-TLS connections at the server. Dynamic parameter: no reboot required.
       name  = "rds.force_ssl"
-      value = "0" # Review this setting for production environments
+      value = var.rds_force_ssl ? "1" : "0"
     }
   ]
   allow_major_version_upgrade = var.rds_allow_major_version_upgrade //true

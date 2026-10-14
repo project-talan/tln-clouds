@@ -41,6 +41,7 @@ variable "postgresql" {
     rds_snapshot_identifier = string
     allow_major_version_upgrade = bool
     apply_immediately = bool
+    force_ssl = optional(bool, true)
   })
   default = {
     size = "db.t4g.micro"

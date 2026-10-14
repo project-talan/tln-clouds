@@ -117,6 +117,12 @@ variable "rds_snapshot_identifier" {
   type        = string
   default     = ""
 }
+variable "rds_force_ssl" {
+  description = "Require TLS for all client connections (rds.force_ssl). Disable only as a temporary escape hatch for legacy clients."
+  type        = bool
+  default     = true
+}
+
 variable "rds_allow_major_version_upgrade" {
   type        = bool
   default     = false
