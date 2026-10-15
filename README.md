@@ -128,6 +128,7 @@ Talan Clouds is a modular infrastructure platform designed to simplify and stand
           tln construct aws -- --backend cloud --init --apply --layer tenant --state project,provider,group,env,tenant
           ```
         * **You can check endpoints availability in browser https://dev01.myprojecy.io & https://api.dev01.myproject.io**
+        * Before teardown, follow the [RDS deletion safeguards](#rds-deletion-safeguards); deletion protection is enabled by default.
         * Now you can deconstruct all layers and free all Cloud resources
         * **Undeploy Tenant (demo)**
           ```
@@ -188,3 +189,40 @@ Recommended aproach is to use git subtree to connect your main repository with t
   | plan | Run Terraform plan | $ tln construct aws -- --backend cloud --plan --layer network --state project,provider,env,layer |
   | apply | Run Terraform apply | $ tln construct aws -- --backend cloud --apply --layer network --state project,provider,env,layer |
   | auto-approve | Tun on auto approve for apply & destroy | $ tln construct aws -- --backend cloud --apply --auto-approve --layer network --state project,provider,env,layer |
+
+## RDS deletion safeguards
+
+The app layer defaults to `postgresql.deletion_protection = true` and
+`postgresql.skip_final_snapshot = false`. Existing PostgreSQL objects that omit
+these attributes, or set them to null, receive the same defaults on the next apply.
+Explicit overrides are preserved.
+
+For planned deletion with a final snapshot, merge these attributes into the
+existing `TF_VAR_postgresql` object, preserving its other required attributes:
+
+```hcl
+deletion_protection = false
+skip_final_snapshot = false
+```
+
+Review the app plan and apply these settings first. After that apply succeeds,
+follow the existing deconstruct procedure. Final snapshots are created on instance
+deletion and incur storage charges while retained.
+
+For disposable environments where discarding data is intended, explicitly use
+`deletion_protection = false` and `skip_final_snapshot = true`. Apply the settings
+before teardown if the instance already exists.
+
+The pinned RDS module adds a `random_id` for final-snapshot naming when snapshots
+are enabled. Review the plan for the intended changes before upgrading existing
+environments; these inputs do not require resource renames or state migration.
+
+Run the configuration regression tests with Python 3 and Terraform 1.14.8:
+
+```sh
+python3 tests/test_rds_deletion_controls.py -v
+```
+
+The tests evaluate the real variable defaults, locals and module forwarding in a
+provider-free fixture. AWS deletion and snapshot restoration require a separate
+sandbox validation.

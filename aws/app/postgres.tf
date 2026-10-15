@@ -15,6 +15,8 @@ locals {
   rds_backup_lifecycle_coldstorage_after = var.postgresql.backup_lifecycle_coldstorage_after
   rds_allow_major_version_upgrade        = var.postgresql.allow_major_version_upgrade
   rds_apply_immediately                  = var.postgresql.apply_immediately
+  rds_deletion_protection                = var.postgresql.deletion_protection
+  rds_skip_final_snapshot                = var.postgresql.skip_final_snapshot
 }
 
 module "rds" {
@@ -41,4 +43,6 @@ module "rds" {
   backup_lifecycle_coldstorage_after = local.rds_backup_lifecycle_coldstorage_after
   rds_allow_major_version_upgrade    = local.rds_allow_major_version_upgrade
   rds_apply_immediately              = local.rds_apply_immediately
+  rds_deletion_protection            = local.rds_deletion_protection
+  rds_skip_final_snapshot            = local.rds_skip_final_snapshot
 }

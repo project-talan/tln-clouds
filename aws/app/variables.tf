@@ -41,6 +41,8 @@ variable "postgresql" {
     rds_snapshot_identifier = string
     allow_major_version_upgrade = bool
     apply_immediately = bool
+    deletion_protection = optional(bool, true)
+    skip_final_snapshot = optional(bool, false)
   })
   default = {
     size = "db.t4g.micro"
@@ -58,6 +60,8 @@ variable "postgresql" {
     rds_snapshot_identifier = null
     allow_major_version_upgrade = false
     apply_immediately = false
+    deletion_protection = true
+    skip_final_snapshot = false
   }
 }
 
