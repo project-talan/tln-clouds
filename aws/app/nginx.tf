@@ -14,7 +14,7 @@ resource "helm_release" "nginx" {
   timeout          = 1200
   wait             = true
   force_update     = true
-  recreate_pods    = true
+  recreate_pods    = false
 
   # allow to delete
   cleanup_on_fail = true
